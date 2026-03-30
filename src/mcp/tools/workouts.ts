@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { IIntervalsClient } from "../../index.js";
 import type { WorkoutPlan } from "../../services/workout-builder/index.js";
+import { slugify } from "../../services/workout-builder/index.js";
 import type { SportType } from "../../types.js";
 
 const workoutStepSchema = z.object({
@@ -8,19 +9,22 @@ const workoutStepSchema = z.object({
   duration: z
     .string()
     .describe(
-      'Step duration or distance, e.g. "5m", "30s", "1h2m30s", "2km", "500mtr"',
+      'Step duration or distance, e.g. "5m", "30s", "1h2m30s", "2km", "500mtr"'
     ),
   target: z
     .string()
     .optional()
     .describe(
-      'Intensity target, e.g. "75%", "200w", "Z2", "70% HR", "5:00/km Pace", "50%-75%"',
+      "Intensity target — prefer absolute watts when user gives specific power numbers. " +
+        'Examples: "200w" (watts), "160w-256w" (watt range for ramps), "75%" (FTP%), "Z2" (zone), "70% HR", "5:00/km Pace"'
     ),
   cadence: z.string().optional().describe('Cadence target, e.g. "90rpm"'),
   ramp: z
     .boolean()
     .optional()
-    .describe("If true, target is a ramp (use range target like 50%-75%)"),
+    .describe(
+      'If true, target is a ramp (use range like "160w-256w" or "50%-75%")'
+    ),
 });
 
 const repeatBlockSchema = z.object({
@@ -38,7 +42,7 @@ export const createWorkoutSchema = z.object({
   sportType: z
     .string()
     .describe(
-      "Sport type: Ride, Run, Swim, VirtualRide, MountainBikeRide, GravelRide, TrailRun, WeightTraining, Yoga, Hike",
+      "Sport type: Ride, Run, Swim, VirtualRide, MountainBikeRide, GravelRide, TrailRun, WeightTraining, Yoga, Hike"
     ),
   steps: z
     .array(z.union([workoutStepSchema, repeatBlockSchema]))
@@ -52,7 +56,7 @@ export const createWorkoutSchema = z.object({
 
 export async function createWorkout(
   client: IIntervalsClient,
-  args: z.infer<typeof createWorkoutSchema>,
+  args: z.infer<typeof createWorkoutSchema>
 ): Promise<string> {
   const plan: WorkoutPlan = {
     name: args.name,
@@ -66,11 +70,61 @@ export async function createWorkout(
   const event = client.workoutBuilder.buildEvent(plan);
   const result = await client.createEvents([event]);
 
+  return formatResponse(result);
+}
+
+export const createStrengthWorkoutSchema = z.object({
+  name: z.string().describe("Strength session name"),
+  date: z.string().describe("Date in YYYY-MM-DD format"),
+  description: z
+    .string()
+    .describe(
+      "Free-form description of the strength session. " +
+        "Include exercises, sets, reps, load, and RPE. " +
+        'Example: "Box Squat 3×5 @ RPE 7\\nTrap Bar Deadlift 3×5 @ RPE 8\\nBulgarian Split Squat 3×8 each leg\\nPull-ups 3×8"'
+    ),
+  externalId: z
+    .string()
+    .optional()
+    .describe("Optional external ID for upsert matching"),
+  color: z.string().optional().describe("Optional event color"),
+});
+
+export async function createStrengthWorkout(
+  client: IIntervalsClient,
+  args: z.infer<typeof createStrengthWorkoutSchema>
+): Promise<string> {
+  const externalId =
+    args.externalId || `mcp-${args.date}-${slugify(args.name)}`;
+
+  const event = {
+    category: "WORKOUT" as const,
+    start_date_local: `${args.date}T00:00:00`,
+    type: "WeightTraining" as const,
+    name: args.name,
+    description: args.description,
+    external_id: externalId,
+    ...(args.color ? { color: args.color } : {}),
+  };
+
+  const result = await client.createEvents([event]);
+
+  return formatResponse(result);
+}
+
+function formatResponse(
+  events: Array<{
+    id?: number;
+    name: string;
+    start_date_local: string;
+    description: string;
+  }>
+) {
   return JSON.stringify(
     {
       success: true,
-      created: result.length,
-      events: result.map((e) => ({
+      created: events.length,
+      events: events.map((e) => ({
         id: e.id,
         name: e.name,
         start_date_local: e.start_date_local,
@@ -78,6 +132,6 @@ export async function createWorkout(
       })),
     },
     null,
-    2,
+    2
   );
 }

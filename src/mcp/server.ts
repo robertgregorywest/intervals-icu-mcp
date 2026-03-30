@@ -2,7 +2,12 @@ import { createRequire } from "node:module";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { IIntervalsClient } from "../index.js";
 import { logResponse, logError } from "./logger.js";
-import { createWorkoutSchema, createWorkout } from "./tools/workouts.js";
+import {
+  createWorkoutSchema,
+  createWorkout,
+  createStrengthWorkoutSchema,
+  createStrengthWorkout,
+} from "./tools/workouts.js";
 
 const require = createRequire(import.meta.url);
 const { version } = require("../../package.json") as { version: string };
@@ -20,7 +25,7 @@ export function createMcpServer(client: IIntervalsClient): McpServer {
     description: string,
     schema: Record<string, unknown>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    handler: (args: any) => Promise<string>,
+    handler: (args: any) => Promise<string>
   ): void {
     server.tool(
       name,
@@ -37,18 +42,28 @@ export function createMcpServer(client: IIntervalsClient): McpServer {
           logError(name, error as Error, Date.now() - start);
           throw error;
         }
-      },
+      }
     );
   }
 
   tool(
     "create_workout",
     "Create a structured workout on the athlete's Intervals.icu calendar. " +
-      "Provide workout steps using Intervals.icu text syntax for targets " +
-      '(e.g. "75%", "200w", "Z2", "70% HR", "5:00/km Pace"). ' +
+      "IMPORTANT: When the user specifies power targets in watts, always use absolute watts " +
+      '(e.g. "200w", "160w-256w") — do NOT convert to percentages. ' +
+      'Percentage targets like "75%" are relative to FTP which may not match the user\'s intent. ' +
       "Supports simple steps, ramps, and repeat blocks.",
     createWorkoutSchema.shape,
-    (args) => createWorkout(client, args),
+    (args) => createWorkout(client, args)
+  );
+
+  tool(
+    "create_strength_workout",
+    "Create a strength/gym session on the athlete's Intervals.icu calendar as a WeightTraining event. " +
+      "Provide a free-form description of exercises, sets, reps, load, and RPE. " +
+      "Use this instead of create_workout for gym/strength sessions.",
+    createStrengthWorkoutSchema.shape,
+    (args) => createStrengthWorkout(client, args)
   );
 
   return server;
