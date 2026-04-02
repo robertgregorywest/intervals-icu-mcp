@@ -6,7 +6,7 @@ import type { IntervalsEvent } from "../../src/types.js";
 function createMockFetch(
   status: number,
   body: unknown,
-  contentType = "application/json",
+  contentType = "application/json"
 ) {
   return vi.fn().mockResolvedValue({
     ok: status >= 200 && status < 300,
@@ -25,6 +25,49 @@ const config = {
 };
 
 describe("EventsApi", () => {
+  describe("getEvents", () => {
+    it("GETs events with date range", async () => {
+      const events = [{ id: 1, name: "Test Workout" }];
+      const mockFetch = createMockFetch(200, events);
+      const httpClient = new HttpClient(config, mockFetch);
+      const eventsApi = new EventsApi(httpClient, config.athleteId);
+
+      const result = await eventsApi.getEvents("2024-01-01", "2024-01-31");
+
+      expect(result).toEqual(events);
+      const [url] = mockFetch.mock.calls[0];
+      expect(url).toBe(
+        "https://intervals.icu/api/v1/athlete/i12345/events?oldest=2024-01-01&newest=2024-01-31"
+      );
+    });
+
+    it("GETs events with resolve parameter", async () => {
+      const mockFetch = createMockFetch(200, []);
+      const httpClient = new HttpClient(config, mockFetch);
+      const eventsApi = new EventsApi(httpClient, config.athleteId);
+
+      await eventsApi.getEvents("2024-01-01", "2024-01-31", true);
+
+      const [url] = mockFetch.mock.calls[0];
+      expect(url).toContain("&resolve=true");
+    });
+  });
+
+  describe("getEvent", () => {
+    it("GETs a single event", async () => {
+      const event = { id: 42, name: "Test Workout" };
+      const mockFetch = createMockFetch(200, event);
+      const httpClient = new HttpClient(config, mockFetch);
+      const eventsApi = new EventsApi(httpClient, config.athleteId);
+
+      const result = await eventsApi.getEvent(42);
+
+      expect(result).toEqual(event);
+      const [url] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://intervals.icu/api/v1/athlete/i12345/events/42");
+    });
+  });
+
   describe("createEvents", () => {
     it("POSTs events to the bulk endpoint with upsert", async () => {
       const responseEvents = [{ id: 1, name: "Test Workout" }];
@@ -48,7 +91,7 @@ describe("EventsApi", () => {
       expect(mockFetch).toHaveBeenCalledOnce();
       const [url, options] = mockFetch.mock.calls[0];
       expect(url).toBe(
-        "https://intervals.icu/api/v1/athlete/i12345/events/bulk?upsert=true",
+        "https://intervals.icu/api/v1/athlete/i12345/events/bulk?upsert=true"
       );
       expect(options.method).toBe("POST");
       expect(JSON.parse(options.body as string)).toEqual(events);
@@ -89,10 +132,41 @@ describe("EventsApi", () => {
 
       const [url, options] = mockFetch.mock.calls[0];
       expect(url).toBe(
-        "https://intervals.icu/api/v1/athlete/i12345/events/bulk-delete",
+        "https://intervals.icu/api/v1/athlete/i12345/events/bulk-delete"
       );
       expect(options.method).toBe("PUT");
       expect(JSON.parse(options.body as string)).toEqual(ids);
+    });
+  });
+
+  describe("updateEvent", () => {
+    it("PUTs update to single event endpoint", async () => {
+      const updated = { id: 42, name: "Updated" };
+      const mockFetch = createMockFetch(200, updated);
+      const httpClient = new HttpClient(config, mockFetch);
+      const eventsApi = new EventsApi(httpClient, config.athleteId);
+
+      const result = await eventsApi.updateEvent(42, { name: "Updated" });
+
+      expect(result).toEqual(updated);
+      const [url, options] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://intervals.icu/api/v1/athlete/i12345/events/42");
+      expect(options.method).toBe("PUT");
+      expect(JSON.parse(options.body as string)).toEqual({ name: "Updated" });
+    });
+  });
+
+  describe("deleteEvent", () => {
+    it("DELETEs a single event", async () => {
+      const mockFetch = createMockFetch(200, undefined);
+      const httpClient = new HttpClient(config, mockFetch);
+      const eventsApi = new EventsApi(httpClient, config.athleteId);
+
+      await eventsApi.deleteEvent(42);
+
+      const [url, options] = mockFetch.mock.calls[0];
+      expect(url).toBe("https://intervals.icu/api/v1/athlete/i12345/events/42");
+      expect(options.method).toBe("DELETE");
     });
   });
 });
