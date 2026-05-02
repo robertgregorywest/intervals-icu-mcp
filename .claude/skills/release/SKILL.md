@@ -14,13 +14,6 @@ description: Cut a new release of intervals-icu-mcp: bump versions, build, pack 
 
 Pushing the tag triggers the GitHub Actions workflow, which handles build, test, pack, clean, and GitHub Release creation.
 
-To test the bundle locally before tagging, install `mcpb` first — it is not in the project dependencies:
-
-```
-npm install -g @anthropic-ai/mcpb
-mcpb pack && mcpb clean intervals-icu-mcp.mcpb
-```
-
 ## MCPB / Claude Desktop Gotchas
 
 - Claude Desktop uses its own **built-in Node.js** (not system Node) and runs with **CWD=`/`**
