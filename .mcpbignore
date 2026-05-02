@@ -1,0 +1,13 @@
+.claude/
+.github/
+.husky/
+.lintstagedrc
+.mcp.json
+src/
+tests/
+scripts/
+docs/
+CLAUDE.md
+vitest.config.ts
+tsconfig*.json
+*.mcpb

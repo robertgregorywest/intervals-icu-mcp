@@ -11,6 +11,7 @@ description: Cut a new release of intervals-icu-mcp: bump versions, build, pack 
 - [ ] Bump `version` in `manifest.json` to match
 - [ ] `npm run build` — compile TypeScript
 - [ ] `npm run mcpb:pack` — produces `intervals-icu-mcp.mcpb`
+- [ ] `mcpb clean intervals-icu-mcp.mcpb` — strips dev node_modules (89MB → 2.5MB)
 - [ ] Commit: `git add package.json manifest.json && git commit -m "chore: release vX.Y.Z"`
 - [ ] Tag and push: `git tag vX.Y.Z && git push && git push --tags`
 
