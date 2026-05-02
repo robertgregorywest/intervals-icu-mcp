@@ -86,16 +86,31 @@ export class IntervalsClient implements IIntervalsClient {
   readonly powerCurves: IPowerCurvesApi;
 
   constructor(options: IntervalsClientOptions = {}) {
-    const apiKey = options.apiKey || process.env.INTERVALS_API_KEY;
+    const apiKey = options.apiKey ?? process.env.INTERVALS_API_KEY;
     const athleteId =
-      options.athleteId || process.env.INTERVALS_ATHLETE_ID || "0";
-    const baseUrl = options.baseUrl || "https://intervals.icu";
+      options.athleteId ?? process.env.INTERVALS_ATHLETE_ID ?? "0";
+    const baseUrl = options.baseUrl ?? "https://intervals.icu";
 
-    if (!apiKey) {
+    if (!apiKey || !apiKey.trim()) {
       throw new Error(
         "Intervals.icu API key required. " +
           "Provide apiKey in options or set INTERVALS_API_KEY env var."
       );
+    }
+    if (!/^[a-zA-Z0-9]+$/.test(athleteId)) {
+      throw new Error(
+        `Invalid athlete ID — must be alphanumeric (e.g. "0" or "i12345"), ` +
+          `got ${JSON.stringify(athleteId)}.`
+      );
+    }
+    try {
+      const parsed = new URL(baseUrl);
+      if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
+        throw new Error("must use http or https");
+      }
+    } catch (err) {
+      const reason = err instanceof Error ? err.message : String(err);
+      throw new Error(`Invalid base URL ${JSON.stringify(baseUrl)}: ${reason}`);
     }
 
     const config: ClientConfig = { apiKey, athleteId, baseUrl };
