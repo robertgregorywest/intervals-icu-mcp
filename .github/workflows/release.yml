@@ -23,7 +23,7 @@ jobs:
       - name: Remove local-only migration dependencies
         run: |
           npm pkg delete devDependencies.trainingpeaks-mcp
-          npm install --package-lock-only
+          npm install --package-lock-only --ignore-scripts
 
       - run: npm ci
 
