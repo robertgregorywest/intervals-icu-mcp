@@ -24,6 +24,7 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "migrate:from-tp": "tsx scripts/migrate-from-tp.ts",
+    "mcpb:pack": "mcpb pack",
     "prepare": "husky"
   },
   "keywords": [
@@ -46,12 +47,12 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
     "dotenv": "^17.0.0",
-    "trainingpeaks-mcp": "file:../trainingpeaks-mcp",
     "zod": "^3.24.0"
   },
   "devDependencies": {
     "@garmin/fitsdk": "^21.171.0",
     "@types/node": "^22.0.0",
+    "trainingpeaks-mcp": "file:../trainingpeaks-mcp",
     "tsx": "^4.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",

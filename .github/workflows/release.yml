@@ -1,0 +1,68 @@
+name: Release
+run-name: ${{ github.ref_name }}
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Remove local-only migration dependencies
+        run: |
+          npm pkg delete devDependencies.trainingpeaks-mcp
+          npm install --package-lock-only
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - run: npm test
+
+      - name: Install mcpb
+        run: npm install -g @anthropic-ai/mcpb
+
+      - name: Pack MCPB bundle
+        run: mcpb pack
+
+      - name: Get bundle filename
+        id: bundle
+        run: |
+          BUNDLE=$(ls *.mcpb)
+          VERSION=${GITHUB_REF_NAME#v}
+          VERSIONED="${BUNDLE%.mcpb}-${VERSION}.mcpb"
+          mv "$BUNDLE" "$VERSIONED"
+          echo "file=$VERSIONED" >> "$GITHUB_OUTPUT"
+          SHA=$(shasum -a 256 "$VERSIONED" | cut -d ' ' -f 1)
+          echo "sha256=$SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.bundle.outputs.file }}
+          body: |
+            ## Install
+
+            Download the `.mcpb` file below and open it in Claude Desktop. You'll be prompted to enter your Intervals.icu API key.
+
+            **SHA-256:** `${{ steps.bundle.outputs.sha256 }}`
+          generate_release_notes: true
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

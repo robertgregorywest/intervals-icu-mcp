@@ -1,0 +1,57 @@
+{
+  "manifest_version": "0.3",
+  "version": "0.1.0",
+  "name": "intervals-icu-mcp",
+  "display_name": "Intervals.icu",
+  "description": "Access your Intervals.icu training data — activities, calendar, fitness metrics, power curves, and workout planning",
+  "server": {
+    "type": "node",
+    "entry_point": "dist/mcp/stdio.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/dist/mcp/stdio.js"],
+      "env": {
+        "INTERVALS_API_KEY": "${user_config.intervals_api_key}",
+        "INTERVALS_ATHLETE_ID": "${user_config.intervals_athlete_id}"
+      }
+    }
+  },
+  "user_config": {
+    "intervals_api_key": {
+      "type": "string",
+      "title": "Intervals.icu API Key",
+      "description": "Your Intervals.icu API key (Settings → API)",
+      "required": true,
+      "sensitive": true
+    },
+    "intervals_athlete_id": {
+      "type": "string",
+      "title": "Athlete ID",
+      "description": "Your Intervals.icu athlete ID, or leave blank to use the authenticated user",
+      "required": false,
+      "default": "0"
+    }
+  },
+  "tools": [
+    { "name": "get_athlete" },
+    { "name": "get_activities" },
+    { "name": "get_activity" },
+    { "name": "get_activity_streams" },
+    { "name": "get_events" },
+    { "name": "get_event" },
+    { "name": "update_event" },
+    { "name": "delete_events" },
+    { "name": "create_workout" },
+    { "name": "create_strength_workout" },
+    { "name": "get_wellness" },
+    { "name": "get_fitness_summary" },
+    { "name": "get_power_curve" },
+    { "name": "get_aerobic_decoupling" },
+    { "name": "compare_intervals" }
+  ],
+  "compatibility": {
+    "runtimes": {
+      "node": ">=20.0.0"
+    }
+  }
+}
