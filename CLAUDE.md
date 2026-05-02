@@ -17,7 +17,7 @@ Use `/release` to create a new release.
 2. `npm run build && npm run mcpb:pack` — produces `intervals-icu-mcp.mcpb`
 3. `git tag vX.Y.Z && git push --tags` — triggers the GitHub Actions release workflow
 
-The workflow builds, tests, packs the `.mcpb` bundle, creates a GitHub Release with the file attached, and publishes to npm. Requires `NPM_TOKEN` secret in the repo.
+The workflow builds, tests, packs the `.mcpb` bundle, and creates a GitHub Release with the file attached.
 
 ## MCPB / Claude Desktop Gotchas
 
