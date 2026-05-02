@@ -4,7 +4,7 @@ An MCP (Model Context Protocol) server for accessing your [Intervals.icu](https:
 
 ## Features
 
-- **15 tools** covering activities, calendar events, fitness metrics, power curves, workout creation, wellness, and analysis
+- **16 tools** covering activities, calendar events, fitness metrics, power curves, workout creation, wellness, analysis, and weekly summaries
 - **Structured workout creation**: build interval sessions on your Intervals.icu calendar using the native workout text syntax
 - **Analysis tools**: aerobic decoupling, interval comparison, power curves, and fitness trends
 
@@ -51,23 +51,24 @@ Requires **Node.js 20+**.
 
 ## Available Tools
 
-| Tool                      | Description                                                                           |
-| ------------------------- | ------------------------------------------------------------------------------------- |
-| `get_athlete`             | Get athlete profile including FTP, LTHR, weight, HR/power/pace zones                  |
-| `get_activities`          | List activities in a date range with summary metrics (TSS, IF, NP, HR, power)         |
-| `get_activity`            | Get full details for a single activity, optionally with detected intervals            |
-| `get_activity_streams`    | Get raw time-series data for an activity (power, HR, cadence, speed, altitude)        |
-| `get_events`              | List calendar events (planned workouts, races, notes) in a date range                 |
-| `get_event`               | Get details of a single calendar event including workout structure                    |
-| `update_event`            | Update an existing calendar event (name, description, date, category, type, colour)   |
-| `delete_events`           | Delete one or more calendar events by ID or external_id                               |
-| `create_workout`          | Create a structured workout on the calendar with steps, ramps, and repeat blocks      |
-| `create_strength_workout` | Create a strength/gym session as a WeightTraining event                               |
-| `get_wellness`            | Get wellness data for a date range (CTL, ATL, weight, HRV, sleep, subjective metrics) |
-| `get_fitness_summary`     | Today's fitness snapshot — CTL, ATL, TSB, HRV, sleep, and readiness                   |
-| `get_power_curve`         | Get the athlete's power-duration curve for a date range or all time                   |
-| `get_aerobic_decoupling`  | Calculate aerobic decoupling (Pw:Hr) for an activity — measures cardiac drift         |
-| `compare_intervals`       | Compare intervals across multiple activities side-by-side                             |
+| Tool                        | Description                                                                           |
+| --------------------------- | ------------------------------------------------------------------------------------- |
+| `get_athlete`               | Get athlete profile including FTP, LTHR, weight, HR/power/pace zones                  |
+| `get_activities`            | List activities in a date range with summary metrics (TSS, IF, NP, HR, power)         |
+| `get_activity`              | Get full details for a single activity, optionally with detected intervals            |
+| `get_activity_streams`      | Get raw time-series data for an activity (power, HR, cadence, speed, altitude)        |
+| `get_events`                | List calendar events (planned workouts, races, notes) in a date range                 |
+| `get_event`                 | Get details of a single calendar event including workout structure                    |
+| `update_event`              | Update an existing calendar event (name, description, date, category, type, colour)   |
+| `delete_events`             | Delete one or more calendar events by ID or external_id                               |
+| `create_workout`            | Create a structured workout on the calendar with steps, ramps, and repeat blocks      |
+| `create_strength_workout`   | Create a strength/gym session as a WeightTraining event                               |
+| `get_wellness`              | Get wellness data for a date range (CTL, ATL, weight, HRV, sleep, subjective metrics) |
+| `get_fitness_summary`       | Today's fitness snapshot — CTL, ATL, TSB, HRV, sleep, and readiness                   |
+| `get_power_curve`           | Get the athlete's power-duration curve for a date range or all time                   |
+| `get_aerobic_decoupling`    | Calculate aerobic decoupling (Pw:Hr) for an activity — measures cardiac drift         |
+| `compare_intervals`         | Compare intervals across multiple activities side-by-side                             |
+| `get_training_week_summary` | Bundle activities + wellness + planned events for a week into one snapshot            |
 
 ## Example Prompts
 

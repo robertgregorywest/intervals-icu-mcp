@@ -1,5 +1,6 @@
 import { z } from "zod";
 import type { IIntervalsClient } from "../../index.js";
+import { truncateForCharacterLimit } from "./common.js";
 
 export const getPowerCurveSchema = z.object({
   type: z
@@ -11,7 +12,9 @@ export const getPowerCurveSchema = z.object({
     .optional()
     .describe(
       'Time range for the curve: "90d" (90 days), "1y" (1 year), "all" (all time), ' +
-        'or custom "r.YYYY-MM-DD.YYYY-MM-DD". Defaults to API default.'
+        'or custom "r.YYYY-MM-DD.YYYY-MM-DD". ' +
+        'Example: "r.2026-01-01.2026-03-31" for Q1 2026. ' +
+        "Defaults to API default."
     ),
 });
 
@@ -20,5 +23,8 @@ export async function getPowerCurve(
   args: z.infer<typeof getPowerCurveSchema>
 ): Promise<string> {
   const curve = await client.getPowerCurve(args);
-  return JSON.stringify(curve, null, 2);
+  return truncateForCharacterLimit(
+    curve,
+    "Power curve payload exceeds character limit. Narrow the range parameter."
+  );
 }

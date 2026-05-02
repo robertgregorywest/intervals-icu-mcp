@@ -2,7 +2,21 @@ import { z } from "zod";
 import type { IIntervalsClient } from "../../index.js";
 import type { WorkoutPlan } from "../../services/workout-builder/index.js";
 import { slugify } from "../../services/workout-builder/index.js";
-import type { SportType } from "../../types.js";
+import { dateString } from "./common.js";
+
+const sportTypeEnum = z.enum([
+  "Ride",
+  "Run",
+  "Swim",
+  "VirtualRide",
+  "MountainBikeRide",
+  "GravelRide",
+  "TrailRun",
+  "WeightTraining",
+  "Yoga",
+  "Hike",
+  "OpenWaterSwim",
+]);
 
 const workoutStepSchema = z.object({
   label: z.string().optional().describe("Optional label/cue for this step"),
@@ -38,15 +52,18 @@ const repeatBlockSchema = z.object({
 
 export const createWorkoutSchema = z.object({
   name: z.string().describe("Workout name"),
-  date: z.string().describe("Date in YYYY-MM-DD format"),
-  sportType: z
-    .string()
-    .describe(
-      "Sport type: Ride, Run, Swim, VirtualRide, MountainBikeRide, GravelRide, TrailRun, WeightTraining, Yoga, Hike"
-    ),
+  date: dateString.describe("Date in YYYY-MM-DD format"),
+  sportType: sportTypeEnum.describe(
+    "Sport type — Ride/Run/Swim/VirtualRide/MountainBikeRide/GravelRide/TrailRun/WeightTraining/Yoga/Hike/OpenWaterSwim"
+  ),
   steps: z
     .array(z.union([workoutStepSchema, repeatBlockSchema]))
-    .describe("Workout steps — simple steps and/or repeat blocks"),
+    .min(1)
+    .describe(
+      "Workout steps — simple steps and/or repeat blocks. " +
+        'Example: [{ label: "Warmup", duration: "10m", target: "Z2", ramp: true }, ' +
+        '{ iterations: 4, steps: [{ duration: "5m", target: "240w" }, { duration: "3m", target: "150w" }] }]'
+    ),
   externalId: z
     .string()
     .optional()
@@ -61,7 +78,7 @@ export async function createWorkout(
   const plan: WorkoutPlan = {
     name: args.name,
     date: args.date,
-    sportType: args.sportType as SportType,
+    sportType: args.sportType,
     steps: args.steps,
     externalId: args.externalId,
     color: args.color,
@@ -75,7 +92,7 @@ export async function createWorkout(
 
 export const createStrengthWorkoutSchema = z.object({
   name: z.string().describe("Strength session name"),
-  date: z.string().describe("Date in YYYY-MM-DD format"),
+  date: dateString.describe("Date in YYYY-MM-DD format"),
   description: z
     .string()
     .describe(

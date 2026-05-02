@@ -37,8 +37,10 @@ describe("getActivities tool handler", () => {
     });
     const parsed = JSON.parse(result);
 
-    expect(parsed).toHaveLength(1);
-    expect(parsed[0].name).toBe("Morning Ride");
+    expect(parsed.total).toBe(1);
+    expect(parsed.count).toBe(1);
+    expect(parsed.truncated).toBe(false);
+    expect(parsed.activities[0].name).toBe("Morning Ride");
     expect(client.getActivities).toHaveBeenCalledWith(
       "2024-01-01",
       "2024-01-31"

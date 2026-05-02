@@ -27,8 +27,10 @@ describe("getWellness tool handler", () => {
     });
     const parsed = JSON.parse(result);
 
-    expect(parsed).toHaveLength(1);
-    expect(parsed[0].ctl).toBe(60);
+    expect(parsed.total).toBe(1);
+    expect(parsed.count).toBe(1);
+    expect(parsed.truncated).toBe(false);
+    expect(parsed.records[0].ctl).toBe(60);
   });
 });
 

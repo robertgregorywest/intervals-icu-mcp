@@ -1,6 +1,6 @@
 {
   "manifest_version": "0.3",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "name": "intervals-icu-mcp",
   "display_name": "Intervals.icu",
   "description": "Access your Intervals.icu training data — activities, calendar, fitness metrics, power curves, and workout planning",
@@ -47,7 +47,8 @@
     { "name": "get_fitness_summary" },
     { "name": "get_power_curve" },
     { "name": "get_aerobic_decoupling" },
-    { "name": "compare_intervals" }
+    { "name": "compare_intervals" },
+    { "name": "get_training_week_summary" }
   ],
   "author": {
     "name": "Rob West",

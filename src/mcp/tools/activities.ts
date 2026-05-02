@@ -1,17 +1,43 @@
 import { z } from "zod";
 import type { IIntervalsClient } from "../../index.js";
+import {
+  applyLimit,
+  assertDateRange,
+  dateString,
+  limitField,
+  truncateForCharacterLimit,
+} from "./common.js";
 
 export const getActivitiesSchema = z.object({
-  oldest: z.string().describe("Start date in YYYY-MM-DD format"),
-  newest: z.string().describe("End date in YYYY-MM-DD format"),
+  oldest: dateString.describe("Start date in YYYY-MM-DD format"),
+  newest: dateString.describe("End date in YYYY-MM-DD format"),
+  limit: limitField.optional(),
 });
 
 export async function getActivities(
   client: IIntervalsClient,
   args: z.infer<typeof getActivitiesSchema>
 ): Promise<string> {
-  const activities = await client.getActivities(args.oldest, args.newest);
-  return JSON.stringify(activities, null, 2);
+  assertDateRange(args.oldest, args.newest);
+  const all = await client.getActivities(args.oldest, args.newest);
+  const limit = args.limit ?? 50;
+  const { items, total, truncated } = applyLimit(all, limit);
+  const payload = {
+    total,
+    count: items.length,
+    truncated,
+    ...(truncated
+      ? {
+          message:
+            "Result list truncated by limit. Increase 'limit' or narrow the date range.",
+        }
+      : {}),
+    activities: items,
+  };
+  return truncateForCharacterLimit(
+    payload,
+    "Activity payload exceeds character limit. Narrow the date range or reduce limit."
+  );
 }
 
 export const getActivitySchema = z.object({
@@ -27,7 +53,10 @@ export async function getActivity(
   args: z.infer<typeof getActivitySchema>
 ): Promise<string> {
   const activity = await client.getActivity(args.id, args.includeIntervals);
-  return JSON.stringify(activity, null, 2);
+  return truncateForCharacterLimit(
+    activity,
+    "Activity payload exceeds character limit. Try includeIntervals=false."
+  );
 }
 
 export const getActivityStreamsSchema = z.object({
@@ -36,7 +65,8 @@ export const getActivityStreamsSchema = z.object({
     .array(z.string())
     .optional()
     .describe(
-      'Stream types to fetch, e.g. ["watts", "heartrate", "cadence"]. Omit for all streams.'
+      'Stream types to fetch, e.g. ["watts", "heartrate", "cadence"]. ' +
+        "Strongly recommended — full streams can be very large for long activities."
     ),
 });
 
@@ -45,5 +75,8 @@ export async function getActivityStreams(
   args: z.infer<typeof getActivityStreamsSchema>
 ): Promise<string> {
   const streams = await client.getActivityStreams(args.id, args.types);
-  return JSON.stringify(streams, null, 2);
+  return truncateForCharacterLimit(
+    streams,
+    "Stream data exceeds character limit. Request fewer stream types via the 'types' parameter."
+  );
 }
