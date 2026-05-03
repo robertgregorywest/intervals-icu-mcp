@@ -1,13 +1,6 @@
 # intervals-icu-mcp
 
-MCP server for the Intervals.icu API. Architecturally mirrors `trainingpeaks-mcp` (`/Users/rob/Git/GitHub/robertgregorywest/trainingpeaks-mcp`).
-
-## Commands
-
-- `npm run build` — compile TypeScript
-- `npm test` — run vitest
-- `npm run typecheck` — type-check without emitting
-- `npm start` — run MCP server via stdio
+MCP server for the Intervals.icu API.
 
 ## Architecture
 
