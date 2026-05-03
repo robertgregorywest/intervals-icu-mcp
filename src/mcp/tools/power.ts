@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { IIntervalsClient } from "../../index.js";
-import { truncateForCharacterLimit } from "./common.js";
+import { withCharacterLimit } from "./common.js";
 
 export const getPowerCurveSchema = z.object({
   type: z
@@ -21,10 +21,10 @@ export const getPowerCurveSchema = z.object({
 export async function getPowerCurve(
   client: IIntervalsClient,
   args: z.infer<typeof getPowerCurveSchema>
-): Promise<string> {
+): Promise<unknown> {
   const curve = await client.getPowerCurve(args);
-  return truncateForCharacterLimit(
-    curve,
+  return withCharacterLimit(
+    { points: curve },
     "Power curve payload exceeds character limit. Narrow the range parameter."
   );
 }

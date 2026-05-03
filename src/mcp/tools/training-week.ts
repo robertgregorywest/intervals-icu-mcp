@@ -13,10 +13,75 @@ export const getTrainingWeekSummarySchema = z.object({
     ),
 });
 
+const fitnessDeltaShape = z
+  .object({
+    start_date: z.string(),
+    end_date: z.string(),
+    ctl: z.object({
+      start: z.number(),
+      end: z.number(),
+      delta: z.number(),
+    }),
+    atl: z.object({
+      start: z.number(),
+      end: z.number(),
+      delta: z.number(),
+    }),
+    tsb: z.object({
+      start: z.number(),
+      end: z.number(),
+    }),
+  })
+  .nullable();
+
+export const getTrainingWeekSummaryOutputSchema = z.object({
+  week: z.object({ start: z.string(), end: z.string() }),
+  totals: z.object({
+    activity_count: z.number(),
+    tss: z.number(),
+    duration_seconds: z.number(),
+    duration_hours: z.number(),
+  }),
+  by_sport: z.record(
+    z.object({
+      count: z.number(),
+      tss: z.number(),
+      hours: z.number(),
+    })
+  ),
+  fitness: fitnessDeltaShape,
+  completed_activities: z.array(
+    z
+      .object({
+        id: z.union([z.number(), z.string()]).nullable().optional(),
+        date: z.string().nullable().optional(),
+        type: z.string().nullable().optional(),
+        name: z.string().nullable().optional(),
+        tss: z.number(),
+        duration_min: z.number(),
+        distance_km: z.number().nullable(),
+        avg_watts: z.number().nullable(),
+        avg_hr: z.number().nullable(),
+      })
+      .passthrough()
+  ),
+  events: z.array(
+    z
+      .object({
+        id: z.union([z.number(), z.string()]).nullable().optional(),
+        date: z.string().nullable().optional(),
+        category: z.string().nullable().optional(),
+        type: z.string().nullable().optional(),
+        name: z.string().nullable().optional(),
+      })
+      .passthrough()
+  ),
+});
+
 export async function getTrainingWeekSummary(
   client: IIntervalsClient,
   args: z.infer<typeof getTrainingWeekSummarySchema>
-): Promise<string> {
+): Promise<z.infer<typeof getTrainingWeekSummaryOutputSchema>> {
   const weekStart = args.weekStart ?? currentMonday();
   const weekEnd = addDays(weekStart, 6);
 
@@ -26,18 +91,14 @@ export async function getTrainingWeekSummary(
     client.getEvents(weekStart, weekEnd),
   ]);
 
-  return JSON.stringify(
-    {
-      week: { start: weekStart, end: weekEnd },
-      totals: computeTotals(activities),
-      by_sport: groupBySport(activities),
-      fitness: computeFitnessDelta(wellness),
-      completed_activities: activities.map(summarizeActivity),
-      events: events.map(summarizeEvent),
-    },
-    null,
-    2
-  );
+  return {
+    week: { start: weekStart, end: weekEnd },
+    totals: computeTotals(activities),
+    by_sport: groupBySport(activities),
+    fitness: computeFitnessDelta(wellness),
+    completed_activities: activities.map(summarizeActivity),
+    events: events.map(summarizeEvent),
+  };
 }
 
 function computeTotals(activities: Activity[]) {

@@ -71,10 +71,23 @@ export const createWorkoutSchema = z.object({
   color: z.string().optional().describe("Optional event color"),
 });
 
+export const createWorkoutOutputSchema = z.object({
+  success: z.literal(true),
+  created: z.number(),
+  events: z.array(
+    z.object({
+      id: z.number().optional(),
+      name: z.string(),
+      start_date_local: z.string(),
+      description: z.string(),
+    })
+  ),
+});
+
 export async function createWorkout(
   client: IIntervalsClient,
   args: z.infer<typeof createWorkoutSchema>
-): Promise<string> {
+): Promise<z.infer<typeof createWorkoutOutputSchema>> {
   const plan: WorkoutPlan = {
     name: args.name,
     date: args.date,
@@ -110,7 +123,7 @@ export const createStrengthWorkoutSchema = z.object({
 export async function createStrengthWorkout(
   client: IIntervalsClient,
   args: z.infer<typeof createStrengthWorkoutSchema>
-): Promise<string> {
+): Promise<z.infer<typeof createWorkoutOutputSchema>> {
   const externalId =
     args.externalId || `mcp-${args.date}-${slugify(args.name)}`;
 
@@ -136,19 +149,15 @@ function formatResponse(
     start_date_local: string;
     description: string;
   }>
-) {
-  return JSON.stringify(
-    {
-      success: true,
-      created: events.length,
-      events: events.map((e) => ({
-        id: e.id,
-        name: e.name,
-        start_date_local: e.start_date_local,
-        description: e.description,
-      })),
-    },
-    null,
-    2
-  );
+): z.infer<typeof createWorkoutOutputSchema> {
+  return {
+    success: true,
+    created: events.length,
+    events: events.map((e) => ({
+      id: e.id,
+      name: e.name,
+      start_date_local: e.start_date_local,
+      description: e.description,
+    })),
+  };
 }

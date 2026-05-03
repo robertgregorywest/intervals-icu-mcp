@@ -29,7 +29,7 @@ describe("getAerobicDecoupling tool handler", () => {
   it("returns decoupling analysis as JSON", async () => {
     const client = createMockClient();
     const result = await getAerobicDecoupling(client, { activityId: 42 });
-    const parsed = JSON.parse(result);
+    const parsed = result;
 
     expect(parsed.decouplingPercent).toBe(7.14);
     expect(parsed.interpretation).toContain("Moderate");
@@ -44,7 +44,7 @@ describe("compareIntervalsHandler", () => {
       activityIds: [1, 2],
       minPower: 200,
     });
-    const parsed = JSON.parse(result);
+    const parsed = result;
 
     expect(parsed.intervals).toHaveLength(1);
     expect(parsed.summaries).toHaveLength(1);

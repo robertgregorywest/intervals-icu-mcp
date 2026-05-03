@@ -166,6 +166,11 @@ async function main() {
     name: "get_training_week_summary",
     arguments: { weekStart: "2026-04-27" },
   });
+  if (week.isError) {
+    console.log("WORKFLOW TOOL ERROR:", week.content[0].text);
+    child.kill();
+    return;
+  }
   const wkRes = JSON.parse(week.content[0].text);
   console.log("week:", wkRes.week);
   console.log("totals:", wkRes.totals);

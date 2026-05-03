@@ -13,37 +13,42 @@ export const getWellnessSchema = z.object({
   limit: limitField.optional(),
 });
 
+export const getWellnessOutputSchema = z
+  .object({
+    total: z.number(),
+    count: z.number(),
+    truncated: z.boolean(),
+    message: z.string().optional(),
+    records: z.array(z.object({}).passthrough()),
+  })
+  .passthrough();
+
 export async function getWellness(
   client: IIntervalsClient,
   args: z.infer<typeof getWellnessSchema>
-): Promise<string> {
+): Promise<z.infer<typeof getWellnessOutputSchema>> {
   assertDateRange(args.oldest, args.newest);
   const all = await client.getWellness(args.oldest, args.newest);
   const limit = args.limit ?? 50;
   const { items, total, truncated } = applyLimit(all, limit);
-  return JSON.stringify(
-    {
-      total,
-      count: items.length,
-      truncated,
-      ...(truncated
-        ? {
-            message:
-              "Result list truncated. Increase 'limit' or narrow the date range.",
-          }
-        : {}),
-      records: items,
-    },
-    null,
-    2
-  );
+  return {
+    total,
+    count: items.length,
+    truncated,
+    ...(truncated
+      ? {
+          message:
+            "Result list truncated. Increase 'limit' or narrow the date range.",
+        }
+      : {}),
+    records: items as Array<Record<string, unknown>>,
+  };
 }
 
 export const getFitnessSummarySchema = z.object({});
 
 export async function getFitnessSummary(
   client: IIntervalsClient
-): Promise<string> {
-  const summary = await client.getFitnessSummary();
-  return JSON.stringify(summary, null, 2);
+): Promise<Record<string, unknown>> {
+  return (await client.getFitnessSummary()) as Record<string, unknown>;
 }

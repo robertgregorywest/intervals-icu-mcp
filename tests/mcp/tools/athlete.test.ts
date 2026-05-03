@@ -18,7 +18,7 @@ describe("getAthlete tool handler", () => {
   it("returns athlete profile as JSON", async () => {
     const client = createMockClient();
     const result = await getAthlete(client);
-    const parsed = JSON.parse(result);
+    const parsed = result;
 
     expect(parsed.name).toBe("Test Athlete");
     expect(parsed.ftp).toBe(280);

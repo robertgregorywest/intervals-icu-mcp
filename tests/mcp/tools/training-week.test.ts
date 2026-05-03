@@ -48,7 +48,7 @@ describe("getTrainingWeekSummary tool handler", () => {
     const result = await getTrainingWeekSummary(client, {
       weekStart: "2026-04-27",
     });
-    const parsed = JSON.parse(result);
+    const parsed = result;
 
     expect(parsed.week).toEqual({ start: "2026-04-27", end: "2026-05-03" });
     expect(parsed.totals.activity_count).toBe(2);
@@ -89,7 +89,7 @@ describe("getTrainingWeekSummary tool handler", () => {
     const result = await getTrainingWeekSummary(client, {
       weekStart: "2026-04-27",
     });
-    const parsed = JSON.parse(result);
+    const parsed = result;
 
     expect(parsed.fitness).toBeNull();
   });

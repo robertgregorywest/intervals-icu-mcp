@@ -38,30 +38,36 @@ export const getEventsSchema = z.object({
   limit: limitField.optional(),
 });
 
+export const getEventsOutputSchema = z
+  .object({
+    total: z.number(),
+    count: z.number(),
+    truncated: z.boolean(),
+    message: z.string().optional(),
+    events: z.array(z.object({}).passthrough()),
+  })
+  .passthrough();
+
 export async function getEvents(
   client: IIntervalsClient,
   args: z.infer<typeof getEventsSchema>
-): Promise<string> {
+): Promise<z.infer<typeof getEventsOutputSchema>> {
   assertDateRange(args.oldest, args.newest);
   const all = await client.getEvents(args.oldest, args.newest);
   const limit = args.limit ?? 50;
   const { items, total, truncated } = applyLimit(all, limit);
-  return JSON.stringify(
-    {
-      total,
-      count: items.length,
-      truncated,
-      ...(truncated
-        ? {
-            message:
-              "Result list truncated. Increase 'limit' or narrow the date range.",
-          }
-        : {}),
-      events: items,
-    },
-    null,
-    2
-  );
+  return {
+    total,
+    count: items.length,
+    truncated,
+    ...(truncated
+      ? {
+          message:
+            "Result list truncated. Increase 'limit' or narrow the date range.",
+        }
+      : {}),
+    events: items as unknown as Array<Record<string, unknown>>,
+  };
 }
 
 export const getEventSchema = z.object({
@@ -71,9 +77,8 @@ export const getEventSchema = z.object({
 export async function getEvent(
   client: IIntervalsClient,
   args: z.infer<typeof getEventSchema>
-): Promise<string> {
-  const event = await client.getEvent(args.id);
-  return JSON.stringify(event, null, 2);
+): Promise<Record<string, unknown>> {
+  return (await client.getEvent(args.id)) as unknown as Record<string, unknown>;
 }
 
 export const updateEventSchema = z.object({
@@ -92,14 +97,16 @@ export const updateEventSchema = z.object({
 export async function updateEvent(
   client: IIntervalsClient,
   args: z.infer<typeof updateEventSchema>
-): Promise<string> {
+): Promise<Record<string, unknown>> {
   const { id, date, ...fields } = args;
   const data: Record<string, unknown> = { ...fields };
   if (date) {
     data.start_date_local = `${date}T00:00:00`;
   }
-  const event = await client.updateEvent(id, data);
-  return JSON.stringify(event, null, 2);
+  return (await client.updateEvent(id, data)) as unknown as Record<
+    string,
+    unknown
+  >;
 }
 
 export const deleteEventsSchema = z.object({
@@ -117,10 +124,15 @@ export const deleteEventsSchema = z.object({
     ),
 });
 
+export const deleteEventsOutputSchema = z.object({
+  success: z.literal(true),
+  deleted: z.number().describe("Number of identifiers submitted for deletion"),
+});
+
 export async function deleteEvents(
   client: IIntervalsClient,
   args: z.infer<typeof deleteEventsSchema>
-): Promise<string> {
+): Promise<z.infer<typeof deleteEventsOutputSchema>> {
   await client.deleteEvents(args.ids);
-  return JSON.stringify({ success: true, deleted: args.ids.length });
+  return { success: true, deleted: args.ids.length };
 }

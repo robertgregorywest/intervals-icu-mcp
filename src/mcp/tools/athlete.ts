@@ -3,7 +3,9 @@ import type { IIntervalsClient } from "../../index.js";
 
 export const getAthleteSchema = z.object({});
 
-export async function getAthlete(client: IIntervalsClient): Promise<string> {
-  const profile = await client.getAthlete();
-  return JSON.stringify(profile, null, 2);
+export async function getAthlete(
+  client: IIntervalsClient
+): Promise<Record<string, unknown>> {
+  const profile = (await client.getAthlete()) as Record<string, unknown>;
+  return profile;
 }

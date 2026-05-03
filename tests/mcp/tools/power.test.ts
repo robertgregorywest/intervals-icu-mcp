@@ -13,14 +13,15 @@ function createMockClient(): IIntervalsClient {
 }
 
 describe("getPowerCurve tool handler", () => {
-  it("returns power curve as JSON", async () => {
+  it("returns power curve as { points: [...] }", async () => {
     const client = createMockClient();
-    const result = await getPowerCurve(client, {});
-    const parsed = JSON.parse(result);
+    const result = (await getPowerCurve(client, {})) as {
+      points: Array<{ secs: number; value: number }>;
+    };
 
-    expect(parsed).toHaveLength(3);
-    expect(parsed[0].secs).toBe(5);
-    expect(parsed[0].value).toBe(900);
+    expect(result.points).toHaveLength(3);
+    expect(result.points[0].secs).toBe(5);
+    expect(result.points[0].value).toBe(900);
   });
 
   it("passes type and range options", async () => {

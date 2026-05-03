@@ -1,0 +1,52 @@
+<!--
+  Evaluation questions for the intervals-icu-mcp server.
+
+  These questions are pinned against the live Intervals.icu account configured
+  via INTERVALS_API_KEY at the time of writing. Answers are stable for the
+  reference athlete used during development (see ground-truth notes below).
+  Re-verify if running against a different account or after profile updates.
+
+  Captured: 2026-05-03 against account i535702 (Robert West).
+-->
+<evaluation>
+  <qa_pair>
+    <question>Use the intervals-icu MCP server to look up the athlete's profile. What is the LTHR (lactate threshold heart rate) configured for the Ride sport? Answer with the integer value only.</question>
+    <answer>159</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Use the intervals-icu MCP server to read the athlete's profile. What is the maximum heart rate (max_hr) configured for the Ride sport? Answer with the integer value only.</question>
+    <answer>175</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Use the intervals-icu MCP server to look up the athlete's profile. What is the icu_resting_hr value? Answer with the integer only.</question>
+    <answer>53</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Use the intervals-icu MCP server to read the athlete's profile and count the registered bikes. How many bikes are in the bikes array? Answer with the integer only.</question>
+    <answer>6</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Use the intervals-icu MCP server to look up the athlete's profile. What is the timezone setting (the value of the "timezone" field)?</question>
+    <answer>Europe/London</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Use the intervals-icu MCP server to fetch the wellness record for the date 2026-04-25. What was the readiness score? Answer with the integer only.</question>
+    <answer>34</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Use the intervals-icu MCP server to fetch the wellness record for the date 2026-04-25. What was the resting HR value (restingHR field)? Answer with the integer only.</question>
+    <answer>52</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Use the intervals-icu MCP server to fetch the wellness record for the date 2026-04-25. What was the sleep duration in seconds (sleepSecs field)? Answer with the integer only.</question>
+    <answer>29029</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Use the intervals-icu MCP server to fetch the wellness record for the date 2026-04-25 and round the CTL value down to the nearest whole number (e.g. 50.08 becomes 50). What integer do you get?</question>
+    <answer>50</answer>
+  </qa_pair>
+  <qa_pair>
+    <question>Use the intervals-icu MCP server to read the athlete's profile. Compute the difference between max_hr and lthr for the Ride sport (max_hr - lthr). Answer with the integer only.</question>
+    <answer>16</answer>
+  </qa_pair>
+</evaluation>

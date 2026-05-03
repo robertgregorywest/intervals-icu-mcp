@@ -80,7 +80,7 @@ describe("createWorkout tool handler", () => {
       ],
     });
 
-    const parsed = JSON.parse(result);
+    const parsed = result;
     expect(parsed.success).toBe(true);
     expect(parsed.created).toBe(1);
     expect(parsed.events[0].name).toBe("Threshold Intervals");
@@ -146,7 +146,7 @@ describe("createStrengthWorkout tool handler", () => {
       description: "Box Squat 3×5 @ RPE 7\nTrap Bar Deadlift 3×5 @ RPE 8",
     });
 
-    const parsed = JSON.parse(result);
+    const parsed = result;
     expect(parsed.success).toBe(true);
     expect(parsed.created).toBe(1);
     expect(parsed.events[0].name).toBe("Strength Session");

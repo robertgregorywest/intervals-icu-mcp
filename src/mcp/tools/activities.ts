@@ -5,7 +5,7 @@ import {
   assertDateRange,
   dateString,
   limitField,
-  truncateForCharacterLimit,
+  withCharacterLimit,
 } from "./common.js";
 
 export const getActivitiesSchema = z.object({
@@ -14,15 +14,25 @@ export const getActivitiesSchema = z.object({
   limit: limitField.optional(),
 });
 
+export const getActivitiesOutputSchema = z
+  .object({
+    total: z.number().describe("Activities matching the date range"),
+    count: z.number().describe("Activities returned (after limit applied)"),
+    truncated: z.boolean(),
+    message: z.string().optional(),
+    activities: z.array(z.object({}).passthrough()),
+  })
+  .passthrough();
+
 export async function getActivities(
   client: IIntervalsClient,
   args: z.infer<typeof getActivitiesSchema>
-): Promise<string> {
+): Promise<z.infer<typeof getActivitiesOutputSchema>> {
   assertDateRange(args.oldest, args.newest);
   const all = await client.getActivities(args.oldest, args.newest);
   const limit = args.limit ?? 50;
   const { items, total, truncated } = applyLimit(all, limit);
-  const payload = {
+  return {
     total,
     count: items.length,
     truncated,
@@ -32,12 +42,8 @@ export async function getActivities(
             "Result list truncated by limit. Increase 'limit' or narrow the date range.",
         }
       : {}),
-    activities: items,
+    activities: items as Array<Record<string, unknown>>,
   };
-  return truncateForCharacterLimit(
-    payload,
-    "Activity payload exceeds character limit. Narrow the date range or reduce limit."
-  );
 }
 
 export const getActivitySchema = z.object({
@@ -51,9 +57,9 @@ export const getActivitySchema = z.object({
 export async function getActivity(
   client: IIntervalsClient,
   args: z.infer<typeof getActivitySchema>
-): Promise<string> {
+): Promise<unknown> {
   const activity = await client.getActivity(args.id, args.includeIntervals);
-  return truncateForCharacterLimit(
+  return withCharacterLimit(
     activity,
     "Activity payload exceeds character limit. Try includeIntervals=false."
   );
@@ -73,9 +79,9 @@ export const getActivityStreamsSchema = z.object({
 export async function getActivityStreams(
   client: IIntervalsClient,
   args: z.infer<typeof getActivityStreamsSchema>
-): Promise<string> {
+): Promise<unknown> {
   const streams = await client.getActivityStreams(args.id, args.types);
-  return truncateForCharacterLimit(
+  return withCharacterLimit(
     streams,
     "Stream data exceeds character limit. Request fewer stream types via the 'types' parameter."
   );

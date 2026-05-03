@@ -50,22 +50,51 @@ export function applyLimit<T>(
   return { items: items.slice(0, limit), total, truncated: true };
 }
 
-export function truncateForCharacterLimit(
-  payload: unknown,
+export type Truncation = {
+  truncated: true;
+  character_limit: number;
+  original_chars: number;
+  message: string;
+};
+
+export function withCharacterLimit<T>(
+  payload: T,
   hint: string
-): string {
+): T | Truncation {
   const json = JSON.stringify(payload, null, 2);
   if (json.length <= CHARACTER_LIMIT) {
-    return json;
+    return payload;
   }
-  return JSON.stringify(
-    {
-      truncated: true,
-      character_limit: CHARACTER_LIMIT,
-      original_chars: json.length,
-      message: hint,
-    },
-    null,
-    2
-  );
+  return {
+    truncated: true,
+    character_limit: CHARACTER_LIMIT,
+    original_chars: json.length,
+    message: hint,
+  };
+}
+
+/**
+ * Common Zod schemas reused in tool outputSchemas.
+ */
+export const truncationSchema = z.object({
+  truncated: z.literal(true),
+  character_limit: z.number(),
+  original_chars: z.number(),
+  message: z.string(),
+});
+
+/**
+ * Build a list-envelope outputSchema with a typed items array under the given key.
+ */
+export function listEnvelopeShape<T extends z.ZodTypeAny>(
+  itemsKey: string,
+  itemSchema: T
+): Record<string, z.ZodTypeAny> {
+  return {
+    total: z.number(),
+    count: z.number(),
+    truncated: z.boolean(),
+    message: z.string().optional(),
+    [itemsKey]: z.array(itemSchema),
+  };
 }

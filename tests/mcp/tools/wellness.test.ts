@@ -25,7 +25,7 @@ describe("getWellness tool handler", () => {
       oldest: "2024-01-01",
       newest: "2024-01-31",
     });
-    const parsed = JSON.parse(result);
+    const parsed = result;
 
     expect(parsed.total).toBe(1);
     expect(parsed.count).toBe(1);
@@ -38,7 +38,7 @@ describe("getFitnessSummary tool handler", () => {
   it("returns today's fitness snapshot", async () => {
     const client = createMockClient();
     const result = await getFitnessSummary(client);
-    const parsed = JSON.parse(result);
+    const parsed = result;
 
     expect(parsed.ctl).toBe(62);
     expect(client.getFitnessSummary).toHaveBeenCalledOnce();

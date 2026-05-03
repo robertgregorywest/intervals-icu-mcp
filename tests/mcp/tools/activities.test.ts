@@ -35,7 +35,7 @@ describe("getActivities tool handler", () => {
       oldest: "2024-01-01",
       newest: "2024-01-31",
     });
-    const parsed = JSON.parse(result);
+    const parsed = result;
 
     expect(parsed.total).toBe(1);
     expect(parsed.count).toBe(1);
@@ -52,7 +52,7 @@ describe("getActivity tool handler", () => {
   it("returns single activity as JSON", async () => {
     const client = createMockClient();
     const result = await getActivity(client, { id: 1 });
-    const parsed = JSON.parse(result);
+    const parsed = result;
 
     expect(parsed.name).toBe("Morning Ride");
     expect(client.getActivity).toHaveBeenCalledWith(1, undefined);
@@ -70,7 +70,7 @@ describe("getActivityStreams tool handler", () => {
   it("returns streams as JSON", async () => {
     const client = createMockClient();
     const result = await getActivityStreams(client, { id: 1 });
-    const parsed = JSON.parse(result);
+    const parsed = result;
 
     expect(parsed.watts).toEqual([200, 210]);
     expect(client.getActivityStreams).toHaveBeenCalledWith(1, undefined);

@@ -37,7 +37,7 @@ describe("getEvents tool handler", () => {
       oldest: "2024-01-01",
       newest: "2024-01-31",
     });
-    const parsed = JSON.parse(result);
+    const parsed = result;
 
     expect(parsed.total).toBe(1);
     expect(parsed.count).toBe(1);
@@ -51,7 +51,7 @@ describe("getEvent tool handler", () => {
   it("returns single event as JSON", async () => {
     const client = createMockClient();
     const result = await getEvent(client, { id: 1 });
-    const parsed = JSON.parse(result);
+    const parsed = result;
 
     expect(parsed.description).toBe("- 10m 60%");
     expect(client.getEvent).toHaveBeenCalledWith(1);
@@ -65,7 +65,7 @@ describe("updateEvent tool handler", () => {
       id: 1,
       name: "Updated Workout",
     });
-    const parsed = JSON.parse(result);
+    const parsed = result;
 
     expect(parsed.name).toBe("Updated Workout");
     expect(client.updateEvent).toHaveBeenCalledWith(1, {
@@ -89,7 +89,7 @@ describe("deleteEvents tool handler", () => {
     const result = await deleteEvents(client, {
       ids: [{ id: 1 }, { external_id: "test-2" }],
     });
-    const parsed = JSON.parse(result);
+    const parsed = result;
 
     expect(parsed.success).toBe(true);
     expect(parsed.deleted).toBe(2);
