@@ -18,7 +18,7 @@ const sportTypeEnum = z.enum([
   "OpenWaterSwim",
 ]);
 
-const workoutStepSchema = z.object({
+export const workoutStepSchema = z.object({
   label: z.string().optional().describe("Optional label/cue for this step"),
   duration: z
     .string()
@@ -41,7 +41,7 @@ const workoutStepSchema = z.object({
     ),
 });
 
-const repeatBlockSchema = z.object({
+export const repeatBlockSchema = z.object({
   iterations: z.number().describe("Number of times to repeat the steps"),
   label: z
     .string()

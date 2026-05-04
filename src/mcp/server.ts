@@ -55,6 +55,24 @@ import {
   getTrainingWeekSummary,
   getTrainingWeekSummaryOutputSchema,
 } from "./tools/training-week.js";
+import {
+  listWorkoutLibrarySchema,
+  listWorkoutLibrary,
+  listWorkoutLibraryOutputSchema,
+  getWorkoutLibraryItemSchema,
+  getWorkoutLibraryItem,
+  seedWorkoutLibrarySchema,
+  seedWorkoutLibrary,
+  seedWorkoutLibraryOutputSchema,
+  refreshWorkoutLibrarySchema,
+  refreshWorkoutLibrary,
+  refreshWorkoutLibraryOutputSchema,
+  createWorkoutLibraryItemSchema,
+  createWorkoutLibraryItem,
+  createWorkoutLibraryItemOutputSchema,
+} from "./tools/workout-library.js";
+import { STATIC_INSTRUCTIONS } from "./syntax-doc.js";
+import { registerSetupCoachingPrompt } from "./prompts/setup-coaching.js";
 
 const require = createRequire(import.meta.url);
 const { version } = require("../../package.json") as { version: string };
@@ -80,11 +98,25 @@ const UPSERT: ToolAnnotations = {
   openWorldHint: true,
 };
 
-export function createMcpServer(client: IIntervalsClient): McpServer {
-  const server = new McpServer({
-    name: "intervals-icu-mcp",
-    version,
-  });
+export interface McpServerOptions {
+  coachingInstructions?: string;
+}
+
+export function createMcpServer(
+  client: IIntervalsClient,
+  opts: McpServerOptions = {}
+): McpServer {
+  const instructions = opts.coachingInstructions
+    ? `${STATIC_INSTRUCTIONS}\n# Coaching context\n\n${opts.coachingInstructions}`
+    : STATIC_INSTRUCTIONS;
+
+  const server = new McpServer(
+    {
+      name: "intervals-icu-mcp",
+      version,
+    },
+    { instructions }
+  );
 
   function tool<S extends z.ZodRawShape>(
     name: string,
@@ -261,6 +293,74 @@ export function createMcpServer(client: IIntervalsClient): McpServer {
     (args) => createStrengthWorkout(client, args)
   );
 
+  // Workout library (saved workouts in Intervals.icu)
+  tool(
+    "list_workout_library",
+    "List the athlete's saved workouts (folders + workouts with name and a one-line summary). " +
+      "Use this BEFORE composing an ad-hoc session so you reuse the athlete's curated templates. " +
+      'Optional "folder" arg filters by folder name. ' +
+      "Returns: { folders: [...], workouts: [{ id, name, folder_id, stepCount, totalSeconds, hasRationale, oneLine }] }.",
+    listWorkoutLibrarySchema,
+    READ_ONLY,
+    listWorkoutLibraryOutputSchema,
+    (args) => listWorkoutLibrary(client, args)
+  );
+
+  tool(
+    "get_workout_library_item",
+    "Get the full body of a saved workout including its rationale (intent, %MAP/%FTP basis, source). " +
+      "Returns: { workout, description_text, rationale, summary } where rationale is the parsed coaching context " +
+      "(null when the workout has no embedded rationale block).",
+    getWorkoutLibraryItemSchema,
+    READ_ONLY,
+    null,
+    (args) => getWorkoutLibraryItem(client, args)
+  );
+
+  tool(
+    "create_workout_library_item",
+    "Author and persist a new workout to the athlete's library. Use when you've " +
+      "composed a session that doesn't already exist in the library and want it " +
+      "saved for reuse. Folder is created if missing (defaults to 'Coach: Custom'). " +
+      "Fails if a workout with this name already exists in the target folder. " +
+      "Provide a rationale block with basis/anchorWatts/seedId/intensities to make " +
+      "the workout refreshable via refresh_workout_library when MAP or FTP changes. " +
+      "Returns: { workoutId, name, folder, description }.",
+    createWorkoutLibraryItemSchema,
+    UPSERT,
+    createWorkoutLibraryItemOutputSchema,
+    (args) => createWorkoutLibraryItem(client, args)
+  );
+
+  tool(
+    "refresh_workout_library",
+    "Regenerate watts on every seeded workout in the library when MAP or FTP changes. " +
+      "Walks all folders, finds workouts whose rationale block has a known seedId, and " +
+      "rewrites the step body using the new anchor while preserving any free-text prose " +
+      "the user has added above the steps. Skips workouts already at the new anchor. " +
+      "Use dryRun=true to preview. " +
+      "Returns: { dryRun, updated: [...], skipped: [...], warnings: [...] }.",
+    refreshWorkoutLibrarySchema,
+    UPSERT,
+    refreshWorkoutLibraryOutputSchema,
+    (args) => refreshWorkoutLibrary(client, args)
+  );
+
+  tool(
+    "seed_workout_library",
+    "Populate the athlete's library with a canonical set of cycling templates " +
+      "(FTP test, MAP ramp, VO2 4x4, VO2 30/30, threshold 2x20, sweet spot 3x12, Z2, MIET, recovery). " +
+      'Authors templates under a "Coach Templates" folder hierarchy. ' +
+      "Provide mapWatts and/or ftpWatts to materialize templates anchored on each. " +
+      "Idempotent: skips workouts whose name already exists in the target folder. " +
+      "Use dryRun=true to preview without writing. " +
+      "Returns: { dryRun, created: [...], skipped: [...], warnings: [...] }.",
+    seedWorkoutLibrarySchema,
+    UPSERT,
+    seedWorkoutLibraryOutputSchema,
+    (args) => seedWorkoutLibrary(client, args)
+  );
+
   // Wellness & fitness
   tool(
     "get_wellness",
@@ -344,6 +444,9 @@ export function createMcpServer(client: IIntervalsClient): McpServer {
     getTrainingWeekSummaryOutputSchema,
     (args) => getTrainingWeekSummary(client, args)
   );
+
+  // Prompts
+  registerSetupCoachingPrompt(server);
 
   return server;
 }

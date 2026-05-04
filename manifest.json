@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "name": "intervals-icu-mcp",
   "display_name": "Intervals.icu",
-  "description": "Access your Intervals.icu training data — activities, calendar, fitness metrics, power curves, and workout planning",
+  "description": "Access your Intervals.icu training data — activities, calendar, fitness metrics, power curves, workout planning, and a managed library of saved workouts that can act as a coaching template store.",
   "server": {
     "type": "node",
     "entry_point": "dist/mcp/stdio.js",
@@ -12,7 +12,8 @@
       "args": ["${__dirname}/dist/mcp/stdio.js"],
       "env": {
         "INTERVALS_API_KEY": "${user_config.intervals_api_key}",
-        "INTERVALS_ATHLETE_ID": "${user_config.intervals_athlete_id}"
+        "INTERVALS_ATHLETE_ID": "${user_config.intervals_athlete_id}",
+        "INTERVALS_COACHING_DIR": "${user_config.intervals_coaching_dir}"
       }
     }
   },
@@ -30,6 +31,12 @@
       "description": "Your Intervals.icu athlete ID, or leave blank to use the authenticated user",
       "required": false,
       "default": "0"
+    },
+    "intervals_coaching_dir": {
+      "type": "directory",
+      "title": "Coaching docs directory",
+      "description": "Directory containing philosophy.md / season.md / athlete.md (loaded into the server's MCP instructions at startup). Leave blank to use ~/.intervals-icu-mcp/coaching/. Run the setup_coaching prompt to create these files interactively.",
+      "required": false
     }
   },
   "tools": [
@@ -43,12 +50,24 @@
     { "name": "delete_events" },
     { "name": "create_workout" },
     { "name": "create_strength_workout" },
+    { "name": "list_workout_library" },
+    { "name": "get_workout_library_item" },
+    { "name": "create_workout_library_item" },
+    { "name": "seed_workout_library" },
+    { "name": "refresh_workout_library" },
     { "name": "get_wellness" },
     { "name": "get_fitness_summary" },
     { "name": "get_power_curve" },
     { "name": "get_aerobic_decoupling" },
     { "name": "compare_intervals" },
     { "name": "get_training_week_summary" }
+  ],
+  "prompts": [
+    {
+      "name": "setup_coaching",
+      "description": "Walk the athlete through a short interview, then write philosophy.md / season.md / athlete.md to the coaching directory so the server can act as a coach.",
+      "text": "Run this prompt to bootstrap the server's coaching context. The LLM will interview the athlete across philosophy, current season, and athlete profile, then write three markdown files that get loaded into the MCP instructions at startup. Restart the host after the files are written so the new context takes effect."
+    }
   ],
   "author": {
     "name": "Rob West",

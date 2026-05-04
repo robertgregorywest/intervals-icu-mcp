@@ -18,6 +18,11 @@ import type {
   PowerCurveOptions,
 } from "./services/power-curves/index.js";
 import type { PowerCurvePoint } from "./services/power-curves/index.js";
+import {
+  createWorkoutLibraryApi,
+  createWorkoutLibrary,
+} from "./services/workout-library/index.js";
+import type { IWorkoutLibrary } from "./services/workout-library/index.js";
 import { computeAerobicDecoupling } from "./services/analysis/index.js";
 import type { DecouplingResult } from "./services/analysis/index.js";
 import { compareIntervals as compareIntervalsAnalysis } from "./services/analysis/index.js";
@@ -34,6 +39,7 @@ export interface IIntervalsClient {
   readonly activities: IActivitiesApi;
   readonly wellness: IWellnessApi;
   readonly powerCurves: IPowerCurvesApi;
+  readonly workoutLibrary: IWorkoutLibrary;
 
   // Events
   getEvents(oldest: string, newest: string): Promise<IntervalsEvent[]>;
@@ -84,6 +90,7 @@ export class IntervalsClient implements IIntervalsClient {
   readonly activities: IActivitiesApi;
   readonly wellness: IWellnessApi;
   readonly powerCurves: IPowerCurvesApi;
+  readonly workoutLibrary: IWorkoutLibrary;
 
   constructor(options: IntervalsClientOptions = {}) {
     const apiKey = options.apiKey ?? process.env.INTERVALS_API_KEY;
@@ -121,6 +128,10 @@ export class IntervalsClient implements IIntervalsClient {
     this.activities = createActivitiesApi(this.httpClient, athleteId);
     this.wellness = createWellnessApi(this.httpClient, athleteId);
     this.powerCurves = createPowerCurvesApi(this.httpClient, athleteId);
+    this.workoutLibrary = createWorkoutLibrary(
+      createWorkoutLibraryApi(this.httpClient, athleteId),
+      this.workoutBuilder
+    );
   }
 
   // Events
@@ -260,3 +271,16 @@ export type {
   CompareIntervalsResult,
   IntervalFilterOptions,
 } from "./services/analysis/index.js";
+export type {
+  IWorkoutLibrary,
+  LibraryListing,
+  LibraryItem,
+  LibraryFolder,
+  LibraryWorkout,
+  LibraryWorkoutSummary,
+  LibraryWorkoutInput,
+  WorkoutSummary,
+  Rationale,
+  RationaleBasis,
+  RationaleIntensity,
+} from "./services/workout-library/index.js";
