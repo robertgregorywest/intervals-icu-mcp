@@ -10,7 +10,11 @@ Reason about intensity in %MAP or %FTP per the coaching context. **Emit absolute
 
 ## Conversion
 
-Pull `ftp` and the cycling power zones from `get_coaching_context`. MAP is typically the upper bound of Z5 in the Coggan/Allen scheme (or a separate field if the athlete has set one — check sport_settings).
+Pull `ftp` and `map.watts` from `get_coaching_context`:
+
+- **`map.watts`** is derived server-side from the athlete's most recent `MAP ramp test*` activity in the last 90 days (best 60-sec power). `map.computedFrom` shows which activity was used.
+- If `map` is null, `mapWarning` will say so. Ask the athlete for a current MAP estimate before prescribing %MAP-anchored work; do not invent a value.
+- `ftp` is the static profile FTP. The Intervals.icu zones in `athlete.power_zones` are FTP-anchored (Coggan), not MAP-anchored — use them only for FTP-anchored prescriptions; map %MAP intent against `map.watts` directly.
 
 **Pattern**: anchor × pct = watts, rounded to nearest 5 W.
 

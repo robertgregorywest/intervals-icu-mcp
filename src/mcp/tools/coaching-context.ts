@@ -65,6 +65,19 @@ export const getCoachingContextOutputSchema = z.object({
       hrv: z.number().nullable(),
     })
   ),
+  map: z
+    .object({
+      watts: z.number(),
+      computedFrom: z.object({
+        metric: z.literal("best_60s"),
+        activityId: z.union([z.number(), z.string()]),
+        activityName: z.string(),
+        activityDate: z.string(),
+        daysAgo: z.number(),
+      }),
+    })
+    .nullable(),
+  mapWarning: z.string().optional(),
 });
 
 export async function getCoachingContext(

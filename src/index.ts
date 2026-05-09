@@ -234,7 +234,11 @@ export class IntervalsClient implements IIntervalsClient {
     opts?: CoachingContextOptions
   ): Promise<CoachingContext> {
     return buildCoachingContext(
-      { athleteApi: this.athlete, wellnessApi: this.wellness },
+      {
+        athleteApi: this.athlete,
+        wellnessApi: this.wellness,
+        activitiesApi: this.activities,
+      },
       opts
     );
   }
@@ -295,6 +299,7 @@ export type {
   AthleteSnapshot,
   FitnessSnapshot,
   WellnessTrendPoint,
+  MapInfo,
 } from "./services/coaching-context/index.js";
 export type {
   IWorkoutLibrary,

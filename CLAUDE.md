@@ -52,6 +52,7 @@ The server `instructions` field is intentionally lean — workout-text syntax, w
 - **Workout-generation rules** — `intervals-coach` skill at `.claude/skills/intervals-coach/` (SKILL.md entry, plus `power-conversion.md`, `session-patterns.md`, `library-vs-compose.md`, `syntax-cheatsheet.md` for progressive disclosure). Reloads per session.
 - **Coaching philosophy + season** — user uploads `philosophy.md` and `season.md` as Claude Project knowledge. The `setup_coaching` MCP prompt interviews and emits these as artifacts. Templates live at `templates/project-knowledge/`.
 - **Athlete state** — `get_coaching_context` tool bundles `getAthlete` + `getWellness(days)` + computed CTL/ATL/TSB into one snapshot. Default 7-day wellness window, max 30. Always fresh — no files to maintain.
+- **MAP** — derived in the same tool: scans the last 90 days of activities, picks the most recent whose name (case-insensitive) starts with `"MAP ramp test"` and does **not** contain `"(skip)"`, runs `computeBestPower(stream, 60)` on its watts stream, returns `{ map: { watts, computedFrom: { metric, activityId, activityName, activityDate, daysAgo } } }`. No qualifying test → `map: null` plus a `mapWarning` for the LLM to act on. Athletes exclude botched tests by renaming the activity in Intervals.icu to include `(skip)`.
 
 Saved workouts can still encode %MAP/%FTP intent via the rationale block (see above) so `refresh_workout_library` can re-anchor them when test values change.
 

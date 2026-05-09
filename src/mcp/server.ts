@@ -444,12 +444,17 @@ export function createMcpServer(client: IIntervalsClient): McpServer {
     "get_coaching_context",
     "Get a single snapshot of the athlete's current coaching state — profile " +
       "(FTP, LTHR, max/resting HR, weight, power/HR zones), today's fitness " +
-      "(CTL, ATL, TSB, ramp rate), and a wellness trend (default 7d, max 30d) " +
-      "with subjective metrics (fatigue, soreness, motivation, mood, sleep). " +
+      "(CTL, ATL, TSB, ramp rate), a wellness trend (default 7d, max 30d) " +
+      "with subjective metrics (fatigue, soreness, motivation, mood, sleep), " +
+      "and a derived MAP (Maximal Aerobic Power) value. " +
+      "MAP is computed as the best-60s power from the most recent activity " +
+      'whose name starts with "MAP ramp test" in the last 90 days. To exclude ' +
+      'a botched test, rename the activity in Intervals.icu to include "(skip)". ' +
+      "If no qualifying test is found, map is null and mapWarning explains. " +
       "Call this at session start to ground workout decisions in current state " +
       "rather than juggling get_athlete + get_wellness + get_fitness_summary " +
       "yourself. " +
-      "Returns: { asOf, daysWindow, athlete, fitness, wellnessTrend }.",
+      "Returns: { asOf, daysWindow, athlete, fitness, wellnessTrend, map, mapWarning? }.",
     getCoachingContextSchema,
     READ_ONLY,
     getCoachingContextOutputSchema,

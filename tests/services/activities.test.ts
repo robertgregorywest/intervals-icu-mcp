@@ -83,4 +83,30 @@ describe("ActivitiesApi", () => {
     const [url] = mockFetch.mock.calls[0];
     expect(url).toBe("https://intervals.icu/api/v1/activity/42/streams.json");
   });
+
+  it("normalises array-shaped streams response into a keyed object", async () => {
+    const arrayResponse = [
+      { type: "watts", name: null, data: [200, 210, 220] },
+      { type: "heartrate", name: null, data: [130, 135, 140] },
+    ];
+    const mockFetch = createMockFetch(200, arrayResponse);
+    const httpClient = new HttpClient(config, mockFetch);
+    const api = new ActivitiesApi(httpClient, config.athleteId);
+
+    const result = await api.getActivityStreams(42, ["watts", "heartrate"]);
+
+    expect(result.watts).toEqual([200, 210, 220]);
+    expect(result.heartrate).toEqual([130, 135, 140]);
+  });
+
+  it("passes through already-keyed streams response unchanged", async () => {
+    const keyed = { watts: [200, 210], heartrate: [130, 135] };
+    const mockFetch = createMockFetch(200, keyed);
+    const httpClient = new HttpClient(config, mockFetch);
+    const api = new ActivitiesApi(httpClient, config.athleteId);
+
+    const result = await api.getActivityStreams(42, ["watts", "heartrate"]);
+
+    expect(result).toEqual(keyed);
+  });
 });

@@ -32,10 +32,34 @@ export class ActivitiesApi implements IActivitiesApi {
     types?: string[]
   ): Promise<ActivityStreams> {
     const query = types?.length ? `?types=${types.join(",")}` : "";
-    return this.httpClient.request<ActivityStreams>(
+    const raw = await this.httpClient.request<unknown>(
       `/api/v1/activity/${id}/streams.json${query}`
     );
+    return normalizeStreams(raw);
   }
+}
+
+function normalizeStreams(raw: unknown): ActivityStreams {
+  // Intervals.icu returns an array of { type, data } stream objects;
+  // the rest of the codebase expects a keyed object ({ watts, heartrate, ... }).
+  if (Array.isArray(raw)) {
+    const out: Record<string, unknown> = {};
+    for (const entry of raw) {
+      if (
+        entry &&
+        typeof entry === "object" &&
+        typeof (entry as { type?: unknown }).type === "string"
+      ) {
+        const e = entry as { type: string; data?: unknown };
+        out[e.type] = e.data;
+      }
+    }
+    return out as ActivityStreams;
+  }
+  if (raw && typeof raw === "object") {
+    return raw as ActivityStreams;
+  }
+  return {} as ActivityStreams;
 }
 
 export function createActivitiesApi(

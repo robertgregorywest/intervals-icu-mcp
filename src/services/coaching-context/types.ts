@@ -40,12 +40,25 @@ export interface WellnessTrendPoint {
   hrv: number | null;
 }
 
+export interface MapInfo {
+  watts: number;
+  computedFrom: {
+    metric: "best_60s";
+    activityId: number | string;
+    activityName: string;
+    activityDate: string;
+    daysAgo: number;
+  };
+}
+
 export interface CoachingContext {
   asOf: string;
   daysWindow: number;
   athlete: AthleteSnapshot;
   fitness: FitnessSnapshot;
   wellnessTrend: WellnessTrendPoint[];
+  map: MapInfo | null;
+  mapWarning?: string;
 }
 
 export type RawAthlete = AthleteProfile;
