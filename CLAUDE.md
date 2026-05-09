@@ -1,6 +1,6 @@
 # intervals-icu-mcp
 
-MCP server for the Intervals.icu API.
+MCP server for the Intervals.icu API plus tools to support agentic coaching.
 
 ## Architecture
 
@@ -12,16 +12,16 @@ MCP server for the Intervals.icu API.
 
 New tools/services should follow this pattern: service with interface → tool handler that delegates → register in `server.ts`.
 
+## Ways of working
+
+- **Probe live before typing.** Before designing or implementing changes that touch Intervals.icu request bodies, response parsing, or query params — call a real endpoint and inspect the JSON. Do not invent shapes from memory or extrapolate from sibling endpoints. The `intervals-api-research` skill (`.claude/skills/intervals-api-research/`) holds the workflow, probe templates, and endpoint index — it auto-loads on API-surface work.
+
 ## Intervals.icu API
 
-- **Auth**: Basic auth with `API_KEY:{key}` (base64 encoded)
-- **Athlete ID**: use `0` for authenticated user
 - **Base URL**: `https://intervals.icu`
-- **Create events**: `POST /api/v1/athlete/{id}/events/bulk?upsert=true` — body is array of events, matched by `external_id` for upsert
-- **Delete events**: `PUT /api/v1/athlete/{id}/events/bulk-delete` — body is array of `{ external_id }` or `{ id }`
-- **Folders + saved workouts**: `GET /api/v1/athlete/{id}/folders` returns a tree of `{ type: "FOLDER", children: [...] }` mixing nested folders and workouts (distinguished by `type`). `POST .../folders` ignores any `parent` field — folders are flat in practice. `POST .../workouts` requires `type` (default to `"Ride"`) and `folder_id`. `PUT .../workouts/{id}` updates a saved workout. `DELETE` works on both.
-- **Full API docs**: https://intervals.icu/api-docs.html (JS SPA — won't render via fetch, use forum posts instead)
-- **Forum API reference**: https://forum.intervals.icu/t/uploading-planned-workouts-to-intervals-icu/63624
+- **Auth**: Basic with `API_KEY:{key}` (base64). Username is the literal `API_KEY`.
+- **Athlete ID**: pass `0` for the authenticated user.
+- **Endpoints, quirks, doc links** → `.claude/skills/intervals-api-research/endpoint-reference.md`.
 
 ### Workout text syntax
 
