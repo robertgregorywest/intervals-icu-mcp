@@ -39,7 +39,7 @@ export async function listWorkoutLibrary(
   client: IIntervalsClient,
   args: z.infer<typeof listWorkoutLibrarySchema>
 ): Promise<z.infer<typeof listWorkoutLibraryOutputSchema>> {
-  return client.workoutLibrary.list(args.folder);
+  return client.listWorkoutLibrary(args.folder);
 }
 
 export const getWorkoutLibraryItemSchema = z.object({
@@ -50,7 +50,7 @@ export async function getWorkoutLibraryItem(
   client: IIntervalsClient,
   args: z.infer<typeof getWorkoutLibraryItemSchema>
 ): Promise<unknown> {
-  return client.workoutLibrary.get(args.id);
+  return client.getWorkoutLibraryItem(args.id);
 }
 
 export const seedWorkoutLibrarySchema = z.object({
@@ -108,7 +108,7 @@ export async function seedWorkoutLibrary(
   client: IIntervalsClient,
   args: z.infer<typeof seedWorkoutLibrarySchema>
 ): Promise<z.infer<typeof seedWorkoutLibraryOutputSchema>> {
-  return client.workoutLibrary.seed(args);
+  return client.seedWorkoutLibrary(args);
 }
 
 export const refreshWorkoutLibrarySchema = z.object({
@@ -165,7 +165,7 @@ export async function refreshWorkoutLibrary(
   client: IIntervalsClient,
   args: z.infer<typeof refreshWorkoutLibrarySchema>
 ): Promise<z.infer<typeof refreshWorkoutLibraryOutputSchema>> {
-  return client.workoutLibrary.refresh(args);
+  return client.refreshWorkoutLibrary(args);
 }
 
 const rationaleIntensitySchema = z.object({
@@ -243,5 +243,5 @@ export async function createWorkoutLibraryItem(
   client: IIntervalsClient,
   args: z.infer<typeof createWorkoutLibraryItemSchema>
 ): Promise<z.infer<typeof createWorkoutLibraryItemOutputSchema>> {
-  return client.workoutLibrary.create(args);
+  return client.createWorkoutLibraryItem(args);
 }

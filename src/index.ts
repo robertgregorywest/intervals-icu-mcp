@@ -3,7 +3,10 @@ import type { IHttpClient } from "./client.js";
 import { createEventsApi } from "./services/events/index.js";
 import type { IEventsApi } from "./services/events/index.js";
 import { createWorkoutBuilder } from "./services/workout-builder/index.js";
-import type { IWorkoutBuilder } from "./services/workout-builder/index.js";
+import type {
+  IWorkoutBuilder,
+  WorkoutPlan,
+} from "./services/workout-builder/index.js";
 import { createAthleteApi } from "./services/athlete/index.js";
 import type { IAthleteApi, AthleteProfile } from "./services/athlete/index.js";
 import { createActivitiesApi } from "./services/activities/index.js";
@@ -22,7 +25,17 @@ import {
   createWorkoutLibraryApi,
   createWorkoutLibrary,
 } from "./services/workout-library/index.js";
-import type { IWorkoutLibrary } from "./services/workout-library/index.js";
+import type {
+  IWorkoutLibrary,
+  LibraryListing,
+  LibraryItem,
+  CreateLibraryItemInput,
+  CreateLibraryItemResult,
+  SeedOptions,
+  SeedReport,
+  RefreshOptions,
+  RefreshReport,
+} from "./services/workout-library/index.js";
 import { computeAerobicDecoupling } from "./services/analysis/index.js";
 import type { DecouplingResult } from "./services/analysis/index.js";
 import { compareIntervals as compareIntervalsAnalysis } from "./services/analysis/index.js";
@@ -38,14 +51,6 @@ import type {
 import type { IntervalsEvent, ClientConfig } from "./types.js";
 
 export interface IIntervalsClient {
-  readonly events: IEventsApi;
-  readonly workoutBuilder: IWorkoutBuilder;
-  readonly athlete: IAthleteApi;
-  readonly activities: IActivitiesApi;
-  readonly wellness: IWellnessApi;
-  readonly powerCurves: IPowerCurvesApi;
-  readonly workoutLibrary: IWorkoutLibrary;
-
   // Events
   getEvents(oldest: string, newest: string): Promise<IntervalsEvent[]>;
   getEvent(eventId: number): Promise<IntervalsEvent>;
@@ -73,6 +78,18 @@ export interface IIntervalsClient {
   // Power curves
   getPowerCurve(options?: PowerCurveOptions): Promise<PowerCurvePoint[]>;
 
+  // Workouts
+  buildWorkoutEvent(plan: WorkoutPlan): IntervalsEvent;
+
+  // Workout library
+  listWorkoutLibrary(folderName?: string): Promise<LibraryListing>;
+  getWorkoutLibraryItem(workoutId: number): Promise<LibraryItem>;
+  seedWorkoutLibrary(opts?: SeedOptions): Promise<SeedReport>;
+  refreshWorkoutLibrary(opts?: RefreshOptions): Promise<RefreshReport>;
+  createWorkoutLibraryItem(
+    input: CreateLibraryItemInput
+  ): Promise<CreateLibraryItemResult>;
+
   // Analysis
   getAerobicDecoupling(activityId: number): Promise<DecouplingResult>;
   compareIntervals(
@@ -92,13 +109,13 @@ export interface IntervalsClientOptions {
 
 export class IntervalsClient implements IIntervalsClient {
   private httpClient: IHttpClient;
-  readonly events: IEventsApi;
-  readonly workoutBuilder: IWorkoutBuilder;
-  readonly athlete: IAthleteApi;
-  readonly activities: IActivitiesApi;
-  readonly wellness: IWellnessApi;
-  readonly powerCurves: IPowerCurvesApi;
-  readonly workoutLibrary: IWorkoutLibrary;
+  private events: IEventsApi;
+  private workoutBuilder: IWorkoutBuilder;
+  private athlete: IAthleteApi;
+  private activities: IActivitiesApi;
+  private wellness: IWellnessApi;
+  private powerCurves: IPowerCurvesApi;
+  private workoutLibrary: IWorkoutLibrary;
 
   constructor(options: IntervalsClientOptions = {}) {
     const apiKey = options.apiKey ?? process.env.INTERVALS_API_KEY;
@@ -202,6 +219,34 @@ export class IntervalsClient implements IIntervalsClient {
   // Power curves
   async getPowerCurve(options?: PowerCurveOptions): Promise<PowerCurvePoint[]> {
     return this.powerCurves.getPowerCurve(options);
+  }
+
+  // Workouts
+  buildWorkoutEvent(plan: WorkoutPlan): IntervalsEvent {
+    return this.workoutBuilder.buildEvent(plan);
+  }
+
+  // Workout library
+  async listWorkoutLibrary(folderName?: string): Promise<LibraryListing> {
+    return this.workoutLibrary.list(folderName);
+  }
+
+  async getWorkoutLibraryItem(workoutId: number): Promise<LibraryItem> {
+    return this.workoutLibrary.get(workoutId);
+  }
+
+  async seedWorkoutLibrary(opts?: SeedOptions): Promise<SeedReport> {
+    return this.workoutLibrary.seed(opts);
+  }
+
+  async refreshWorkoutLibrary(opts?: RefreshOptions): Promise<RefreshReport> {
+    return this.workoutLibrary.refresh(opts);
+  }
+
+  async createWorkoutLibraryItem(
+    input: CreateLibraryItemInput
+  ): Promise<CreateLibraryItemResult> {
+    return this.workoutLibrary.create(input);
   }
 
   // Analysis

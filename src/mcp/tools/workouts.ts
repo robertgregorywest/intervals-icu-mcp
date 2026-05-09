@@ -97,7 +97,7 @@ export async function createWorkout(
     color: args.color,
   };
 
-  const event = client.workoutBuilder.buildEvent(plan);
+  const event = client.buildWorkoutEvent(plan);
   const result = await client.createEvents([event]);
 
   return formatResponse(result);

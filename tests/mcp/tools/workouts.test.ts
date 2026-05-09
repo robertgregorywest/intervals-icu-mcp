@@ -10,44 +10,11 @@ import type { IntervalsEvent } from "../../../src/types.js";
 function createMockClient(
   returnEvents: IntervalsEvent[] = []
 ): IIntervalsClient {
+  const builder = new WorkoutBuilder();
   return {
-    events: {
-      getEvents: vi.fn().mockResolvedValue([]),
-      getEvent: vi.fn().mockResolvedValue({}),
-      createEvents: vi.fn().mockResolvedValue(returnEvents),
-      updateEvent: vi.fn().mockResolvedValue({}),
-      deleteEvent: vi.fn().mockResolvedValue(undefined),
-      deleteEvents: vi.fn().mockResolvedValue(undefined),
-    },
-    workoutBuilder: new WorkoutBuilder(),
-    athlete: { getAthlete: vi.fn().mockResolvedValue({}) },
-    activities: {
-      getActivities: vi.fn().mockResolvedValue([]),
-      getActivity: vi.fn().mockResolvedValue({}),
-      getActivityStreams: vi.fn().mockResolvedValue({}),
-    },
-    wellness: {
-      getWellness: vi.fn().mockResolvedValue([]),
-      getWellnessDay: vi.fn().mockResolvedValue({}),
-    },
-    powerCurves: { getPowerCurve: vi.fn().mockResolvedValue([]) },
-    getEvents: vi.fn().mockResolvedValue([]),
-    getEvent: vi.fn().mockResolvedValue({}),
+    buildWorkoutEvent: vi.fn((plan) => builder.buildEvent(plan)),
     createEvents: vi.fn().mockResolvedValue(returnEvents),
-    updateEvent: vi.fn().mockResolvedValue({}),
-    deleteEvents: vi.fn().mockResolvedValue(undefined),
-    getAthlete: vi.fn().mockResolvedValue({}),
-    getActivities: vi.fn().mockResolvedValue([]),
-    getActivity: vi.fn().mockResolvedValue({}),
-    getActivityStreams: vi.fn().mockResolvedValue({}),
-    getWellness: vi.fn().mockResolvedValue([]),
-    getFitnessSummary: vi.fn().mockResolvedValue({}),
-    getPowerCurve: vi.fn().mockResolvedValue([]),
-    getAerobicDecoupling: vi.fn().mockResolvedValue({}),
-    compareIntervals: vi
-      .fn()
-      .mockResolvedValue({ intervals: [], summaries: [] }),
-  };
+  } as unknown as IIntervalsClient;
 }
 
 describe("createWorkout tool handler", () => {
