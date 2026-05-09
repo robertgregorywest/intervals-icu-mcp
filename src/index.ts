@@ -1,5 +1,6 @@
 import { createHttpClient } from "./client.js";
 import type { IHttpClient } from "./client.js";
+import { parseClientConfig } from "./config.js";
 import { createEventsApi } from "./services/events/index.js";
 import type { IEventsApi } from "./services/events/index.js";
 import { createWorkoutBuilder } from "./services/workout-builder/index.js";
@@ -48,7 +49,7 @@ import type {
   CoachingContext,
   CoachingContextOptions,
 } from "./services/coaching-context/index.js";
-import type { IntervalsEvent, ClientConfig } from "./types.js";
+import type { IntervalsEvent } from "./types.js";
 
 export interface IIntervalsClient {
   // Events
@@ -118,34 +119,13 @@ export class IntervalsClient implements IIntervalsClient {
   private workoutLibrary: IWorkoutLibrary;
 
   constructor(options: IntervalsClientOptions = {}) {
-    const apiKey = options.apiKey ?? process.env.INTERVALS_API_KEY;
-    const athleteId =
-      options.athleteId ?? process.env.INTERVALS_ATHLETE_ID ?? "0";
-    const baseUrl = options.baseUrl ?? "https://intervals.icu";
+    const config = parseClientConfig({
+      apiKey: options.apiKey ?? process.env.INTERVALS_API_KEY,
+      athleteId: options.athleteId ?? process.env.INTERVALS_ATHLETE_ID ?? "0",
+      baseUrl: options.baseUrl ?? "https://intervals.icu",
+    });
+    const { athleteId } = config;
 
-    if (!apiKey || !apiKey.trim()) {
-      throw new Error(
-        "Intervals.icu API key required. " +
-          "Provide apiKey in options or set INTERVALS_API_KEY env var."
-      );
-    }
-    if (!/^[a-zA-Z0-9]+$/.test(athleteId)) {
-      throw new Error(
-        `Invalid athlete ID — must be alphanumeric (e.g. "0" or "i12345"), ` +
-          `got ${JSON.stringify(athleteId)}.`
-      );
-    }
-    try {
-      const parsed = new URL(baseUrl);
-      if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
-        throw new Error("must use http or https");
-      }
-    } catch (err) {
-      const reason = err instanceof Error ? err.message : String(err);
-      throw new Error(`Invalid base URL ${JSON.stringify(baseUrl)}: ${reason}`);
-    }
-
-    const config: ClientConfig = { apiKey, athleteId, baseUrl };
     this.httpClient = createHttpClient(config);
     this.events = createEventsApi(this.httpClient, athleteId);
     this.workoutBuilder = createWorkoutBuilder();
