@@ -1,5 +1,6 @@
 import type { AthleteProfile, Zone } from "../athlete/index.js";
 import type { WellnessRecord } from "../wellness/index.js";
+import type { MapInfo } from "../map/index.js";
 
 export interface AthleteSnapshot {
   id: string | null;
@@ -38,17 +39,6 @@ export interface WellnessTrendPoint {
   sleep_score: number | null;
   resting_hr: number | null;
   hrv: number | null;
-}
-
-export interface MapInfo {
-  watts: number;
-  computedFrom: {
-    metric: "best_60s";
-    activityId: number | string;
-    activityName: string;
-    activityDate: string;
-    daysAgo: number;
-  };
 }
 
 export interface CoachingContext {

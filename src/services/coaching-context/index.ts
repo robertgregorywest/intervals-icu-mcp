@@ -3,7 +3,6 @@ export type {
   FitnessSnapshot,
   WellnessTrendPoint,
   CoachingContext,
-  MapInfo,
 } from "./types.js";
 export {
   buildCoachingContext,

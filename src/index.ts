@@ -344,8 +344,8 @@ export type {
   AthleteSnapshot,
   FitnessSnapshot,
   WellnessTrendPoint,
-  MapInfo,
 } from "./services/coaching-context/index.js";
+export type { MapInfo, MapDerivation } from "./services/map/index.js";
 export type {
   IWorkoutLibrary,
   LibraryListing,
