@@ -56,6 +56,11 @@ import {
   getTrainingWeekSummaryOutputSchema,
 } from "./tools/training-week.js";
 import {
+  getCoachingContextSchema,
+  getCoachingContext,
+  getCoachingContextOutputSchema,
+} from "./tools/coaching-context.js";
+import {
   listWorkoutLibrarySchema,
   listWorkoutLibrary,
   listWorkoutLibraryOutputSchema,
@@ -98,24 +103,13 @@ const UPSERT: ToolAnnotations = {
   openWorldHint: true,
 };
 
-export interface McpServerOptions {
-  coachingInstructions?: string;
-}
-
-export function createMcpServer(
-  client: IIntervalsClient,
-  opts: McpServerOptions = {}
-): McpServer {
-  const instructions = opts.coachingInstructions
-    ? `${STATIC_INSTRUCTIONS}\n# Coaching context\n\n${opts.coachingInstructions}`
-    : STATIC_INSTRUCTIONS;
-
+export function createMcpServer(client: IIntervalsClient): McpServer {
   const server = new McpServer(
     {
       name: "intervals-icu-mcp",
       version,
     },
-    { instructions }
+    { instructions: STATIC_INSTRUCTIONS }
   );
 
   function tool<S extends z.ZodRawShape>(
@@ -443,6 +437,23 @@ export function createMcpServer(
     READ_ONLY,
     getTrainingWeekSummaryOutputSchema,
     (args) => getTrainingWeekSummary(client, args)
+  );
+
+  // Coaching context
+  tool(
+    "get_coaching_context",
+    "Get a single snapshot of the athlete's current coaching state — profile " +
+      "(FTP, LTHR, max/resting HR, weight, power/HR zones), today's fitness " +
+      "(CTL, ATL, TSB, ramp rate), and a wellness trend (default 7d, max 30d) " +
+      "with subjective metrics (fatigue, soreness, motivation, mood, sleep). " +
+      "Call this at session start to ground workout decisions in current state " +
+      "rather than juggling get_athlete + get_wellness + get_fitness_summary " +
+      "yourself. " +
+      "Returns: { asOf, daysWindow, athlete, fitness, wellnessTrend }.",
+    getCoachingContextSchema,
+    READ_ONLY,
+    getCoachingContextOutputSchema,
+    (args) => getCoachingContext(client, args)
   );
 
   // Prompts

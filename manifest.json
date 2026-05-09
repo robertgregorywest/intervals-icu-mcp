@@ -1,6 +1,6 @@
 {
-  "manifest_version": "0.3",
-  "version": "0.3.0",
+  "manifest_version": "0.4",
+  "version": "0.4.0",
   "name": "intervals-icu-mcp",
   "display_name": "Intervals.icu",
   "description": "Access your Intervals.icu training data — activities, calendar, fitness metrics, power curves, workout planning, and a managed library of saved workouts that can act as a coaching template store.",
@@ -12,8 +12,7 @@
       "args": ["${__dirname}/dist/mcp/stdio.js"],
       "env": {
         "INTERVALS_API_KEY": "${user_config.intervals_api_key}",
-        "INTERVALS_ATHLETE_ID": "${user_config.intervals_athlete_id}",
-        "INTERVALS_COACHING_DIR": "${user_config.intervals_coaching_dir}"
+        "INTERVALS_ATHLETE_ID": "${user_config.intervals_athlete_id}"
       }
     }
   },
@@ -31,12 +30,6 @@
       "description": "Your Intervals.icu athlete ID, or leave blank to use the authenticated user",
       "required": false,
       "default": "0"
-    },
-    "intervals_coaching_dir": {
-      "type": "directory",
-      "title": "Coaching docs directory",
-      "description": "Directory containing philosophy.md / season.md / athlete.md (loaded into the server's MCP instructions at startup). Leave blank to use ~/.intervals-icu-mcp/coaching/. Run the setup_coaching prompt to create these files interactively.",
-      "required": false
     }
   },
   "tools": [
@@ -60,13 +53,14 @@
     { "name": "get_power_curve" },
     { "name": "get_aerobic_decoupling" },
     { "name": "compare_intervals" },
-    { "name": "get_training_week_summary" }
+    { "name": "get_training_week_summary" },
+    { "name": "get_coaching_context" }
   ],
   "prompts": [
     {
       "name": "setup_coaching",
-      "description": "Walk the athlete through a short interview, then write philosophy.md / season.md / athlete.md to the coaching directory so the server can act as a coach.",
-      "text": "Run this prompt to bootstrap the server's coaching context. The LLM will interview the athlete across philosophy, current season, and athlete profile, then write three markdown files that get loaded into the MCP instructions at startup. Restart the host after the files are written so the new context takes effect."
+      "description": "Walk the athlete through a short interview, then emit philosophy.md and season.md for them to upload as Claude Project knowledge.",
+      "text": "Run this prompt to bootstrap your training Project. The LLM will call get_coaching_context to seed itself with FTP, zones, and current fitness, then interview you on coaching philosophy and current season. The output is two markdown files you upload to a Claude Project — no server restart, no files on disk."
     }
   ],
   "author": {

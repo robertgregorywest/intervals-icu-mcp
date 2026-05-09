@@ -37,7 +37,8 @@ export const TOOL_INVENTORY = `## Tool inventory (high-level)
 - **Wellness** — \`get_wellness\`, \`get_fitness_summary\`: CTL/ATL/TSB and recovery metrics.
 - **Analysis** — \`get_power_curve\`, \`get_aerobic_decoupling\`, \`compare_intervals\`, \`get_training_week_summary\`: derived insights.
 - **Athlete** — \`get_athlete\`: profile, FTP, zones.
-- **Prompts** — \`setup_coaching\`: user-invokable; walks the athlete through writing \`philosophy.md\` / \`season.md\` / \`athlete.md\` so the server can act as a coach.
+- **Coaching** — \`get_coaching_context\`: one-call snapshot of athlete profile + today's fitness + recent wellness trend. Call at session start to ground workout decisions.
+- **Prompts** — \`setup_coaching\`: user-invokable; walks the athlete through an interview, then emits \`philosophy.md\` and \`season.md\` for the user to upload to their Claude Project.
 `;
 
 export const STATIC_INSTRUCTIONS =

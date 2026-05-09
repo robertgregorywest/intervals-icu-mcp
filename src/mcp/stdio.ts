@@ -3,7 +3,6 @@ import "dotenv/config";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { IntervalsClient } from "../index.js";
 import { createMcpServer } from "./server.js";
-import { loadCoachingInstructions } from "./coaching.js";
 
 async function main() {
   let client: IntervalsClient;
@@ -14,8 +13,7 @@ async function main() {
     process.exit(1);
   }
 
-  const coachingInstructions = await loadCoachingInstructions();
-  const server = createMcpServer(client, { coachingInstructions });
+  const server = createMcpServer(client);
   const transport = new StdioServerTransport();
 
   process.on("SIGINT", () => {

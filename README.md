@@ -4,10 +4,10 @@ An MCP (Model Context Protocol) server for accessing your [Intervals.icu](https:
 
 ## Features
 
-- **21 tools** covering activities, calendar events, fitness metrics, power curves, workout creation, a managed workout library, wellness, analysis, and weekly summaries
+- **22 tools** covering activities, calendar events, fitness metrics, power curves, workout creation, a managed workout library, wellness, analysis, weekly summaries, and a one-call coaching snapshot
 - **Structured workout creation**: build interval sessions on your Intervals.icu calendar using the native workout text syntax
 - **Workout library as a coaching template store**: browse, author, seed, and refresh saved workouts in your Intervals.icu library. Workouts carry an embedded rationale block (%MAP / %FTP intent) so absolute watts can be regenerated when your fitness changes.
-- **Coach mode**: drop three markdown files (`philosophy.md`, `season.md`, `athlete.md`) into a config directory and the server injects them into MCP `instructions` so the LLM behaves as your coach. Use the `/setup_coaching` MCP prompt for a guided setup.
+- **Coach mode**: pair the bundled `intervals-coach` skill (workout-generation rules) with your own `philosophy.md` / `season.md` uploaded as Claude Project knowledge. Athlete state (FTP, zones, fitness) comes from the `get_coaching_context` tool — always fresh, no files to maintain.
 - **Analysis tools**: aerobic decoupling, interval comparison, power curves, and fitness trends
 
 ## Quick Start
@@ -76,30 +76,29 @@ Requires **Node.js 20+**.
 | `get_aerobic_decoupling`      | Calculate aerobic decoupling (Pw:Hr) for an activity — measures cardiac drift                                                |
 | `compare_intervals`           | Compare intervals across multiple activities side-by-side                                                                    |
 | `get_training_week_summary`   | Bundle activities + wellness + planned events for a week into one snapshot                                                   |
+| `get_coaching_context`        | One-call snapshot — athlete profile, today's CTL/ATL/TSB, and a wellness trend (default 7d, max 30d)                         |
 
 ## MCP Prompts
 
-| Prompt           | Description                                                                                                                                                       |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `setup_coaching` | Walks the athlete through a short interview, then writes `philosophy.md` / `season.md` / `athlete.md` to the coaching directory so the server can act as a coach. |
+| Prompt           | Description                                                                                                         |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `setup_coaching` | Interviews the athlete and emits `philosophy.md` + `season.md` for upload to a Claude Project as Project knowledge. |
 
 ## Coach mode
 
-The server can act as your coach by loading three markdown files from a config directory at startup and injecting them into the MCP `instructions` field every conversation:
+Coach mode is split across three surfaces — none of them require restarting the server:
 
-| File            | Purpose                                                                   |
-| --------------- | ------------------------------------------------------------------------- |
-| `philosophy.md` | Timeless coaching principles (intensity model, recovery rules, biases)    |
-| `season.md`     | Current season block — races, dates, mesocycle structure, key constraints |
-| `athlete.md`    | Current athlete state — MAP / FTP / zones, availability, niggles          |
+| Concern                           | Where it lives                                                                                  | How to update                                              |
+| --------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Workout-generation rules          | `intervals-coach` skill at [`.claude/skills/intervals-coach/`](.claude/skills/intervals-coach/) | Edit the skill files; re-load Claude                       |
+| Coaching philosophy + season      | `philosophy.md` + `season.md` in your Claude Project                                            | Re-upload the file in Claude.ai                            |
+| Athlete state (FTP, MAP, fitness) | `get_coaching_context` tool                                                                     | Always fresh — re-tested values flow through automatically |
 
-Default location: `~/.intervals-icu-mcp/coaching/`. Override with the `INTERVALS_COACHING_DIR` env var.
+**Bootstrapping**: in Claude Desktop, run the `setup_coaching` MCP prompt. The LLM calls `get_coaching_context` to seed itself with FTP/zones/current fitness, interviews you on philosophy and current season, then emits two markdown files for you to upload to a Claude Project as Project knowledge.
 
-**Easiest way to set them up:** in Claude Desktop, run the `setup_coaching` MCP prompt. The LLM will interview you across the three areas, then write the files (using the host's filesystem tools, or showing them in code blocks for you to save). After the files exist, restart the host so the new context loads.
+**Skill installation**: the `intervals-coach` skill ships in this repo at `.claude/skills/intervals-coach/`. To use it across all your Claude Desktop projects: `cp -r .claude/skills/intervals-coach ~/.claude/skills/`. To use it locally in this repo: it's already there.
 
-**Power-user route:** hand-author the files. Scaffolds with placeholder structure live at [`templates/coaching/`](templates/coaching/) in this repo.
-
-The combined size is capped at 20 000 chars; larger inputs get truncated with a stderr warning. Restart the host after editing any file for changes to take effect.
+**Hand-authoring**: scaffolds for `philosophy.md` and `season.md` live at [`templates/project-knowledge/`](templates/project-knowledge/).
 
 ## Workout library
 
@@ -137,11 +136,10 @@ Coach mode + workout library (after running `/setup_coaching`):
 
 ## Environment Variables
 
-| Variable                 | Required | Default                          | Description                                                                                               |
-| ------------------------ | -------- | -------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `INTERVALS_API_KEY`      | Yes      | —                                | API key from Intervals.icu Settings → API                                                                 |
-| `INTERVALS_ATHLETE_ID`   | No       | `0`                              | Athlete ID (0 = authenticated user)                                                                       |
-| `INTERVALS_COACHING_DIR` | No       | `~/.intervals-icu-mcp/coaching/` | Directory containing `philosophy.md` / `season.md` / `athlete.md` (loaded into `instructions` at startup) |
+| Variable               | Required | Default | Description                               |
+| ---------------------- | -------- | ------- | ----------------------------------------- |
+| `INTERVALS_API_KEY`    | Yes      | —       | API key from Intervals.icu Settings → API |
+| `INTERVALS_ATHLETE_ID` | No       | `0`     | Athlete ID (0 = authenticated user)       |
 
 ## Development
 

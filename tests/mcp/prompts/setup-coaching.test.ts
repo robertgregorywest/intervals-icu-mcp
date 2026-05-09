@@ -25,11 +25,16 @@ describe("registerSetupCoachingPrompt", () => {
     expect(result.messages[0].content.text).toBe(SETUP_COACHING_PROMPT);
   });
 
-  it("interview text references all three coaching files and the default path", () => {
+  it("interview text directs output to Claude Project knowledge and points at get_coaching_context", () => {
     expect(SETUP_COACHING_PROMPT).toContain("philosophy.md");
     expect(SETUP_COACHING_PROMPT).toContain("season.md");
-    expect(SETUP_COACHING_PROMPT).toContain("athlete.md");
-    expect(SETUP_COACHING_PROMPT).toContain("~/.intervals-icu-mcp/coaching/");
-    expect(SETUP_COACHING_PROMPT).toContain("INTERVALS_COACHING_DIR");
+    expect(SETUP_COACHING_PROMPT).toContain("get_coaching_context");
+    expect(SETUP_COACHING_PROMPT).toContain("intervals-coach");
+    expect(SETUP_COACHING_PROMPT).toMatch(/Project knowledge/i);
+    expect(SETUP_COACHING_PROMPT).not.toContain("INTERVALS_COACHING_DIR");
+    expect(SETUP_COACHING_PROMPT).not.toContain("athlete.md");
+    expect(SETUP_COACHING_PROMPT).not.toMatch(
+      /restart\s+(claude|the\s+(host|server))/i
+    );
   });
 });

@@ -30,6 +30,11 @@ import type {
   CompareIntervalsResult,
   IntervalFilterOptions,
 } from "./services/analysis/index.js";
+import { buildCoachingContext } from "./services/coaching-context/index.js";
+import type {
+  CoachingContext,
+  CoachingContextOptions,
+} from "./services/coaching-context/index.js";
 import type { IntervalsEvent, ClientConfig } from "./types.js";
 
 export interface IIntervalsClient {
@@ -74,6 +79,9 @@ export interface IIntervalsClient {
     activityIds: number[],
     options?: IntervalFilterOptions
   ): Promise<CompareIntervalsResult>;
+
+  // Coaching context
+  getCoachingContext(opts?: CoachingContextOptions): Promise<CoachingContext>;
 }
 
 export interface IntervalsClientOptions {
@@ -220,6 +228,16 @@ export class IntervalsClient implements IIntervalsClient {
     );
     return compareIntervalsAnalysis(activities, options);
   }
+
+  // Coaching context
+  async getCoachingContext(
+    opts?: CoachingContextOptions
+  ): Promise<CoachingContext> {
+    return buildCoachingContext(
+      { athleteApi: this.athlete, wellnessApi: this.wellness },
+      opts
+    );
+  }
 }
 
 export function createClient(
@@ -271,6 +289,13 @@ export type {
   CompareIntervalsResult,
   IntervalFilterOptions,
 } from "./services/analysis/index.js";
+export type {
+  CoachingContext,
+  CoachingContextOptions,
+  AthleteSnapshot,
+  FitnessSnapshot,
+  WellnessTrendPoint,
+} from "./services/coaching-context/index.js";
 export type {
   IWorkoutLibrary,
   LibraryListing,

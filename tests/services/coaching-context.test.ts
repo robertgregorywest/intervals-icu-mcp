@@ -1,0 +1,159 @@
+import { describe, it, expect } from "vitest";
+import { buildCoachingContext } from "../../src/services/coaching-context/coaching-context.js";
+import type {
+  AthleteProfile,
+  IAthleteApi,
+} from "../../src/services/athlete/index.js";
+import type {
+  IWellnessApi,
+  WellnessRecord,
+} from "../../src/services/wellness/index.js";
+
+function fakeAthleteApi(profile: Partial<AthleteProfile>): IAthleteApi {
+  return {
+    getAthlete: async () => profile as AthleteProfile,
+  };
+}
+
+function fakeWellnessApi(records: Partial<WellnessRecord>[]): IWellnessApi {
+  return {
+    getWellness: async () => records as WellnessRecord[],
+    getWellnessDay: async () => records[0] as WellnessRecord,
+  };
+}
+
+describe("buildCoachingContext", () => {
+  it("synthesises athlete + wellness into one snapshot", async () => {
+    const athleteApi = fakeAthleteApi({
+      id: "i1",
+      name: "Test",
+      weight: 72,
+      ftp: 285,
+      lthr: 168,
+      max_hr: 192,
+      resting_hr: 48,
+      sport_settings: [
+        {
+          types: ["Ride", "VirtualRide"],
+          ftp: 285,
+          lthr: 168,
+          max_hr: 192,
+          threshold_pace: 0,
+          power_zones: [
+            { id: 1, name: "Z1", min: 0, max: 150 },
+            { id: 2, name: "Z2", min: 150, max: 220 },
+          ],
+          hr_zones: [
+            { id: 1, name: "Z1", min: 0, max: 130 },
+            { id: 2, name: "Z2", min: 130, max: 150 },
+          ],
+          pace_zones: [],
+        },
+      ],
+    });
+    const wellnessApi = fakeWellnessApi([
+      { id: "2026-04-28", ctl: 60, atl: 55, fatigue: 3 } as WellnessRecord,
+      { id: "2026-04-29", ctl: 62, atl: 58, fatigue: 4 } as WellnessRecord,
+      { id: "2026-04-30", ctl: 64, atl: 50, fatigue: 2 } as WellnessRecord,
+    ]);
+
+    const ctx = await buildCoachingContext(
+      { athleteApi, wellnessApi },
+      { days: 3, today: "2026-04-30" }
+    );
+
+    expect(ctx.asOf).toBe("2026-04-30");
+    expect(ctx.daysWindow).toBe(3);
+    expect(ctx.athlete.ftp).toBe(285);
+    expect(ctx.athlete.power_zones).toHaveLength(2);
+    expect(ctx.athlete.hr_zones).toHaveLength(2);
+    expect(ctx.athlete.pace_zones).toBeNull();
+    expect(ctx.fitness).toEqual({
+      date: "2026-04-30",
+      ctl: 64,
+      atl: 50,
+      tsb: 14,
+      ramp_rate: round1((64 - 60) / 3),
+    });
+    expect(ctx.wellnessTrend).toHaveLength(3);
+    expect(ctx.wellnessTrend[0].date).toBe("2026-04-28");
+    expect(ctx.wellnessTrend[2].fatigue).toBe(2);
+  });
+
+  it("handles missing fields and empty wellness window", async () => {
+    const athleteApi = fakeAthleteApi({ id: "i2" });
+    const wellnessApi = fakeWellnessApi([]);
+
+    const ctx = await buildCoachingContext(
+      { athleteApi, wellnessApi },
+      { today: "2026-05-01" }
+    );
+
+    expect(ctx.daysWindow).toBe(7);
+    expect(ctx.athlete.ftp).toBeNull();
+    expect(ctx.athlete.power_zones).toBeNull();
+    expect(ctx.athlete.sport_settings_count).toBe(0);
+    expect(ctx.fitness).toEqual({
+      date: null,
+      ctl: null,
+      atl: null,
+      tsb: null,
+      ramp_rate: null,
+    });
+    expect(ctx.wellnessTrend).toEqual([]);
+  });
+
+  it("falls back to icu_-prefixed fields and sportSettings camelCase", async () => {
+    const athleteApi = fakeAthleteApi({
+      id: "i3",
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      ...({
+        icu_ftp: 300,
+        icu_lthr: 170,
+        sportSettings: [
+          {
+            types: ["Run"],
+            ftp: 0,
+            lthr: 170,
+            max_hr: 188,
+            threshold_pace: 4,
+            power_zones: [],
+            hr_zones: [],
+            pace_zones: [{ id: 1, name: "Easy", min: 0, max: 60 }],
+          },
+        ],
+      } as any),
+    });
+    const wellnessApi = fakeWellnessApi([
+      { id: "2026-05-01", ctl: 50, atl: 50 } as WellnessRecord,
+    ]);
+
+    const ctx = await buildCoachingContext(
+      { athleteApi, wellnessApi },
+      { today: "2026-05-01", days: 1 }
+    );
+
+    expect(ctx.athlete.ftp).toBe(300);
+    expect(ctx.athlete.lthr).toBe(170);
+    expect(ctx.athlete.pace_zones).toEqual([
+      { id: 1, name: "Easy", min: 0, max: 60 },
+    ]);
+    expect(ctx.athlete.sport_settings_count).toBe(1);
+  });
+
+  it("rejects out-of-range days", async () => {
+    const athleteApi = fakeAthleteApi({});
+    const wellnessApi = fakeWellnessApi([]);
+
+    await expect(
+      buildCoachingContext({ athleteApi, wellnessApi }, { days: 0 })
+    ).rejects.toThrow(/days must be >= 1/);
+    await expect(
+      buildCoachingContext({ athleteApi, wellnessApi }, { days: 31 })
+    ).rejects.toThrow(/days must be <= 30/);
+  });
+});
+
+function round1(n: number): number {
+  return Math.round(n * 10) / 10;
+}

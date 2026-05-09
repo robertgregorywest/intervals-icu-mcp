@@ -1,61 +1,55 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-const SETUP_COACHING_PROMPT = `You are bootstrapping coaching context for the \`intervals-icu-mcp\` server. The athlete is interacting with you because they want this server to act like a coach — picking workouts, building plans, and offering analysis. To do that well, the server reads three markdown files at startup and injects them into your instructions:
+const SETUP_COACHING_PROMPT = `You are bootstrapping coaching context for the \`intervals-icu-mcp\` server. The athlete wants this server to act like a coach — picking workouts, building plans, and offering analysis. The coaching layer is split across three surfaces, each owned by a different system:
 
-- **\`philosophy.md\`** — timeless coaching principles (intensity model, recovery rules, biases, what "good" execution looks like).
-- **\`season.md\`** — current season block: races, dates, mesocycle structure, key constraints.
-- **\`athlete.md\`** — current athlete state: MAP / FTP / zones, training availability, strengths and limitations, niggles.
+- **\`philosophy.md\`** (Claude Project knowledge) — timeless coaching principles: intensity model, recovery rules, biases, what "good" execution looks like.
+- **\`season.md\`** (Claude Project knowledge) — current season block: races, dates, mesocycle structure, key constraints.
+- **\`intervals-coach\` skill** (\`.claude/skills/intervals-coach/\`) — workout-generation rules: ships with the server, activates automatically when the athlete works on workouts. The user already has it; they don't need to author it.
+- **Athlete state** (\`get_coaching_context\` tool) — FTP, MAP, zones, today's CTL/ATL/TSB, recent wellness. Always fresh from the API. Don't ask for FTP/zones in the interview — call the tool.
 
-These files live at \`~/.intervals-icu-mcp/coaching/\` by default (or wherever the \`INTERVALS_COACHING_DIR\` env var points). They are plain markdown — the user can edit them in any editor at any time.
+Your job: produce two markdown files (\`philosophy.md\` and \`season.md\`) that the user uploads to a Claude Project as Project knowledge.
 
 ## Your task
 
-Conduct a short, focused interview with the user, then write each of the three files. Keep the interview tight: aim for ~5–10 minutes total. Don't ask anything you can derive from MCP tools — call \`get_athlete\` and \`get_fitness_summary\` first to seed yourself with FTP, zones, and recent fitness.
+1. Call \`get_coaching_context\` first to seed yourself with FTP, zones, and current fitness — do not ask the athlete for things you can read.
+2. Conduct a tight interview (~5–10 minutes total).
+3. Emit \`philosophy.md\` and \`season.md\` as code-block artifacts the user can copy.
+4. Tell the user how to add them to a Claude Project (see "Delivery" below).
 
 ## Interview structure
 
-For each file, ask 3–5 targeted questions. **Suggested prompts** (adapt to the athlete; skip what isn't applicable):
+For each file, ask 3–5 targeted questions. Adapt to the athlete; skip what isn't applicable.
 
 ### Philosophy (timeless)
-- What's your primary intensity anchor — MAP, FTP, HR, or feel — and why?
-- Are there execution rules you want followed (e.g., NP caps on Z2, no hard days back-to-back, recovery week cadence)?
-- What's your bias — polarized, sweet-spot, threshold-heavy, masters-style "fewer hard days done well"?
+- Primary intensity anchor — MAP, FTP, HR, or feel — and why?
+- Execution rules to follow (e.g., NP caps on Z2, no hard days back-to-back, recovery week cadence)?
+- Bias — polarized, sweet-spot, threshold-heavy, masters-style "fewer hard days done well"?
 - Anything that should never happen in a plan (e.g., VO2 the day after heavy strength)?
-- How should I think about test-vs-train, hero sessions, and quality vs. volume trade-offs?
+- Test-vs-train, hero sessions, and quality vs. volume trade-offs?
 
 ### Season
-- What's your competition calendar this year? Dates, events, priorities.
-- How is the year structured (mesocycles, blocks, phases)? Roughly when does each start/end?
+- Competition calendar this year — dates, events, priorities.
+- Year structure (mesocycles, blocks, phases). Roughly when does each start/end?
 - Where are you right now in that structure?
-- Any non-negotiable constraints — track sessions, team commitments, weekly volume cap, family/work blocks?
-- Strength training schedule — sessions per week, when in the season does it taper?
+- Non-negotiable constraints — track sessions, team commitments, weekly volume cap, family/work blocks?
+- Strength training schedule — sessions per week; when does it taper?
 
-### Athlete
-- Current MAP (W) and FTP (W). When were each last tested? When is the next test due?
-- Power zones (or anchor + ranges if you don't use canonical zones).
-- Weekly training hours available, broken down by weekday vs weekend if relevant.
-- Strengths and weaknesses (durability, repeatability, sprint, threshold, etc.).
-- Current niggles, limitations, or fatigue indicators to watch.
+## Delivery
 
-## Writing the files
+Present the final \`philosophy.md\` and \`season.md\` content as separate fenced code blocks. Then tell the user:
 
-Default output directory: \`~/.intervals-icu-mcp/coaching/\` (resolve \`~\` to the user's home directory). Honor \`INTERVALS_COACHING_DIR\` if set in the user's environment.
+> Copy each block into a markdown file. In Claude.ai, open (or create) a Project for your training, click "Add knowledge", and upload \`philosophy.md\` and \`season.md\`. The next time you start a chat in that project, this context will be loaded automatically — no server restart needed. To update later, edit the file and re-upload, or edit the knowledge directly in the Project UI.
 
-For each file: confirm the content with the user, then write it. **If you have access to a filesystem write tool** (e.g., from a filesystem MCP server), use it. **If you do not**, present the final content in a code block and tell the user the exact path to save it to.
-
-The repo at \`https://github.com/robertgregorywest/intervals-icu-mcp/tree/main/templates/coaching\` contains scaffold versions of these files if the user prefers to hand-author starting from a stub.
-
-After all three files are written, tell the user:
-
-> Restart Claude Desktop to reload the coaching instructions. After restart, ask me to "list my workout library" to confirm the server is healthy.
+The repo at \`https://github.com/robertgregorywest/intervals-icu-mcp/tree/main/templates/project-knowledge\` ships scaffold versions of both files for hand-authoring.
 
 ## Style for the documents
 
 - Markdown, terse. Headings + bullets. No filler prose.
 - Write rules and biases in *first person of the user* ("I prefer…", "Avoid…") so the LLM speaks with the athlete's voice.
 - Include numeric values where relevant (watts, hours, dates) — they are the load-bearing parts.
+- Do **not** include FTP, MAP, zones, or current fitness in these docs — those live in \`get_coaching_context\` and would only go stale here.
 
-Begin by greeting the athlete, summarizing what you'll do, and asking for permission to call \`get_athlete\` and \`get_fitness_summary\` to seed yourself before the interview starts.`;
+Begin by greeting the athlete, summarising what you'll do, and asking permission to call \`get_coaching_context\` to seed yourself before the interview starts.`;
 
 export function registerSetupCoachingPrompt(server: McpServer): void {
   server.registerPrompt(
@@ -63,7 +57,7 @@ export function registerSetupCoachingPrompt(server: McpServer): void {
     {
       title: "Set up coaching context",
       description:
-        "Walk the athlete through a short interview, then write philosophy.md / season.md / athlete.md to the coaching directory so the server can act as a coach.",
+        "Walk the athlete through a short interview, then emit philosophy.md and season.md for them to upload as Claude Project knowledge.",
     },
     () => ({
       messages: [
