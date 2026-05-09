@@ -3,4 +3,5 @@ dist/
 .env
 *.tsbuildinfo
 .mcp.json
-docs/
+docs/personal/
+.DS_Store
