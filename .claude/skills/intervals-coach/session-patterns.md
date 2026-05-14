@@ -100,7 +100,26 @@ Cool:     5m  50% FTP
 - Series count: 2–4. Three series at 12 reps ≈ 6 min preload + 9 min short work / session — a heavy stimulus; trim before adding.
 - Anchor: %MAP. Don't use %FTP for the short reps — the kinetics argument is about VO2, not lactate threshold.
 
-**Sources** — Odden et al. 2024 (HIT time-at-fraction-of-VO2max), Vaccari et al. 2020 (VO2 kinetics in short vs long intermittents). Slide deck cached at `docs/personal/instagram/DXUgF3DDAjv/` (Instagram @knowledgeiswatt). Seeded as `vo2-preloaded-shorts` (see `seed.ts`).
+**Progression** — Repeating the same short-intermittent session week after week stagnates: it's already near-maximal and leaves no room to push (Ronnestad et al. 2015, 2020). Apply progressive overload by manipulating three variables, in this order:
+
+1. **Series count** — 2 → 3.
+2. **Reps per series** — start short (e.g. 8) and grow toward 12.
+3. **Work:recovery ratio** — 1:1 → 3:2 → 2:1 (e.g. 30/30 → 30/20 → 40/20).
+
+When stepping up the work:rec ratio (steps 4–5 below), drop series length one notch in the first session at the new ratio, then re-grow. Example block (Ronnestad-style, no preload — for the preloaded variant start one notch lighter because the preload adds load):
+
+| Week | Session 1  | Session 2  |
+| ---- | ---------- | ---------- |
+| 1    | 2×8 30/30  | 3×8 30/30  |
+| 2    | 3×10 30/30 | 3×12 30/30 |
+| 3    | 3×12 30/30 | 3×10 30/20 |
+| 4    | 3×10 30/20 | 3×12 30/20 |
+| 5    | 3×10 40/20 | 3×10 40/20 |
+| 6    | 3×11 40/20 | 3×12 40/20 |
+
+For the preloaded variant: keep the 2 min @ 95–100% MAP preload fixed across the block; only progress the short-rep cluster. Adding the preload itself is already a stimulus bump versus plain 30/30s — don't also chase the highest series count in week 1.
+
+**Sources** — Odden et al. 2024 (HIT time-at-fraction-of-VO2max), Vaccari et al. 2020 (VO2 kinetics in short vs long intermittents), Ronnestad et al. 2015, 2020 (short-intermittent protocols and progression). Slide decks cached at `docs/personal/instagram/DXUgF3DDAjv/` (preloaded variant) and `docs/personal/instagram/DXgy9CTDHiR/` (progression scheme) — both Instagram @knowledgeiswatt. Seeded as `vo2-preloaded-shorts` (see `seed.ts`).
 
 ## Race-prep / race-pace
 
