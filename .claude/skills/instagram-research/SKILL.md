@@ -35,10 +35,20 @@ The directory `docs/personal/` is already gitignored — downloads stay local.
 
 ## After download
 
-1. **Get caption + tags from any one JSON** — `description`, `tags`, `username`, `post_date` are identical across sidecars in a carousel.
-2. **Order the slides by the `num` field** in each JSON (carousel position 1..N). Filenames are not in slide order.
-3. **Read each image in order** with the `Read` tool (multimodal). Transcribe the substantive text and describe any charts/diagrams in your head before summarising.
-4. **Cite sources visible on the slides** (e.g. "Vaccari et al. 2020", "Odden et al. 2024") so the user can verify the underlying paper before you change project code.
+Use **absolute paths** for everything below — see the "do not cd" note in _What not to do_.
+
+1. **Order the slides and grab the caption in one shot** with `jq` (always pass absolute paths, never `cd` into the directory first):
+
+   ```bash
+   DIR=/abs/path/to/repo/docs/personal/instagram/$SC
+   jq -r '[.num, input_filename] | @tsv' "$DIR"/*.json | sort -n
+   jq -r '.description' "$DIR"/*.json | head -1
+   ```
+
+   The first command prints `num<TAB>path` so you can read images in slide order. The second prints the caption (identical across sidecars in a carousel).
+
+2. **Read each image in slide order** with the `Read` tool (multimodal). Transcribe the substantive text and describe any charts/diagrams before summarising.
+3. **Cite sources visible on the slides** (e.g. "Vaccari et al. 2020", "Odden et al. 2024") so the user can verify the underlying paper before you change project code.
 
 ## Where insights typically land
 
@@ -64,6 +74,8 @@ If both fail, fall back to a manual `cookies.txt`: install a "Get cookies.txt LO
 ## What not to do
 
 - **Do not** `WebFetch` the Instagram URL — it returns "[Content truncated due to length...]" or a login redirect. Wastes a turn.
+- **Do not** `cd` into the download directory in a Bash call. The Bash tool persists CWD across calls, so a `cd` in one command silently breaks every later command that uses repo-relative paths. Pass absolute paths to `jq`, `ls`, etc. instead.
+- **Do not** reach for inline `python3 -c '...json.load...'` to inspect sidecars — `jq` is shorter, and for whole-file reads the `Read` tool handles JSON fine.
 - **Do not** guess slide content from the URL shortcode or the user's hint. Read the actual images.
 - **Do not** check downloaded images into git. `docs/personal/` is gitignored; keep it that way.
 - **Do not** auto-propose code changes from a single post. Summarise the insight, cite the paper(s), and ask the user before editing any project file beyond skill docs.
