@@ -147,6 +147,60 @@ export const CANONICAL_TEMPLATES: SeedTemplate[] = [
     ],
   },
   {
+    seedId: "vo2-preloaded-shorts",
+    name: "VO2 preloaded shorts",
+    folder: "Coach: VO2 Max",
+    description:
+      "Each series opens with a ~2-min 'preload' interval to drive VO2 upward fast, then " +
+      "a short 30s recovery preserves the elevated state, so the short 30/15s reps that " +
+      "follow start already near 90% VO2peak instead of climbing into it. Net effect: more " +
+      "time at high fraction of VO2max per session than plain 30/30s. Use when 30/30s have " +
+      "been well tolerated and you want to extract more aerobic stimulus per session; " +
+      "don't use as the first VO2 session of a block. Sources: Odden et al. 2024 " +
+      "(HIT time-at-fraction-of-VO2max); Vaccari et al. 2020 (VO2 kinetics, short vs long).",
+    steps: [
+      { label: "Warm-up", duration: "15m", intensity: map([50, 60]) },
+      {
+        iterations: 3,
+        label: "Series",
+        steps: [
+          {
+            label: "Preload",
+            duration: "2m",
+            intensity: map([95, 100]),
+            cadence: "95rpm",
+          },
+          { label: "Short rec", duration: "30s", intensity: map(50) },
+          { label: "On", duration: "30s", intensity: map([100, 105]) },
+          { label: "Off", duration: "15s", intensity: map(50) },
+          { label: "On", duration: "30s", intensity: map([100, 105]) },
+          { label: "Off", duration: "15s", intensity: map(50) },
+          { label: "On", duration: "30s", intensity: map([100, 105]) },
+          { label: "Off", duration: "15s", intensity: map(50) },
+          { label: "On", duration: "30s", intensity: map([100, 105]) },
+          { label: "Off", duration: "15s", intensity: map(50) },
+          { label: "On", duration: "30s", intensity: map([100, 105]) },
+          { label: "Off", duration: "15s", intensity: map(50) },
+          { label: "On", duration: "30s", intensity: map([100, 105]) },
+          { label: "Off", duration: "15s", intensity: map(50) },
+          { label: "On", duration: "30s", intensity: map([100, 105]) },
+          { label: "Off", duration: "15s", intensity: map(50) },
+          { label: "On", duration: "30s", intensity: map([100, 105]) },
+          { label: "Off", duration: "15s", intensity: map(50) },
+          { label: "On", duration: "30s", intensity: map([100, 105]) },
+          { label: "Off", duration: "15s", intensity: map(50) },
+          { label: "On", duration: "30s", intensity: map([100, 105]) },
+          { label: "Off", duration: "15s", intensity: map(50) },
+          { label: "On", duration: "30s", intensity: map([100, 105]) },
+          { label: "Off", duration: "15s", intensity: map(50) },
+          { label: "On", duration: "30s", intensity: map([100, 105]) },
+          { label: "Series rec", duration: "3m", intensity: map(50) },
+        ],
+      },
+      { label: "Cooldown", duration: "10m", intensity: map(45) },
+    ],
+  },
+  {
     seedId: "threshold-2x20",
     name: "Threshold 2×20",
     folder: "Coach: Threshold",
