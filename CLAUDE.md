@@ -62,3 +62,17 @@ Saved workouts can still encode %MAP/%FTP intent via the rationale block (see ab
 | ---------------------- | -------- | ------- |
 | `INTERVALS_API_KEY`    | Yes      | —       |
 | `INTERVALS_ATHLETE_ID` | No       | `0`     |
+
+## Agent skills
+
+### Issue tracker
+
+Issues live in GitHub Issues for `robertgregorywest/intervals-icu-mcp` (use the `gh` CLI). See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Canonical label vocabulary, no overrides. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+Single-context layout: `CONTEXT.md` + `docs/adr/` at the repo root. See `docs/agents/domain.md`.
