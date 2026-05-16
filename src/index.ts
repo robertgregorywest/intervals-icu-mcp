@@ -49,6 +49,11 @@ import type {
   CoachingContext,
   CoachingContextOptions,
 } from "./services/coaching-context/index.js";
+import { computePowerProfileWith } from "./services/power-profile/index.js";
+import type {
+  PowerProfileOverrides,
+  PowerProfileResult,
+} from "./services/power-profile/index.js";
 import type { IntervalsEvent } from "./types.js";
 
 export interface IIntervalsClient {
@@ -100,6 +105,11 @@ export interface IIntervalsClient {
 
   // Coaching context
   getCoachingContext(opts?: CoachingContextOptions): Promise<CoachingContext>;
+
+  // Power profile
+  computePowerProfile(
+    overrides?: PowerProfileOverrides
+  ): Promise<PowerProfileResult>;
 }
 
 export interface IntervalsClientOptions {
@@ -267,6 +277,20 @@ export class IntervalsClient implements IIntervalsClient {
       opts
     );
   }
+
+  // Power profile (cyclecoach.com calculator port)
+  async computePowerProfile(
+    overrides?: PowerProfileOverrides
+  ): Promise<PowerProfileResult> {
+    return computePowerProfileWith(
+      {
+        athleteApi: this.athlete,
+        activitiesApi: this.activities,
+        powerCurvesApi: this.powerCurves,
+      },
+      overrides
+    );
+  }
 }
 
 export function createClient(
@@ -326,6 +350,27 @@ export type {
   WellnessTrendPoint,
 } from "./services/coaching-context/index.js";
 export type { MapInfo, MapDerivation } from "./services/map/index.js";
+export type {
+  PowerProfileOverrides,
+  PowerProfileResult,
+  ResolvedInputs,
+  Sex,
+  AeroPosition,
+  Discipline,
+  TrainingHistory,
+  StrengthFrequency,
+  ZoneRow,
+  FtpCheck,
+  PstsResult,
+  CompoundResult,
+  Vo2Result,
+  AllometricResult,
+  TpProfileRow,
+  RiderTypeResult,
+  MapBandResult,
+  TtEstimateRow,
+  RaceEstimateRow,
+} from "./services/power-profile/index.js";
 export type {
   IWorkoutLibrary,
   LibraryListing,
