@@ -17,12 +17,9 @@ export const getCoachingContextSchema = z.object({
     ),
 });
 
-const zoneSchema = z.object({
-  id: z.number(),
-  name: z.string(),
-  min: z.number(),
-  max: z.number(),
-});
+// Zones are arrays of boundary values (e.g. %FTP for power, bpm for HR);
+// `null` when the athlete hasn't configured that zone set for cycling.
+const zoneBoundariesSchema = z.array(z.number()).nullable();
 
 export const getCoachingContextOutputSchema = z.object({
   asOf: z.string(),
@@ -35,9 +32,9 @@ export const getCoachingContextOutputSchema = z.object({
     lthr: z.number().nullable(),
     max_hr: z.number().nullable(),
     resting_hr: z.number().nullable(),
-    power_zones: z.array(zoneSchema).nullable(),
-    hr_zones: z.array(zoneSchema).nullable(),
-    pace_zones: z.array(zoneSchema).nullable(),
+    power_zones: zoneBoundariesSchema,
+    hr_zones: zoneBoundariesSchema,
+    pace_zones: zoneBoundariesSchema,
     sport_settings_count: z.number(),
   }),
   fitness: z.object({

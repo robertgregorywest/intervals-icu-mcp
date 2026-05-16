@@ -19,17 +19,11 @@ export interface SportSetting {
   lthr: number;
   max_hr: number;
   threshold_pace: number;
-  power_zones: Zone[];
-  hr_zones: Zone[];
-  pace_zones: Zone[];
+  // Zone boundaries (e.g. %FTP for power, bpm for HR). `null` when not configured for the sport.
+  power_zones: number[] | null;
+  hr_zones: number[] | null;
+  pace_zones: number[] | null;
   [key: string]: unknown;
-}
-
-export interface Zone {
-  id: number;
-  name: string;
-  min: number;
-  max: number;
 }
 
 export interface IAthleteApi {

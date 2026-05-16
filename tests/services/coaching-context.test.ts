@@ -50,15 +50,9 @@ describe("buildCoachingContext", () => {
           lthr: 168,
           max_hr: 192,
           threshold_pace: 0,
-          power_zones: [
-            { id: 1, name: "Z1", min: 0, max: 150 },
-            { id: 2, name: "Z2", min: 150, max: 220 },
-          ],
-          hr_zones: [
-            { id: 1, name: "Z1", min: 0, max: 130 },
-            { id: 2, name: "Z2", min: 130, max: 150 },
-          ],
-          pace_zones: [],
+          power_zones: [55, 75, 90, 105, 120, 150, 999],
+          hr_zones: [127, 142, 148, 158, 162, 167, 175],
+          pace_zones: null,
         },
       ],
     });
@@ -75,8 +69,8 @@ describe("buildCoachingContext", () => {
     expect(ctx.asOf).toBe("2026-04-30");
     expect(ctx.daysWindow).toBe(3);
     expect(ctx.athlete.ftp).toBe(285);
-    expect(ctx.athlete.power_zones).toHaveLength(2);
-    expect(ctx.athlete.hr_zones).toHaveLength(2);
+    expect(ctx.athlete.power_zones).toEqual([55, 75, 90, 105, 120, 150, 999]);
+    expect(ctx.athlete.hr_zones).toEqual([127, 142, 148, 158, 162, 167, 175]);
     expect(ctx.athlete.pace_zones).toBeNull();
     expect(ctx.fitness).toEqual({
       date: "2026-04-30",
@@ -126,9 +120,9 @@ describe("buildCoachingContext", () => {
             lthr: 170,
             max_hr: 188,
             threshold_pace: 4,
-            power_zones: [],
-            hr_zones: [],
-            pace_zones: [{ id: 1, name: "Easy", min: 0, max: 60 }],
+            power_zones: null,
+            hr_zones: null,
+            pace_zones: [60, 90, 120],
           },
         ],
       } as any),
@@ -143,9 +137,7 @@ describe("buildCoachingContext", () => {
 
     expect(ctx.athlete.ftp).toBe(300);
     expect(ctx.athlete.lthr).toBe(170);
-    expect(ctx.athlete.pace_zones).toEqual([
-      { id: 1, name: "Easy", min: 0, max: 60 },
-    ]);
+    expect(ctx.athlete.pace_zones).toEqual([60, 90, 120]);
     expect(ctx.athlete.sport_settings_count).toBe(1);
   });
 

@@ -1,4 +1,4 @@
-import type { IAthleteApi, Zone, SportSetting } from "../athlete/index.js";
+import type { IAthleteApi, SportSetting } from "../athlete/index.js";
 import type { IWellnessApi, WellnessRecord } from "../wellness/index.js";
 import type { IActivitiesApi } from "../activities/index.js";
 import { deriveLatestMap } from "../map/index.js";
@@ -106,7 +106,7 @@ function pickCyclingSport(settings: SportSetting[]): SportSetting | undefined {
   return cycling ?? settings[0];
 }
 
-function pickZones(zones: Zone[] | undefined): Zone[] | null {
+function pickZones(zones: number[] | null | undefined): number[] | null {
   if (!zones || !zones.length) return null;
   return zones;
 }

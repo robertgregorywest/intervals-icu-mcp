@@ -326,7 +326,6 @@ export type {
   IAthleteApi,
   AthleteProfile,
   SportSetting,
-  Zone,
 } from "./services/athlete/index.js";
 export type { IActivitiesApi } from "./services/activities/index.js";
 export type {

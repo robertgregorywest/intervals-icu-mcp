@@ -1,4 +1,4 @@
-import type { AthleteProfile, Zone } from "../athlete/index.js";
+import type { AthleteProfile } from "../athlete/index.js";
 import type { WellnessRecord } from "../wellness/index.js";
 import type { MapInfo } from "../map/index.js";
 
@@ -10,9 +10,10 @@ export interface AthleteSnapshot {
   lthr: number | null;
   max_hr: number | null;
   resting_hr: number | null;
-  power_zones: Zone[] | null;
-  hr_zones: Zone[] | null;
-  pace_zones: Zone[] | null;
+  // Zone boundaries (e.g. %FTP for power, bpm for HR). `null` when not configured for cycling.
+  power_zones: number[] | null;
+  hr_zones: number[] | null;
+  pace_zones: number[] | null;
   sport_settings_count: number;
 }
 
