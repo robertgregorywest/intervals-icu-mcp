@@ -6,6 +6,7 @@ import {
   dateString,
   limitField,
 } from "./common.js";
+import { repeatBlockSchema, workoutStepSchema } from "./workouts.js";
 
 const eventCategoryEnum = z.enum([
   "WORKOUT",
@@ -87,7 +88,21 @@ export const updateEventSchema = z.object({
   description: z
     .string()
     .optional()
-    .describe("Updated description/workout text"),
+    .describe(
+      "Updated description (prose). Mutually exclusive with 'steps'. " +
+        "Refused on WORKOUT events — Intervals.icu reparses description " +
+        "as workout-text and would collapse workout_doc.steps. " +
+        "Pass 'steps' to update a workout's structure."
+    ),
+  steps: z
+    .array(z.union([workoutStepSchema, repeatBlockSchema]))
+    .min(1)
+    .optional()
+    .describe(
+      "Updated workout steps (same shape as create_workout). When supplied, " +
+        "the description is rebuilt from these so workout_doc.steps is preserved. " +
+        "Mutually exclusive with 'description'."
+    ),
   date: dateString.optional().describe("Updated date in YYYY-MM-DD format"),
   category: eventCategoryEnum.optional().describe("Updated event category"),
   type: sportTypeEnum.optional().describe("Updated sport type"),
@@ -98,11 +113,42 @@ export async function updateEvent(
   client: IIntervalsClient,
   args: z.infer<typeof updateEventSchema>
 ): Promise<Record<string, unknown>> {
-  const { id, date, ...fields } = args;
-  const data: Record<string, unknown> = { ...fields };
-  if (date) {
-    data.start_date_local = `${date}T00:00:00`;
+  const { id, date, steps, description, name, category, type, color } = args;
+
+  if (steps && description !== undefined) {
+    throw new Error(
+      "update_event: 'steps' and 'description' are mutually exclusive. " +
+        "Use 'steps' to update workout structure (description is rebuilt from it), " +
+        "or 'description' alone for prose-only updates on non-WORKOUT events."
+    );
   }
+
+  // Guard against the issue-#1 bug: PUT /events/{id} with a `description` body
+  // makes Intervals.icu reparse the text as workout-text. On a structured
+  // WORKOUT event, anything that isn't a valid step line collapses
+  // workout_doc.steps. Force callers to use `steps` for WORKOUT updates.
+  if (description !== undefined && !steps) {
+    const existing = await client.getEvent(id);
+    if (existing.category === "WORKOUT") {
+      throw new Error(
+        "update_event: refusing to update 'description' on a WORKOUT event — " +
+          "Intervals.icu would reparse it and collapse workout_doc.steps. " +
+          "Pass 'steps' to update the workout's structure (description is " +
+          "rebuilt from steps), or update the metadata fields only " +
+          "(name, date, color, category, type)."
+      );
+    }
+  }
+
+  const data: Record<string, unknown> = {};
+  if (name !== undefined) data.name = name;
+  if (category !== undefined) data.category = category;
+  if (type !== undefined) data.type = type;
+  if (color !== undefined) data.color = color;
+  if (date) data.start_date_local = `${date}T00:00:00`;
+  if (description !== undefined) data.description = description;
+  if (steps) data.description = client.buildWorkoutDescription(steps);
+
   return (await client.updateEvent(id, data)) as unknown as Record<
     string,
     unknown

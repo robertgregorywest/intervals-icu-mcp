@@ -7,6 +7,8 @@ import { createWorkoutBuilder } from "./services/workout-builder/index.js";
 import type {
   IWorkoutBuilder,
   WorkoutPlan,
+  WorkoutStep,
+  RepeatBlock,
 } from "./services/workout-builder/index.js";
 import { createAthleteApi } from "./services/athlete/index.js";
 import type { IAthleteApi, AthleteProfile } from "./services/athlete/index.js";
@@ -86,6 +88,7 @@ export interface IIntervalsClient {
 
   // Workouts
   buildWorkoutEvent(plan: WorkoutPlan): IntervalsEvent;
+  buildWorkoutDescription(steps: Array<WorkoutStep | RepeatBlock>): string;
 
   // Workout library
   listWorkoutLibrary(folderName?: string): Promise<LibraryListing>;
@@ -214,6 +217,10 @@ export class IntervalsClient implements IIntervalsClient {
   // Workouts
   buildWorkoutEvent(plan: WorkoutPlan): IntervalsEvent {
     return this.workoutBuilder.buildEvent(plan);
+  }
+
+  buildWorkoutDescription(steps: Array<WorkoutStep | RepeatBlock>): string {
+    return this.workoutBuilder.toDescription(steps);
   }
 
   // Workout library
