@@ -36,12 +36,12 @@ describe("deriveLatestMap", () => {
     const activitiesApi = fakeActivitiesApi(
       [
         {
-          id: 7777,
+          id: "i7777",
           name: "MAP ramp test",
           start_date_local: "2026-03-15T10:00:00",
         } as Activity,
       ],
-      { "7777": { watts: stream } }
+      { i7777: { watts: stream } }
     );
 
     const result = await deriveLatestMap(activitiesApi, "2026-05-09");
@@ -50,7 +50,7 @@ describe("deriveLatestMap", () => {
     expect(result.map?.watts).toBe(394);
     expect(result.map?.computedFrom).toEqual({
       metric: "best_60s",
-      activityId: 7777,
+      activityId: "i7777",
       activityName: "MAP ramp test",
       activityDate: "2026-03-15",
       daysAgo: 55,
@@ -121,7 +121,7 @@ describe("deriveLatestMap", () => {
   it("returns null + warning when no ramp test is in the 90-day window", async () => {
     const activitiesApi = fakeActivitiesApi([
       {
-        id: 1,
+        id: "i1",
         name: "Morning Ride",
         start_date_local: "2026-04-12T09:00:00",
       } as Activity,
@@ -138,12 +138,12 @@ describe("deriveLatestMap", () => {
     const activitiesApi = fakeActivitiesApi(
       [
         {
-          id: 42,
+          id: "i42",
           name: "MAP ramp test",
           start_date_local: "2026-04-20T09:00:00",
         } as Activity,
       ],
-      { "42": {} }
+      { i42: {} }
     );
 
     const result = await deriveLatestMap(activitiesApi, "2026-05-09");

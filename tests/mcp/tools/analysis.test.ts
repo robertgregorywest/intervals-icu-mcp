@@ -28,12 +28,18 @@ function createMockClient(): IIntervalsClient {
 describe("getAerobicDecoupling tool handler", () => {
   it("returns decoupling analysis as JSON", async () => {
     const client = createMockClient();
-    const result = await getAerobicDecoupling(client, { activityId: 42 });
+    const result = await getAerobicDecoupling(client, { activityId: "i42" });
     const parsed = result;
 
     expect(parsed.decouplingPercent).toBe(7.14);
     expect(parsed.interpretation).toContain("Moderate");
-    expect(client.getAerobicDecoupling).toHaveBeenCalledWith(42);
+    expect(client.getAerobicDecoupling).toHaveBeenCalledWith("i42");
+  });
+
+  it("normalizes bare number to i-prefixed string", async () => {
+    const client = createMockClient();
+    await getAerobicDecoupling(client, { activityId: 42 });
+    expect(client.getAerobicDecoupling).toHaveBeenCalledWith("i42");
   });
 });
 
@@ -41,17 +47,26 @@ describe("compareIntervalsHandler", () => {
   it("returns interval comparison as JSON", async () => {
     const client = createMockClient();
     const result = await compareIntervalsHandler(client, {
-      activityIds: [1, 2],
+      activityIds: ["i1", "i2"],
       minPower: 200,
     });
     const parsed = result;
 
     expect(parsed.intervals).toHaveLength(1);
     expect(parsed.summaries).toHaveLength(1);
-    expect(client.compareIntervals).toHaveBeenCalledWith([1, 2], {
+    expect(client.compareIntervals).toHaveBeenCalledWith(["i1", "i2"], {
       minPower: 200,
       targetDuration: undefined,
       durationTolerance: undefined,
     });
+  });
+
+  it("normalizes bare numbers in activityIds", async () => {
+    const client = createMockClient();
+    await compareIntervalsHandler(client, { activityIds: [1, 2] });
+    expect(client.compareIntervals).toHaveBeenCalledWith(
+      ["i1", "i2"],
+      expect.any(Object)
+    );
   });
 });

@@ -21,7 +21,7 @@ const config = {
 
 describe("ActivitiesApi", () => {
   it("GETs activities with date range", async () => {
-    const activities = [{ id: 1, name: "Morning Ride" }];
+    const activities = [{ id: "i1", name: "Morning Ride" }];
     const mockFetch = createMockFetch(200, activities);
     const httpClient = new HttpClient(config, mockFetch);
     const api = new ActivitiesApi(httpClient, config.athleteId);
@@ -36,26 +36,28 @@ describe("ActivitiesApi", () => {
   });
 
   it("GETs single activity without intervals", async () => {
-    const activity = { id: 42, name: "Ride" };
+    const activity = { id: "i42", name: "Ride" };
     const mockFetch = createMockFetch(200, activity);
     const httpClient = new HttpClient(config, mockFetch);
     const api = new ActivitiesApi(httpClient, config.athleteId);
 
-    await api.getActivity(42);
+    await api.getActivity("i42");
 
     const [url] = mockFetch.mock.calls[0];
-    expect(url).toBe("https://intervals.icu/api/v1/activity/42");
+    expect(url).toBe("https://intervals.icu/api/v1/activity/i42");
   });
 
   it("GETs single activity with intervals", async () => {
-    const mockFetch = createMockFetch(200, { id: 42 });
+    const mockFetch = createMockFetch(200, { id: "i42" });
     const httpClient = new HttpClient(config, mockFetch);
     const api = new ActivitiesApi(httpClient, config.athleteId);
 
-    await api.getActivity(42, true);
+    await api.getActivity("i42", true);
 
     const [url] = mockFetch.mock.calls[0];
-    expect(url).toBe("https://intervals.icu/api/v1/activity/42?intervals=true");
+    expect(url).toBe(
+      "https://intervals.icu/api/v1/activity/i42?intervals=true"
+    );
   });
 
   it("GETs activity streams with type filter", async () => {
@@ -64,12 +66,12 @@ describe("ActivitiesApi", () => {
     const httpClient = new HttpClient(config, mockFetch);
     const api = new ActivitiesApi(httpClient, config.athleteId);
 
-    const result = await api.getActivityStreams(42, ["watts", "heartrate"]);
+    const result = await api.getActivityStreams("i42", ["watts", "heartrate"]);
 
     expect(result).toEqual(streams);
     const [url] = mockFetch.mock.calls[0];
     expect(url).toBe(
-      "https://intervals.icu/api/v1/activity/42/streams.json?types=watts,heartrate"
+      "https://intervals.icu/api/v1/activity/i42/streams.json?types=watts,heartrate"
     );
   });
 
@@ -78,10 +80,10 @@ describe("ActivitiesApi", () => {
     const httpClient = new HttpClient(config, mockFetch);
     const api = new ActivitiesApi(httpClient, config.athleteId);
 
-    await api.getActivityStreams(42);
+    await api.getActivityStreams("i42");
 
     const [url] = mockFetch.mock.calls[0];
-    expect(url).toBe("https://intervals.icu/api/v1/activity/42/streams.json");
+    expect(url).toBe("https://intervals.icu/api/v1/activity/i42/streams.json");
   });
 
   it("normalises array-shaped streams response into a keyed object", async () => {
@@ -93,7 +95,7 @@ describe("ActivitiesApi", () => {
     const httpClient = new HttpClient(config, mockFetch);
     const api = new ActivitiesApi(httpClient, config.athleteId);
 
-    const result = await api.getActivityStreams(42, ["watts", "heartrate"]);
+    const result = await api.getActivityStreams("i42", ["watts", "heartrate"]);
 
     expect(result.watts).toEqual([200, 210, 220]);
     expect(result.heartrate).toEqual([130, 135, 140]);
@@ -105,7 +107,7 @@ describe("ActivitiesApi", () => {
     const httpClient = new HttpClient(config, mockFetch);
     const api = new ActivitiesApi(httpClient, config.athleteId);
 
-    const result = await api.getActivityStreams(42, ["watts", "heartrate"]);
+    const result = await api.getActivityStreams("i42", ["watts", "heartrate"]);
 
     expect(result).toEqual(keyed);
   });

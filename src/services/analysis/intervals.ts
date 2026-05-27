@@ -3,7 +3,7 @@ import type { Activity, ActivityInterval } from "../activities/types.js";
 export interface IntervalComparison {
   lapNumber: number;
   values: Array<{
-    activityId: number;
+    activityId: string;
     name?: string;
     date?: string;
     avg_watts?: number;
@@ -15,7 +15,7 @@ export interface IntervalComparison {
 }
 
 export interface IntervalSummary {
-  activityId: number;
+  activityId: string;
   name?: string;
   date?: string;
   intervalCount: number;

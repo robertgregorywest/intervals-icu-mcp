@@ -76,8 +76,8 @@ export interface IIntervalsClient {
 
   // Activities
   getActivities(oldest: string, newest: string): Promise<Activity[]>;
-  getActivity(id: number, includeIntervals?: boolean): Promise<Activity>;
-  getActivityStreams(id: number, types?: string[]): Promise<ActivityStreams>;
+  getActivity(id: string, includeIntervals?: boolean): Promise<Activity>;
+  getActivityStreams(id: string, types?: string[]): Promise<ActivityStreams>;
 
   // Wellness
   getWellness(oldest: string, newest: string): Promise<WellnessRecord[]>;
@@ -100,9 +100,9 @@ export interface IIntervalsClient {
   ): Promise<CreateLibraryItemResult>;
 
   // Analysis
-  getAerobicDecoupling(activityId: number): Promise<DecouplingResult>;
+  getAerobicDecoupling(activityId: string): Promise<DecouplingResult>;
   compareIntervals(
-    activityIds: number[],
+    activityIds: string[],
     options?: IntervalFilterOptions
   ): Promise<CompareIntervalsResult>;
 
@@ -188,12 +188,12 @@ export class IntervalsClient implements IIntervalsClient {
     return this.activities.getActivities(oldest, newest);
   }
 
-  async getActivity(id: number, includeIntervals?: boolean): Promise<Activity> {
+  async getActivity(id: string, includeIntervals?: boolean): Promise<Activity> {
     return this.activities.getActivity(id, includeIntervals);
   }
 
   async getActivityStreams(
-    id: number,
+    id: string,
     types?: string[]
   ): Promise<ActivityStreams> {
     return this.activities.getActivityStreams(id, types);
@@ -247,7 +247,7 @@ export class IntervalsClient implements IIntervalsClient {
   }
 
   // Analysis
-  async getAerobicDecoupling(activityId: number): Promise<DecouplingResult> {
+  async getAerobicDecoupling(activityId: string): Promise<DecouplingResult> {
     const streams = await this.activities.getActivityStreams(activityId, [
       "watts",
       "heartrate",
@@ -262,7 +262,7 @@ export class IntervalsClient implements IIntervalsClient {
   }
 
   async compareIntervals(
-    activityIds: number[],
+    activityIds: string[],
     options?: IntervalFilterOptions
   ): Promise<CompareIntervalsResult> {
     const activities = await Promise.all(

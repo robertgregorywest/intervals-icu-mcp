@@ -3,8 +3,8 @@ import type { Activity, ActivityStreams } from "./types.js";
 
 export interface IActivitiesApi {
   getActivities(oldest: string, newest: string): Promise<Activity[]>;
-  getActivity(id: number, includeIntervals?: boolean): Promise<Activity>;
-  getActivityStreams(id: number, types?: string[]): Promise<ActivityStreams>;
+  getActivity(id: string, includeIntervals?: boolean): Promise<Activity>;
+  getActivityStreams(id: string, types?: string[]): Promise<ActivityStreams>;
 }
 
 export class ActivitiesApi implements IActivitiesApi {
@@ -22,13 +22,13 @@ export class ActivitiesApi implements IActivitiesApi {
     );
   }
 
-  async getActivity(id: number, includeIntervals = false): Promise<Activity> {
+  async getActivity(id: string, includeIntervals = false): Promise<Activity> {
     const query = includeIntervals ? "?intervals=true" : "";
     return this.httpClient.request<Activity>(`/api/v1/activity/${id}${query}`);
   }
 
   async getActivityStreams(
-    id: number,
+    id: string,
     types?: string[]
   ): Promise<ActivityStreams> {
     const query = types?.length ? `?types=${types.join(",")}` : "";

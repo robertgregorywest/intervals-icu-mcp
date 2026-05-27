@@ -6,10 +6,11 @@ function createMockClient(): IIntervalsClient {
   return {
     getActivities: vi.fn().mockResolvedValue([
       {
-        id: 1,
+        id: "i1",
         start_date_local: "2026-04-27T07:00:00",
         type: "Ride",
         name: "Endurance Ride",
+        source: "WAHOO",
         icu_training_load: 80,
         moving_time: 5400,
         distance: 45000,
@@ -17,10 +18,11 @@ function createMockClient(): IIntervalsClient {
         average_heartrate: 138,
       },
       {
-        id: 2,
+        id: "i2",
         start_date_local: "2026-04-29T18:00:00",
         type: "Run",
         name: "Easy Run",
+        source: "GARMIN",
         icu_training_load: 40,
         moving_time: 1800,
         distance: 6000,

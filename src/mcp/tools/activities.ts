@@ -47,7 +47,13 @@ export async function getActivities(
 }
 
 export const getActivitySchema = z.object({
-  id: z.number().describe("Activity ID"),
+  id: z
+    .union([z.string(), z.number()])
+    .describe(
+      "Activity ID — use the string form returned by get_activities / get_training_week_summary " +
+        '(e.g. "i151827252"). Bare numbers are also accepted and will be prefixed automatically. ' +
+        "Note: activities synced from Strava cannot be retrieved via the API."
+    ),
   includeIntervals: z
     .boolean()
     .optional()
@@ -58,7 +64,10 @@ export async function getActivity(
   client: IIntervalsClient,
   args: z.infer<typeof getActivitySchema>
 ): Promise<unknown> {
-  const activity = await client.getActivity(args.id, args.includeIntervals);
+  const id = normalizeActivityId(args.id);
+  const activity = await client.getActivity(id, args.includeIntervals);
+  const stub = detectStravaStub(activity as Record<string, unknown>);
+  if (stub) return stub;
   return withCharacterLimit(
     activity,
     "Activity payload exceeds character limit. Try includeIntervals=false."
@@ -66,7 +75,13 @@ export async function getActivity(
 }
 
 export const getActivityStreamsSchema = z.object({
-  id: z.number().describe("Activity ID"),
+  id: z
+    .union([z.string(), z.number()])
+    .describe(
+      "Activity ID — use the string form returned by get_activities / get_training_week_summary " +
+        '(e.g. "i151827252"). Bare numbers are also accepted and will be prefixed automatically. ' +
+        "Note: activities synced from Strava have no stream data available."
+    ),
   types: z
     .array(z.string())
     .optional()
@@ -80,9 +95,35 @@ export async function getActivityStreams(
   client: IIntervalsClient,
   args: z.infer<typeof getActivityStreamsSchema>
 ): Promise<unknown> {
-  const streams = await client.getActivityStreams(args.id, args.types);
+  const id = normalizeActivityId(args.id);
+  const streams = await client.getActivityStreams(id, args.types);
   return withCharacterLimit(
     streams,
     "Stream data exceeds character limit. Request fewer stream types via the 'types' parameter."
   );
+}
+
+function normalizeActivityId(id: string | number): string {
+  if (typeof id === "number") return `i${id}`;
+  return id.startsWith("i") ? id : `i${id}`;
+}
+
+function detectStravaStub(
+  activity: Record<string, unknown>
+): Record<string, unknown> | null {
+  const note = activity._note;
+  if (typeof note === "string" && /strava/i.test(note)) {
+    return {
+      _strava_limitation: true,
+      _note: note,
+      id: activity.id,
+      source: activity.source,
+      start_date_local: activity.start_date_local,
+      message:
+        "This activity was synced from Strava and cannot be retrieved via the Intervals.icu API " +
+        "(Strava API terms prohibit third-party access). " +
+        "Only activities recorded directly by Intervals.icu-compatible devices are available.",
+    };
+  }
+  return null;
 }

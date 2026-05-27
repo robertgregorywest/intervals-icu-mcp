@@ -13,10 +13,10 @@ function createMockClient(
     getActivities: vi
       .fn()
       .mockResolvedValue([
-        { id: 1, name: "Morning Ride", icu_training_load: 65 },
+        { id: "i1", name: "Morning Ride", icu_training_load: 65 },
       ]),
     getActivity: vi.fn().mockResolvedValue({
-      id: 1,
+      id: "i1",
       name: "Morning Ride",
       icu_intervals: [],
     }),
@@ -51,35 +51,67 @@ describe("getActivities tool handler", () => {
 describe("getActivity tool handler", () => {
   it("returns single activity as JSON", async () => {
     const client = createMockClient();
-    const result = await getActivity(client, { id: 1 });
+    const result = await getActivity(client, { id: "i1" });
     const parsed = result;
 
     expect(parsed.name).toBe("Morning Ride");
-    expect(client.getActivity).toHaveBeenCalledWith(1, undefined);
+    expect(client.getActivity).toHaveBeenCalledWith("i1", undefined);
+  });
+
+  it("normalizes bare number to i-prefixed string", async () => {
+    const client = createMockClient();
+    await getActivity(client, { id: 1 });
+
+    expect(client.getActivity).toHaveBeenCalledWith("i1", undefined);
   });
 
   it("passes includeIntervals flag", async () => {
     const client = createMockClient();
-    await getActivity(client, { id: 1, includeIntervals: true });
+    await getActivity(client, { id: "i1", includeIntervals: true });
 
-    expect(client.getActivity).toHaveBeenCalledWith(1, true);
+    expect(client.getActivity).toHaveBeenCalledWith("i1", true);
+  });
+
+  it("surfaces Strava stub as a structured limitation message", async () => {
+    const client = createMockClient({
+      getActivity: vi.fn().mockResolvedValue({
+        id: "i999",
+        source: "STRAVA",
+        start_date_local: "2026-05-20T08:00:00",
+        _note: "STRAVA activities are not available via the API",
+      }),
+    });
+    const result = (await getActivity(client, { id: "i999" })) as Record<
+      string,
+      unknown
+    >;
+
+    expect(result._strava_limitation).toBe(true);
+    expect(typeof result.message).toBe("string");
   });
 });
 
 describe("getActivityStreams tool handler", () => {
   it("returns streams as JSON", async () => {
     const client = createMockClient();
-    const result = await getActivityStreams(client, { id: 1 });
+    const result = await getActivityStreams(client, { id: "i1" });
     const parsed = result;
 
     expect(parsed.watts).toEqual([200, 210]);
-    expect(client.getActivityStreams).toHaveBeenCalledWith(1, undefined);
+    expect(client.getActivityStreams).toHaveBeenCalledWith("i1", undefined);
+  });
+
+  it("normalizes bare number to i-prefixed string", async () => {
+    const client = createMockClient();
+    await getActivityStreams(client, { id: 1 });
+
+    expect(client.getActivityStreams).toHaveBeenCalledWith("i1", undefined);
   });
 
   it("passes types filter", async () => {
     const client = createMockClient();
-    await getActivityStreams(client, { id: 1, types: ["watts"] });
+    await getActivityStreams(client, { id: "i1", types: ["watts"] });
 
-    expect(client.getActivityStreams).toHaveBeenCalledWith(1, ["watts"]);
+    expect(client.getActivityStreams).toHaveBeenCalledWith("i1", ["watts"]);
   });
 });

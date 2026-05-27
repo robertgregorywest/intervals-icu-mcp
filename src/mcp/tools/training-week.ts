@@ -57,6 +57,7 @@ export const getTrainingWeekSummaryOutputSchema = z.object({
         date: z.string().nullable().optional(),
         type: z.string().nullable().optional(),
         name: z.string().nullable().optional(),
+        source: z.string().nullable().optional(),
         tss: z.number(),
         duration_min: z.number(),
         distance_km: z.number().nullable(),
@@ -161,11 +162,13 @@ function computeFitnessDelta(wellness: WellnessRecord[]) {
 function summarizeActivity(a: Activity) {
   const seconds = numericField(a, "moving_time");
   const meters = numericField(a, "distance");
+  const source = typeof a.source === "string" ? a.source : null;
   return {
     id: a.id,
     date: a.start_date_local,
     type: a.type,
     name: a.name,
+    source,
     tss: round1(numericField(a, "icu_training_load")),
     duration_min: Math.round(seconds / 60),
     distance_km: meters ? round1(meters / 1000) : null,

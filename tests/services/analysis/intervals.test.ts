@@ -3,7 +3,7 @@ import { compareIntervals } from "../../../src/services/analysis/intervals.js";
 import type { Activity } from "../../../src/services/activities/types.js";
 
 function makeActivity(
-  id: number,
+  id: string,
   intervals: Array<{
     avg_watts: number;
     max_watts: number;
@@ -45,7 +45,7 @@ function makeActivity(
 
 describe("compareIntervals", () => {
   it("compares intervals across activities", () => {
-    const a1 = makeActivity(1, [
+    const a1 = makeActivity("i1", [
       {
         avg_watts: 300,
         max_watts: 320,
@@ -61,7 +61,7 @@ describe("compareIntervals", () => {
         elapsed: 240,
       },
     ]);
-    const a2 = makeActivity(2, [
+    const a2 = makeActivity("i2", [
       {
         avg_watts: 305,
         max_watts: 325,
@@ -88,7 +88,7 @@ describe("compareIntervals", () => {
   });
 
   it("filters by minimum power", () => {
-    const a = makeActivity(1, [
+    const a = makeActivity("i1", [
       {
         avg_watts: 100,
         max_watts: 120,
@@ -112,7 +112,7 @@ describe("compareIntervals", () => {
   });
 
   it("filters by target duration", () => {
-    const a = makeActivity(1, [
+    const a = makeActivity("i1", [
       {
         avg_watts: 300,
         max_watts: 320,
@@ -136,7 +136,7 @@ describe("compareIntervals", () => {
   });
 
   it("handles activities with different interval counts", () => {
-    const a1 = makeActivity(1, [
+    const a1 = makeActivity("i1", [
       {
         avg_watts: 300,
         max_watts: 320,
@@ -145,7 +145,7 @@ describe("compareIntervals", () => {
         elapsed: 240,
       },
     ]);
-    const a2 = makeActivity(2, [
+    const a2 = makeActivity("i2", [
       {
         avg_watts: 300,
         max_watts: 320,

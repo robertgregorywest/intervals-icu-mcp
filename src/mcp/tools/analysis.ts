@@ -2,7 +2,11 @@ import { z } from "zod";
 import type { IIntervalsClient } from "../../index.js";
 
 export const getAerobicDecouplingSchema = z.object({
-  activityId: z.number().describe("Activity ID to analyze"),
+  activityId: z
+    .union([z.string(), z.number()])
+    .describe(
+      'Activity ID (e.g. "i151827252" from get_activities, or bare number)'
+    ),
 });
 
 const decouplingHalfShape = z.object({
@@ -22,13 +26,16 @@ export async function getAerobicDecoupling(
   client: IIntervalsClient,
   args: z.infer<typeof getAerobicDecouplingSchema>
 ): Promise<z.infer<typeof getAerobicDecouplingOutputSchema>> {
-  return client.getAerobicDecoupling(args.activityId);
+  return client.getAerobicDecoupling(normalizeActivityId(args.activityId));
 }
 
 export const compareIntervalsSchema = z.object({
   activityIds: z
-    .array(z.number())
-    .describe("Activity IDs to compare intervals across"),
+    .array(z.union([z.string(), z.number()]))
+    .describe(
+      "Activity IDs to compare intervals across " +
+        '(e.g. ["i151827252", "i151543822"] from get_activities)'
+    ),
   minPower: z
     .number()
     .optional()
@@ -48,7 +55,7 @@ export const compareIntervalsSchema = z.object({
 });
 
 const intervalValueShape = z.object({
-  activityId: z.number(),
+  activityId: z.union([z.string(), z.number()]),
   name: z.string().optional(),
   date: z.string().optional(),
   avg_watts: z.number().optional(),
@@ -59,7 +66,7 @@ const intervalValueShape = z.object({
 });
 
 const intervalSummaryShape = z.object({
-  activityId: z.number(),
+  activityId: z.union([z.string(), z.number()]),
   name: z.string().optional(),
   date: z.string().optional(),
   intervalCount: z.number(),
@@ -85,9 +92,14 @@ export async function compareIntervalsHandler(
   client: IIntervalsClient,
   args: z.infer<typeof compareIntervalsSchema>
 ): Promise<z.infer<typeof compareIntervalsOutputSchema>> {
-  return client.compareIntervals(args.activityIds, {
+  return client.compareIntervals(args.activityIds.map(normalizeActivityId), {
     minPower: args.minPower,
     targetDuration: args.targetDuration,
     durationTolerance: args.durationTolerance,
   });
+}
+
+function normalizeActivityId(id: string | number): string {
+  if (typeof id === "number") return `i${id}`;
+  return id.startsWith("i") ? id : `i${id}`;
 }
