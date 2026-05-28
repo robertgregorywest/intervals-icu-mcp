@@ -1,6 +1,6 @@
 {
   "name": "intervals-icu-mcp",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "MCP server for the Intervals.icu API",
   "type": "module",
   "scripts": {
