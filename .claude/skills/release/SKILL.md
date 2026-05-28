@@ -22,17 +22,10 @@ The manifest's `tools[]` and `prompts[]` arrays must match what the server actua
 Run before bumping versions:
 
 ```bash
-# Tools — empty diff means in sync
-diff <(perl -0777 -nE 'say $1 while /\btool\(\s*"([^"]+)"/g' src/mcp/server.ts | sort) \
-     <(jq -r '.tools[].name' manifest.json | sort)
-
-# Prompts — eyeball both lists
-perl -0777 -nE 'say $1 while /registerPrompt\(\s*"([^"]+)"/g' \
-  src/mcp/server.ts src/mcp/prompts/*.ts | sort -u
-jq -r '.prompts[].name' manifest.json | sort
+npm run check:manifest
 ```
 
-(Perl rather than `grep` because the registrations span newlines: `tool(\n    "name",`.)
+This compares the `tool("…")` / `registerPrompt("…")` registrations in `src/mcp/` against `manifest.json` and exits non-zero on drift (`scripts/check-manifest.mjs`). The logic lives in a committed script rather than inline shell so it's a single stable command — allowlist `Bash(npm run check:manifest)` to skip the permission prompt.
 
 If something's missing from the manifest, add it before tagging. Each `tools[]` entry is `{ "name": "..." }`; each `prompts[]` entry needs `name`, `description`, and `text` (validated by `npx mcpb validate manifest.json`).
 

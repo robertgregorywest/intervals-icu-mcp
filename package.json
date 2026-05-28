@@ -9,6 +9,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
+    "check:manifest": "node scripts/check-manifest.mjs",
     "migrate:from-tp": "tsx scripts/migrate-from-tp.ts",
     "mcpb:pack": "mcpb pack",
     "prepare": "husky"
