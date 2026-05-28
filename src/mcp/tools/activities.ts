@@ -5,8 +5,11 @@ import {
   assertDateRange,
   dateString,
   limitField,
-  withCharacterLimit,
 } from "./common.js";
+
+// Stream payloads scale with activity duration and are unbounded; this budget
+// caps the model-facing size by downsampling resolution, not by dropping the tail.
+const STREAMS_CHARACTER_BUDGET = 40_000;
 
 export const getActivitiesSchema = z.object({
   oldest: dateString.describe("Start date in YYYY-MM-DD format"),
@@ -68,10 +71,7 @@ export async function getActivity(
   const activity = await client.getActivity(id, args.includeIntervals);
   const stub = detectStravaStub(activity as Record<string, unknown>);
   if (stub) return stub;
-  return withCharacterLimit(
-    activity,
-    "Activity payload exceeds character limit. Try includeIntervals=false."
-  );
+  return activity;
 }
 
 export const getActivityStreamsSchema = z.object({
@@ -97,10 +97,72 @@ export async function getActivityStreams(
 ): Promise<unknown> {
   const id = normalizeActivityId(args.id);
   const streams = await client.getActivityStreams(id, args.types);
-  return withCharacterLimit(
-    streams,
-    "Stream data exceeds character limit. Request fewer stream types via the 'types' parameter."
+  return packStreams(
+    streams as unknown as Record<string, unknown>,
+    STREAMS_CHARACTER_BUDGET
   );
+}
+
+type PackedStreams = {
+  samples: number;
+  original_samples: number;
+  downsampled: boolean;
+  stride: number;
+  streams: Record<string, unknown>;
+};
+
+// Downsample by index stride so the full ride stays represented at lower
+// resolution, rather than truncating the payload and losing the tail.
+export function packStreams(
+  streams: Record<string, unknown>,
+  budget: number
+): PackedStreams {
+  const original = maxArrayLength(streams);
+  const fits = (s: Record<string, unknown>) =>
+    JSON.stringify({ streams: s }).length <= budget;
+
+  let stride = 1;
+  let out = streams;
+  if (!fits(streams)) {
+    stride = Math.max(
+      2,
+      Math.ceil(JSON.stringify({ streams }).length / budget)
+    );
+    out = downsample(streams, stride);
+    while (!fits(out)) {
+      stride += 1;
+      out = downsample(streams, stride);
+    }
+  }
+
+  return {
+    samples: maxArrayLength(out),
+    original_samples: original,
+    downsampled: stride > 1,
+    stride,
+    streams: out,
+  };
+}
+
+function downsample(
+  streams: Record<string, unknown>,
+  stride: number
+): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(streams)) {
+    out[key] = Array.isArray(value)
+      ? value.filter((_, i) => i % stride === 0)
+      : value;
+  }
+  return out;
+}
+
+function maxArrayLength(streams: Record<string, unknown>): number {
+  let max = 0;
+  for (const value of Object.values(streams)) {
+    if (Array.isArray(value)) max = Math.max(max, value.length);
+  }
+  return max;
 }
 
 function normalizeActivityId(id: string | number): string {

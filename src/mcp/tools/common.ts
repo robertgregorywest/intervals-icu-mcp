@@ -61,7 +61,7 @@ export function withCharacterLimit<T>(
   payload: T,
   hint: string
 ): T | Truncation {
-  const json = JSON.stringify(payload, null, 2);
+  const json = JSON.stringify(payload);
   if (json.length <= CHARACTER_LIMIT) {
     return payload;
   }

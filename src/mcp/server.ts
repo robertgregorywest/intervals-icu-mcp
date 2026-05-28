@@ -138,7 +138,7 @@ export function createMcpServer(client: IIntervalsClient): McpServer {
       const start = Date.now();
       try {
         const data = await handler(args as z.infer<z.ZodObject<S>>);
-        const text = JSON.stringify(data, null, 2);
+        const text = JSON.stringify(data);
         logResponse(name, text, Date.now() - start);
         const result: Record<string, unknown> = {
           content: [{ type: "text" as const, text }],
@@ -197,8 +197,9 @@ export function createMcpServer(client: IIntervalsClient): McpServer {
     "get_activity",
     "Get full details for a single activity including metrics, and optionally detected intervals. " +
       "Set includeIntervals=true to get interval-by-interval breakdown. " +
-      "Returns an Activity object (icu_training_load, icu_intensity, icu_average_watts, " +
-      "average_heartrate, distance, moving_time, plus icu_intervals[] when requested).",
+      "Returns the full Activity object (icu_training_load, icu_intensity, icu_average_watts, " +
+      "average_heartrate, distance, moving_time, plus icu_intervals[] when requested) — " +
+      "not size-capped, since an activity payload is bounded.",
     getActivitySchema,
     READ_ONLY,
     null,
@@ -208,10 +209,11 @@ export function createMcpServer(client: IIntervalsClient): McpServer {
   tool(
     "get_activity_streams",
     "Get raw time-series data for an activity (power, heart rate, cadence, speed, altitude). " +
-      "Use types parameter to request specific streams (recommended — full streams are large). " +
+      "Use types parameter to request specific streams (recommended — fewer streams = full resolution). " +
       'Example: types=["watts", "heartrate"] for a power+HR analysis. ' +
-      "Long activities may exceed the character limit; check 'truncated' field in response. " +
-      "Returns: { watts: number[], heartrate: number[], ... } indexed by sample.",
+      "Long activities are downsampled by an index stride to fit a size budget, preserving " +
+      "whole-ride coverage at lower resolution. " +
+      "Returns: { samples, original_samples, downsampled, stride, streams: { watts: number[], ... } }.",
     getActivityStreamsSchema,
     READ_ONLY,
     null,

@@ -92,13 +92,51 @@ describe("getActivity tool handler", () => {
 });
 
 describe("getActivityStreams tool handler", () => {
-  it("returns streams as JSON", async () => {
+  it("returns streams in a packed envelope, full resolution when small", async () => {
     const client = createMockClient();
-    const result = await getActivityStreams(client, { id: "i1" });
-    const parsed = result;
+    const result = (await getActivityStreams(client, {
+      id: "i1",
+    })) as {
+      samples: number;
+      original_samples: number;
+      downsampled: boolean;
+      stride: number;
+      streams: Record<string, number[]>;
+    };
 
-    expect(parsed.watts).toEqual([200, 210]);
+    expect(result.downsampled).toBe(false);
+    expect(result.stride).toBe(1);
+    expect(result.samples).toBe(2);
+    expect(result.original_samples).toBe(2);
+    expect(result.streams.watts).toEqual([200, 210]);
     expect(client.getActivityStreams).toHaveBeenCalledWith("i1", undefined);
+  });
+
+  it("downsamples large streams to fit the budget, preserving coverage", async () => {
+    const watts = Array.from({ length: 20000 }, (_, i) => i);
+    const heartrate = Array.from({ length: 20000 }, (_, i) => 100 + (i % 60));
+    const client = createMockClient({
+      getActivityStreams: vi.fn().mockResolvedValue({ watts, heartrate }),
+    });
+
+    const result = (await getActivityStreams(client, { id: "i1" })) as {
+      samples: number;
+      original_samples: number;
+      downsampled: boolean;
+      stride: number;
+      streams: Record<string, number[]>;
+    };
+
+    expect(result.downsampled).toBe(true);
+    expect(result.stride).toBeGreaterThan(1);
+    expect(result.original_samples).toBe(20000);
+    expect(result.samples).toBeLessThan(20000);
+    // First sample is kept (index 0) and arrays stay aligned across streams.
+    expect(result.streams.watts[0]).toBe(0);
+    expect(result.streams.watts.length).toBe(result.streams.heartrate.length);
+    expect(
+      JSON.stringify({ streams: result.streams }).length
+    ).toBeLessThanOrEqual(40_000);
   });
 
   it("normalizes bare number to i-prefixed string", async () => {
