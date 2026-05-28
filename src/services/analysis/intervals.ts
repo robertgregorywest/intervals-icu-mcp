@@ -61,11 +61,11 @@ export function compareIntervals(
           activityId: a.activity.id,
           name: a.activity.name,
           date: a.activity.start_date_local,
-          avg_watts: a.intervals[i].avg_watts,
+          avg_watts: a.intervals[i].average_watts,
           max_watts: a.intervals[i].max_watts,
-          avg_hr: a.intervals[i].avg_hr,
-          avg_cadence: a.intervals[i].avg_cadence,
-          elapsed: a.intervals[i].elapsed,
+          avg_hr: a.intervals[i].average_heartrate,
+          avg_cadence: a.intervals[i].average_cadence,
+          elapsed: a.intervals[i].elapsed_time,
         })),
     });
   }
@@ -84,14 +84,16 @@ function filterIntervals(
   let filtered = intervals;
 
   if (options.minPower !== undefined) {
-    filtered = filtered.filter((i) => i.avg_watts >= options.minPower!);
+    filtered = filtered.filter((i) => i.average_watts >= options.minPower!);
   }
 
   if (options.targetDuration !== undefined) {
     const tolerance = options.durationTolerance ?? 0.2;
     const min = options.targetDuration * (1 - tolerance);
     const max = options.targetDuration * (1 + tolerance);
-    filtered = filtered.filter((i) => i.elapsed >= min && i.elapsed <= max);
+    filtered = filtered.filter(
+      (i) => i.elapsed_time >= min && i.elapsed_time <= max
+    );
   }
 
   return filtered;
@@ -102,10 +104,10 @@ function buildSummary(
   intervals: ActivityInterval[]
 ): IntervalSummary {
   const powers = intervals
-    .map((i) => i.avg_watts)
+    .map((i) => i.average_watts)
     .filter((p) => p != null && p > 0);
   const cadences = intervals
-    .map((i) => i.avg_cadence)
+    .map((i) => i.average_cadence)
     .filter((c) => c != null && c > 0);
 
   const avgPower = powers.length
@@ -116,7 +118,10 @@ function buildSummary(
   const avgCadence = cadences.length
     ? Math.round(cadences.reduce((s, v) => s + v, 0) / cadences.length)
     : null;
-  const totalDuration = intervals.reduce((s, i) => s + (i.elapsed || 0), 0);
+  const totalDuration = intervals.reduce(
+    (s, i) => s + (i.elapsed_time || 0),
+    0
+  );
 
   return {
     activityId: activity.id,

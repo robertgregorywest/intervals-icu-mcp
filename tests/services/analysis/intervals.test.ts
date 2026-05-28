@@ -5,11 +5,11 @@ import type { Activity } from "../../../src/services/activities/types.js";
 function makeActivity(
   id: string,
   intervals: Array<{
-    avg_watts: number;
+    average_watts: number;
     max_watts: number;
-    avg_hr: number;
-    avg_cadence: number;
-    elapsed: number;
+    average_heartrate: number;
+    average_cadence: number;
+    elapsed_time: number;
   }>
 ): Activity {
   return {
@@ -47,34 +47,34 @@ describe("compareIntervals", () => {
   it("compares intervals across activities", () => {
     const a1 = makeActivity("i1", [
       {
-        avg_watts: 300,
+        average_watts: 300,
         max_watts: 320,
-        avg_hr: 160,
-        avg_cadence: 90,
-        elapsed: 240,
+        average_heartrate: 160,
+        average_cadence: 90,
+        elapsed_time: 240,
       },
       {
-        avg_watts: 310,
+        average_watts: 310,
         max_watts: 330,
-        avg_hr: 162,
-        avg_cadence: 91,
-        elapsed: 240,
+        average_heartrate: 162,
+        average_cadence: 91,
+        elapsed_time: 240,
       },
     ]);
     const a2 = makeActivity("i2", [
       {
-        avg_watts: 305,
+        average_watts: 305,
         max_watts: 325,
-        avg_hr: 158,
-        avg_cadence: 89,
-        elapsed: 240,
+        average_heartrate: 158,
+        average_cadence: 89,
+        elapsed_time: 240,
       },
       {
-        avg_watts: 315,
+        average_watts: 315,
         max_watts: 335,
-        avg_hr: 165,
-        avg_cadence: 92,
-        elapsed: 240,
+        average_heartrate: 165,
+        average_cadence: 92,
+        elapsed_time: 240,
       },
     ]);
 
@@ -85,23 +85,28 @@ describe("compareIntervals", () => {
     expect(result.intervals[0].values).toHaveLength(2);
     expect(result.summaries).toHaveLength(2);
     expect(result.summaries[0].intervalCount).toBe(2);
+    // Guards the API field-name mapping: reads must come through populated, not
+    // undefined (regression — source reads average_watts/elapsed_time).
+    expect(result.intervals[0].values[0].avg_watts).toBe(300);
+    expect(result.intervals[0].values[0].elapsed).toBe(240);
+    expect(result.summaries[0].avgPower).toBe(305);
   });
 
   it("filters by minimum power", () => {
     const a = makeActivity("i1", [
       {
-        avg_watts: 100,
+        average_watts: 100,
         max_watts: 120,
-        avg_hr: 120,
-        avg_cadence: 85,
-        elapsed: 300,
+        average_heartrate: 120,
+        average_cadence: 85,
+        elapsed_time: 300,
       },
       {
-        avg_watts: 300,
+        average_watts: 300,
         max_watts: 320,
-        avg_hr: 160,
-        avg_cadence: 90,
-        elapsed: 240,
+        average_heartrate: 160,
+        average_cadence: 90,
+        elapsed_time: 240,
       },
     ]);
 
@@ -114,18 +119,18 @@ describe("compareIntervals", () => {
   it("filters by target duration", () => {
     const a = makeActivity("i1", [
       {
-        avg_watts: 300,
+        average_watts: 300,
         max_watts: 320,
-        avg_hr: 160,
-        avg_cadence: 90,
-        elapsed: 240,
+        average_heartrate: 160,
+        average_cadence: 90,
+        elapsed_time: 240,
       },
       {
-        avg_watts: 200,
+        average_watts: 200,
         max_watts: 220,
-        avg_hr: 140,
-        avg_cadence: 85,
-        elapsed: 600,
+        average_heartrate: 140,
+        average_cadence: 85,
+        elapsed_time: 600,
       },
     ]);
 
@@ -138,27 +143,27 @@ describe("compareIntervals", () => {
   it("handles activities with different interval counts", () => {
     const a1 = makeActivity("i1", [
       {
-        avg_watts: 300,
+        average_watts: 300,
         max_watts: 320,
-        avg_hr: 160,
-        avg_cadence: 90,
-        elapsed: 240,
+        average_heartrate: 160,
+        average_cadence: 90,
+        elapsed_time: 240,
       },
     ]);
     const a2 = makeActivity("i2", [
       {
-        avg_watts: 300,
+        average_watts: 300,
         max_watts: 320,
-        avg_hr: 160,
-        avg_cadence: 90,
-        elapsed: 240,
+        average_heartrate: 160,
+        average_cadence: 90,
+        elapsed_time: 240,
       },
       {
-        avg_watts: 310,
+        average_watts: 310,
         max_watts: 330,
-        avg_hr: 162,
-        avg_cadence: 91,
-        elapsed: 240,
+        average_heartrate: 162,
+        average_cadence: 91,
+        elapsed_time: 240,
       },
     ]);
 

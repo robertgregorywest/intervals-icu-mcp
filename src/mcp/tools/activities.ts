@@ -11,6 +11,12 @@ import {
 // caps the model-facing size by downsampling resolution, not by dropping the tail.
 const STREAMS_CHARACTER_BUDGET = 40_000;
 
+// Raw icu_intervals + icu_groups carry ~70 mostly-irrelevant fields per entry
+// (weather, smo2, lactate, torque, dfa, wind...) and can dominate the payload to
+// the point of overflowing the model's token budget — burying the very structure
+// (e.g. "4x 2min") a coach needs. This budget bounds the compacted projection.
+const INTERVAL_ANALYSIS_BUDGET = 12_000;
+
 export const getActivitiesSchema = z.object({
   oldest: dateString.describe("Start date in YYYY-MM-DD format"),
   newest: dateString.describe("End date in YYYY-MM-DD format"),
@@ -69,9 +75,89 @@ export async function getActivity(
 ): Promise<unknown> {
   const id = normalizeActivityId(args.id);
   const activity = await client.getActivity(id, args.includeIntervals);
-  const stub = detectStravaStub(activity as Record<string, unknown>);
+  const record = activity as Record<string, unknown>;
+  const stub = detectStravaStub(record);
   if (stub) return stub;
+  if (args.includeIntervals && Array.isArray(record.icu_intervals)) {
+    return compactIntervalAnalysis(record, INTERVAL_ANALYSIS_BUDGET);
+  }
   return activity;
+}
+
+type IntervalProjection = {
+  i: number;
+  type?: unknown;
+  label?: unknown;
+  start?: unknown;
+  dur?: unknown;
+  avgW?: unknown;
+  maxW?: unknown;
+  hr?: unknown;
+  cadence?: unknown;
+  grp?: unknown;
+};
+
+type GroupProjection = {
+  sig?: unknown;
+  count?: unknown;
+  dur?: unknown;
+  avgW?: unknown;
+  maxW?: unknown;
+  hr?: unknown;
+  cadence?: unknown;
+};
+
+// Replace the raw icu_intervals/icu_groups blobs with slim projections that keep
+// the coaching signal: per-lap power/HR/cadence/duration, and the grouped rollup
+// where repeated laps collapse into one entry with `count` (e.g. count:4 = a 4x2min
+// block). `grp`/`sig` link a lap to its group. Other activity fields pass through.
+export function compactIntervalAnalysis(
+  activity: Record<string, unknown>,
+  budget: number
+): Record<string, unknown> {
+  const rawIntervals =
+    (activity.icu_intervals as Array<Record<string, unknown>>) ?? [];
+  const rawGroups =
+    (activity.icu_groups as Array<Record<string, unknown>>) ?? [];
+
+  const intervals: IntervalProjection[] = rawIntervals.map((iv, i) => {
+    const p: IntervalProjection = {
+      i,
+      type: iv.type,
+      label: iv.label,
+      start: iv.start_time,
+      dur: iv.elapsed_time,
+      avgW: iv.average_watts,
+      maxW: iv.max_watts,
+      hr: iv.average_heartrate,
+      cadence: iv.average_cadence,
+    };
+    if (iv.group_id != null) p.grp = iv.group_id;
+    return p;
+  });
+
+  const groups: GroupProjection[] = rawGroups.map((g) => ({
+    sig: g.id,
+    count: g.count,
+    dur: g.elapsed_time,
+    avgW: g.average_watts,
+    maxW: g.max_watts,
+    hr: g.average_heartrate,
+    cadence: g.average_cadence,
+  }));
+
+  const rest: Record<string, unknown> = { ...activity };
+  delete rest.icu_intervals;
+  delete rest.icu_groups;
+
+  let result: Record<string, unknown> = { ...rest, groups, intervals };
+  // Safety net: projections are tiny, but if a pathological activity blows the
+  // budget, drop the per-lap detail first — groups + interval_summary still
+  // convey the structure.
+  if (JSON.stringify(result).length > budget) {
+    result = { ...rest, groups, intervals_omitted: intervals.length };
+  }
+  return result;
 }
 
 export const getActivityStreamsSchema = z.object({

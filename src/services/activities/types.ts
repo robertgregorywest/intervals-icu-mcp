@@ -24,16 +24,19 @@ export interface Activity {
 
 export interface ActivityInterval {
   id: number;
+  type: string;
   label: string;
+  group_id: string | null;
   start_index: number;
   end_index: number;
-  elapsed: number;
+  start_time: number;
+  elapsed_time: number;
   distance: number;
-  avg_watts: number;
+  average_watts: number;
   max_watts: number;
-  avg_hr: number;
-  max_hr: number;
-  avg_cadence: number;
+  average_heartrate: number;
+  max_heartrate: number;
+  average_cadence: number;
   [key: string]: unknown;
 }
 

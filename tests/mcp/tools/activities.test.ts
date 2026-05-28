@@ -72,6 +72,98 @@ describe("getActivity tool handler", () => {
     expect(client.getActivity).toHaveBeenCalledWith("i1", true);
   });
 
+  it("compacts interval analysis so a 4x2min block is discoverable", async () => {
+    const client = createMockClient({
+      getActivity: vi.fn().mockResolvedValue({
+        id: "i149578078",
+        name: "Pursuit sharpening — 4 × 2min",
+        icu_average_watts: 164,
+        interval_summary: ["1x 4m 151w", "4x 2m 369w", "1x 10m8s 111w"],
+        icu_intervals: [
+          {
+            type: "WORK",
+            label: null,
+            start_time: 1294,
+            elapsed_time: 120,
+            average_watts: 383,
+            max_watts: 427,
+            average_heartrate: 142,
+            average_cadence: 91,
+            group_id: "120s@369w91rpm",
+            // noise fields that must be dropped from the projection
+            average_smo2: null,
+            average_wind_speed: 5.5,
+            tailwind_percent: 29,
+          },
+          {
+            type: "RECOVERY",
+            label: null,
+            start_time: 2494,
+            elapsed_time: 266,
+            average_watts: 123,
+            max_watts: 255,
+            average_heartrate: 130,
+            average_cadence: 60,
+            group_id: null,
+          },
+        ],
+        icu_groups: [
+          {
+            id: "120s@369w91rpm",
+            count: 4,
+            elapsed_time: 120,
+            average_watts: 369,
+            max_watts: 462,
+            average_heartrate: 142,
+            average_cadence: 91,
+            average_lactate: null,
+          },
+        ],
+      }),
+    });
+
+    const result = (await getActivity(client, {
+      id: "i149578078",
+      includeIntervals: true,
+    })) as {
+      name: string;
+      icu_average_watts: number;
+      icu_intervals?: unknown;
+      icu_groups?: unknown;
+      interval_summary: string[];
+      groups: Array<Record<string, unknown>>;
+      intervals: Array<Record<string, unknown>>;
+    };
+
+    // Grouped structure is front and centre.
+    expect(result.groups).toHaveLength(1);
+    expect(result.groups[0]).toMatchObject({
+      sig: "120s@369w91rpm",
+      count: 4,
+      avgW: 369,
+      dur: 120,
+    });
+    expect(result.interval_summary).toContain("4x 2m 369w");
+
+    // Per-lap detail is slim and links to its group via grp.
+    expect(result.intervals).toHaveLength(2);
+    expect(result.intervals[0]).toMatchObject({
+      i: 0,
+      type: "WORK",
+      avgW: 383,
+      grp: "120s@369w91rpm",
+    });
+    // Recovery lap has no group_id, so grp is omitted.
+    expect(result.intervals[1].grp).toBeUndefined();
+
+    // Raw blobs and their ~70 noise fields are gone; other activity fields stay.
+    expect(result.icu_intervals).toBeUndefined();
+    expect(result.icu_groups).toBeUndefined();
+    expect("average_smo2" in result.intervals[0]).toBe(false);
+    expect(result.icu_average_watts).toBe(164);
+    expect(result.name).toBe("Pursuit sharpening — 4 × 2min");
+  });
+
   it("surfaces Strava stub as a structured limitation message", async () => {
     const client = createMockClient({
       getActivity: vi.fn().mockResolvedValue({

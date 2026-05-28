@@ -195,11 +195,13 @@ export function createMcpServer(client: IIntervalsClient): McpServer {
 
   tool(
     "get_activity",
-    "Get full details for a single activity including metrics, and optionally detected intervals. " +
-      "Set includeIntervals=true to get interval-by-interval breakdown. " +
-      "Returns the full Activity object (icu_training_load, icu_intensity, icu_average_watts, " +
-      "average_heartrate, distance, moving_time, plus icu_intervals[] when requested) — " +
-      "not size-capped, since an activity payload is bounded.",
+    "Get full details for a single activity including metrics, and optionally its laps/intervals. " +
+      "Set includeIntervals=true to add a compact interval analysis: " +
+      "`intervals[]` (one slim entry per lap: i, type, label, start, dur, avgW, maxW, hr, cadence, grp), " +
+      "`groups[]` (laps with the same signature collapsed into one entry — `count` is how many, " +
+      "so a 4x2min block appears as one group with count:4; `sig` matches each lap's `grp`), and " +
+      '`interval_summary[]` (human strings like "4x 2m 369w"). To find a structured workout\'s ' +
+      "efforts, read `groups`/`interval_summary` for the structure, then `intervals` for per-rep detail.",
     getActivitySchema,
     READ_ONLY,
     null,
