@@ -11,6 +11,7 @@ import type {
 } from "./types.js";
 import { isFolderNode } from "./types.js";
 import { embedRationale } from "./parser.js";
+import { expandRamp } from "./ramp.js";
 
 export type Pct = number | [number, number];
 
@@ -103,7 +104,15 @@ export const CANONICAL_TEMPLATES: SeedTemplate[] = [
     type: "Ride",
     steps: [
       { label: "Warm-up", duration: "5m", intensity: map(40) },
-      { label: "Ramp", duration: "20m", intensity: map([40, 110]), ramp: true },
+      // A continuous 20-min ramp collapses to a single average on a head unit;
+      // expand it into short narrow steps so the target steps upward on screen.
+      ...expandRamp({
+        label: "Ramp",
+        from: 40,
+        to: 110,
+        duration: "20m",
+        basis: "MAP",
+      }),
       { label: "Cooldown", duration: "5m", intensity: map(35) },
     ],
   },
@@ -295,14 +304,19 @@ function resolveAnchor(
   return null;
 }
 
+// Round to nearest 5 W: head-unit targets should be clean numbers, not noisy
+// decimals (see power-conversion.md). Matches formatWatts in parser.ts so
+// seed and refresh stay in lockstep.
+function wattsFromPct(pct: number, anchorWatts: number): number {
+  return Math.round(((pct / 100) * anchorWatts) / 5) * 5;
+}
+
 function computeWatts(intensity: SeedIntensity, anchorWatts: number): string {
   const { pct } = intensity;
   if (Array.isArray(pct)) {
-    const lo = Math.round((pct[0] / 100) * anchorWatts);
-    const hi = Math.round((pct[1] / 100) * anchorWatts);
-    return `${lo}w-${hi}w`;
+    return `${wattsFromPct(pct[0], anchorWatts)}w-${wattsFromPct(pct[1], anchorWatts)}w`;
   }
-  return `${Math.round((pct / 100) * anchorWatts)}w`;
+  return `${wattsFromPct(pct, anchorWatts)}w`;
 }
 
 function toBuilderStep(step: SeedStep, anchorWatts: number): WorkoutStep {

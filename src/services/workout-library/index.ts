@@ -33,6 +33,12 @@ export type {
   SeedIntensity,
 } from "./seed.js";
 export { CANONICAL_TEMPLATES, materializeTemplate, runSeed } from "./seed.js";
+export type { RampSpec } from "./ramp.js";
+export {
+  expandRamp,
+  DEFAULT_MAX_STEP_SEC,
+  DEFAULT_MAX_RANGE_PCT,
+} from "./ramp.js";
 export type {
   RefreshOptions,
   RefreshReport,

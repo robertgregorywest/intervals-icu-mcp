@@ -42,6 +42,8 @@ Athlete: FTP 285 W, MAP 380 W.
 
 When the user gives a range (e.g. "95–105% MAP"), emit a watts range: `360w-400w`. The Intervals.icu parser supports `<min>w-<max>w`.
 
+**Ramps vs. bands for head units.** A long/wide ramp step displays as a single average wattage on a head unit, losing the progression. Split any ramp or progression into short steps of **≤ 2 min** and **≤ ~8% MAP (~25–30 W)** range each, stepping upward (e.g. a 20-min ramp 40→110% becomes ten 2-min steps). A steady-state **target band** (e.g. Z2 `60-72%`) is a deliberate range the rider holds — keep it as one step. The `expandRamp` helper applies this rule to the seed library.
+
 ## Rationale block (saved workouts only)
 
 When persisting via `create_workout_library_item`, attach a rationale block so the workout becomes refreshable:

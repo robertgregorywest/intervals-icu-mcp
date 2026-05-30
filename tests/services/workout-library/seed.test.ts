@@ -70,6 +70,38 @@ describe("CANONICAL_TEMPLATES", () => {
     const ids = CANONICAL_TEMPLATES.map((t) => t.seedId);
     expect(new Set(ids).size).toBe(ids.length);
   });
+
+  it("no ramp step exceeds the head-unit granularity caps", () => {
+    // Ramp/progression steps display as a single average on head units, so
+    // they must be ≤ 2 min and ≤ ~8% range per step. Steady-state range bands
+    // (no ramp flag) are deliberate target bands and are exempt.
+    const durSeconds = (d: string): number => {
+      let s = 0;
+      for (const m of d.matchAll(/(\d+)(h|m|s)/gi)) {
+        const v = Number(m[1]);
+        if (m[2] === "h") s += v * 3600;
+        else if (m[2] === "m") s += v * 60;
+        else s += v;
+      }
+      return s;
+    };
+    const allSteps = CANONICAL_TEMPLATES.flatMap((t) =>
+      t.steps.flatMap((node) => ("iterations" in node ? node.steps : [node]))
+    );
+    for (const step of allSteps) {
+      if (!step.ramp) continue;
+      expect(
+        durSeconds(step.duration),
+        `${step.label} too long`
+      ).toBeLessThanOrEqual(120);
+      const pct = step.intensity.pct;
+      if (Array.isArray(pct)) {
+        expect(pct[1] - pct[0], `${step.label} too wide`).toBeLessThanOrEqual(
+          8
+        );
+      }
+    }
+  });
 });
 
 describe("materializeTemplate", () => {
@@ -80,11 +112,12 @@ describe("materializeTemplate", () => {
     expect(result.anchorWatts).toBe(380);
 
     expect(result.description).toContain("Hard intervals.");
-    expect(result.description).toContain("- Warm-up 10m 228w");
-    // 95% of 380 = 361, 102% of 380 = 387.6 → 388
-    expect(result.description).toContain("- On 4m 361w-388w");
+    // 60% of 380 = 228 → nearest 5 W → 230
+    expect(result.description).toContain("- Warm-up 10m 230w");
+    // 95% of 380 = 361 → 360, 102% of 380 = 387.6 → 390 (nearest 5 W)
+    expect(result.description).toContain("- On 4m 360w-390w");
     expect(result.description).toContain("- Off 4m 190w");
-    expect(result.description).toMatch(/4x\n- On 4m 361w-388w\n- Off 4m 190w/);
+    expect(result.description).toMatch(/4x\n- On 4m 360w-390w\n- Off 4m 190w/);
 
     const rationale = extractRationale(result.description);
     expect(rationale).toEqual({
@@ -97,6 +130,24 @@ describe("materializeTemplate", () => {
         { stepRef: "Off", pct: 50 },
       ],
     });
+  });
+
+  it("renders map-ramp-test as short stepped lines, not one wide ramp", () => {
+    const tmpl = CANONICAL_TEMPLATES.find((t) => t.seedId === "map-ramp-test");
+    if (!tmpl) throw new Error("map-ramp-test missing");
+    const result = materializeTemplate(tmpl, { mapWatts: 380 }, builder);
+    if ("skip" in result) throw new Error("expected materialization");
+
+    // No single continuous "ramp" line survives.
+    expect(result.body).not.toContain("ramp");
+    // The 20-min ramp becomes a run of short narrow steps (nearest 5 W).
+    expect(result.body).toContain("- Ramp 2m 150w-180w");
+    expect(result.body).toContain("- Ramp 2m 390w-420w");
+
+    // The rationale intensities array length tracks the expanded step count:
+    // 1 warm-up + 10 ramp steps + 1 cooldown = 12.
+    const rationale = extractRationale(result.description);
+    expect(rationale?.intensities).toHaveLength(12);
   });
 
   it("returns skip when required anchor is missing", () => {

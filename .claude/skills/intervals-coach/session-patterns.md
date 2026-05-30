@@ -4,6 +4,18 @@ Default skeletons for common cycling sessions. Adapt durations and intensities t
 
 Each template assumes a 60–120 min session unless noted. Trim warm-up/cool-down for time-crunched sessions; do **not** trim the main set.
 
+> **Head-unit granularity.** The `ramp` shorthand below (`10m ramp 50–80% FTP`) is logical, not literal. A single long/wide ramp step collapses to **one average wattage** on a Wahoo/Garmin, so when you emit a warm-up ramp or any progression, split it into short steps of **≤ 2 min** and **≤ ~8% MAP (~25–30 W)** range each, stepping upward. Steady-state target bands (e.g. a Z2 `60–72%` block) are deliberate and stay as one step — don't fragment them. Reshaped warm-up, FTP 285 W:
+>
+> ```
+> - Warm-up 2m 145w-160w
+> - Warm-up 2m 160w-175w
+> - Warm-up 2m 175w-195w
+> - Warm-up 2m 195w-210w
+> - Warm-up 2m 210w-230w
+> ```
+>
+> The `map-ramp-test` seed and `expandRamp` (`src/services/workout-library/ramp.ts`) embody the same rule for the built-in library.
+
 ## Z2 / endurance
 
 ```

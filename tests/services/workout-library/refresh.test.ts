@@ -99,10 +99,39 @@ describe("runRefresh", () => {
       .mock.calls[0];
     expect(updateId).toBe(w.id);
     expect(patch.description).toContain("- On 4m"); // structure preserved
-    // 95% of 394 = 374, 102% of 394 = 401.88 → 402
-    expect(patch.description).toContain("- On 4m 374w-402w");
+    // 95% of 394 = 374.3 → 375, 102% of 394 = 401.88 → 400 (nearest 5 W)
+    expect(patch.description).toContain("- On 4m 375w-400w");
     const newRationale = extractRationale(patch.description);
     expect(newRationale?.anchorWatts).toBe(394);
+  });
+
+  it("re-anchors every step line of an expanded multi-step ramp", async () => {
+    const w = seededWorkout("map-ramp-test", 380);
+    const api = fakeApi({
+      listFolders: vi.fn().mockResolvedValue([
+        {
+          id: 1,
+          name: "Coach: Tests",
+          type: "FOLDER",
+          children: [w],
+        },
+      ]),
+    });
+
+    const report = await runRefresh(api, builder, { mapWatts: 400 });
+
+    expect(report.updated).toHaveLength(1);
+    const [, patch] = (api.updateWorkout as ReturnType<typeof vi.fn>).mock
+      .calls[0];
+    // First and last ramp segments re-anchor at the new MAP (nearest 5 W):
+    // 40% × 400 = 160, 47% × 400 = 188 → 190; 103% × 400 = 412 → 410, 110% = 440.
+    expect(patch.description).toContain("- Ramp 2m 160w-190w");
+    expect(patch.description).toContain("- Ramp 2m 410w-440w");
+    // No stale 380-anchored watts remain on any ramp line.
+    expect(patch.description).not.toContain("150w-180w");
+    // Prose preserved, anchor updated.
+    expect(patch.description).toContain("Ramp test to exhaustion.");
+    expect(extractRationale(patch.description)?.anchorWatts).toBe(400);
   });
 
   it("preserves user-edited prose above the steps", async () => {
@@ -207,9 +236,9 @@ describe("runRefresh", () => {
     expect(report.updated[0].seedId).toBe("my-custom-2x10");
     const [, patch] = (api.updateWorkout as ReturnType<typeof vi.fn>).mock
       .calls[0];
-    // 80% × 290 = 232, 40% × 290 = 116
-    expect(patch.description).toContain("- On 10m 232w");
-    expect(patch.description).toContain("- Off 5m 116w");
+    // 80% × 290 = 232 → 230, 40% × 290 = 116 → 115 (nearest 5 W)
+    expect(patch.description).toContain("- On 10m 230w");
+    expect(patch.description).toContain("- Off 5m 115w");
     expect(patch.description).toContain("Notes about why I like this.");
   });
 

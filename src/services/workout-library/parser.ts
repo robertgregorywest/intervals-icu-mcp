@@ -35,16 +35,20 @@ export function embedRationale(
 const WATTS_TARGET_RE = /\d+w(?:-\d+w)?/;
 const STEP_LINE_RE = /^\s*-\s/;
 
+// Round to nearest 5 W so refreshed targets match freshly-seeded ones (see
+// wattsFromPct in seed.ts) and stay clean on head units.
+function wattsFromPct(pct: number, anchorWatts: number): number {
+  return Math.round(((pct / 100) * anchorWatts) / 5) * 5;
+}
+
 function formatWatts(
   pct: RationaleIntensity["pct"],
   anchorWatts: number
 ): string {
   if (Array.isArray(pct)) {
-    const lo = Math.round((pct[0] / 100) * anchorWatts);
-    const hi = Math.round((pct[1] / 100) * anchorWatts);
-    return `${lo}w-${hi}w`;
+    return `${wattsFromPct(pct[0], anchorWatts)}w-${wattsFromPct(pct[1], anchorWatts)}w`;
   }
-  return `${Math.round((pct / 100) * anchorWatts)}w`;
+  return `${wattsFromPct(pct, anchorWatts)}w`;
 }
 
 export interface RegenerateResult {
