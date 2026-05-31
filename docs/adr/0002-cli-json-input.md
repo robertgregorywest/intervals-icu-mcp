@@ -1,0 +1,3 @@
+# CLI commands take JSON input, not derived flags
+
+The CLI adapter's primary user is Claude Code, not a human, and 7 of the ~23 Tools take arrays or nested unions (e.g. `create_workout.steps`, `delete_events.ids`) that don't map to flat `--flags`. So each CLI command accepts one JSON object (`--json`, `--file`, or stdin) validated by the Tool's existing Zod schema, rather than schema-derived or hand-written flags. This keeps the CLI adapter purely mechanical (zero per-Tool argument code), maps 1:1 to the schemas an agent already knows from the MCP surface, and covers every Tool uniformly. The ergonomic cost to occasional human users is deliberately accepted; schema-derived flags can be layered on later for the flat-input Tools without changing this baseline.
