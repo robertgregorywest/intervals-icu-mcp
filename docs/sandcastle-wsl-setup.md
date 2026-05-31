@@ -30,7 +30,7 @@ SELinux). **No code change is needed** — leave `selinuxLabel` at its default i
 | Thing          | Value                                                      |
 | -------------- | ---------------------------------------------------------- |
 | WSL distro     | `aurora_wsl` (hostname `AER-OXF-DEV-RWE`)                  |
-| Repo (primary) | `~/intervals-icu-mcp` on the distro's native ext4          |
+| Repo (primary) | `~/personal/intervals-icu-mcp` on the distro's native ext4 |
 | Docker         | Linux daemon in `aurora_wsl`, reached via local socket     |
 | `DOCKER_HOST`  | unset inside the distro (uses the socket — leave it unset) |
 | Node           | v22 at `~/.local/node` (per-user, no sudo)                 |
@@ -46,7 +46,7 @@ Claude CLI (see `.sandcastle/Dockerfile`), so the host needs neither.
 Open the distro (Windows Terminal → `aurora_wsl`, or `wsl -d aurora_wsl`), then:
 
 ```bash
-cd ~/intervals-icu-mcp
+cd ~/personal/intervals-icu-mcp
 npm install        # first time, or after dependency changes
 npm run sandcastle
 ```
@@ -61,7 +61,7 @@ Use the **WSL** extension (`ms-vscode-remote.remote-wsl`) so VS Code edits the
 native Linux files directly:
 
 ```bash
-cd ~/intervals-icu-mcp
+cd ~/personal/intervals-icu-mcp
 code .             # opens a "[WSL: aurora_wsl]" window
 ```
 
@@ -85,10 +85,16 @@ over 9p (slow, and the terminal isn't in the distro).
        || echo 'export PATH="$HOME/.local/node/bin:$PATH"' >> "$f"
    done
    ```
-2. **Clone the repo into the native filesystem** (not `/mnt/c`):
+2. **Clone the repo into the native filesystem** (not `/mnt/c`). The
+   `github.com-personal` host below is an SSH alias from the multi-account git
+   setup (`~/.ssh/config` + per-directory `~/.gitconfig` `includeIf`); it selects
+   the personal key so this repo authenticates and commits as the personal
+   account. Substitute a plain `git@github.com:` / HTTPS URL if you haven't set
+   that up.
    ```bash
-   git clone <repo-url> ~/intervals-icu-mcp
-   cd ~/intervals-icu-mcp && npm install
+   mkdir -p ~/personal
+   git clone git@github.com-personal:robertgregorywest/intervals-icu-mcp.git ~/personal/intervals-icu-mcp
+   cd ~/personal/intervals-icu-mcp && npm install
    ```
 3. **Create `.sandcastle/.env`** from `.sandcastle/.env.example`. For Claude
    auth set **`CLAUDE_CODE_OAUTH_TOKEN`** (generate with `claude setup-token` —
@@ -104,7 +110,7 @@ over 9p (slow, and the terminal isn't in the distro).
 ## Troubleshooting
 
 - **`invalid volume specification ... :z`** — you're running from Windows, not
-  inside WSL. `cd ~/intervals-icu-mcp` in the `aurora_wsl` distro and re-run.
+  inside WSL. `cd ~/personal/intervals-icu-mcp` in the `aurora_wsl` distro and re-run.
 - **`npm` resolves to a Windows version (wrong number)** — your shell picked up
   the leaked Windows Node via `/mnt/c`. Confirm `command -v node` points at
   `~/.local/node/bin/node`; if not, ensure the `PATH` line is in `~/.profile` and
