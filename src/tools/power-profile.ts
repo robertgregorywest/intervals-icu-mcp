@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { IIntervalsClient } from "../../index.js";
+import type { IIntervalsClient } from "../index.js";
 
 export const computePowerProfileSchema = z.object({
   mapWatts: z

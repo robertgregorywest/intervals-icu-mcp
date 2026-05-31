@@ -1,0 +1,222 @@
+import { describe, it, expect, vi } from "vitest";
+import type { IIntervalsClient } from "../../src/index.js";
+import { runCli, type CliIO } from "../../src/cli/main.js";
+
+function makeIO(isTTY = false): CliIO & {
+  outLines: string[];
+  errLines: string[];
+  exitCode: number | null;
+} {
+  const outLines: string[] = [];
+  const errLines: string[] = [];
+  let exitCode: number | null = null;
+  return {
+    outLines,
+    errLines,
+    get exitCode() {
+      return exitCode;
+    },
+    stdout(s: string) {
+      outLines.push(s);
+    },
+    stderr(s: string) {
+      errLines.push(s);
+    },
+    exit(code: number) {
+      exitCode = code;
+    },
+    isTTY,
+  };
+}
+
+function makeClient(): IIntervalsClient {
+  return {
+    getAthlete: vi.fn().mockResolvedValue({ id: "i0", name: "Test" }),
+    getWellness: vi.fn().mockResolvedValue([]),
+    getFitnessSummary: vi.fn().mockResolvedValue({}),
+    deleteEvents: vi.fn().mockResolvedValue(undefined),
+    updateEvent: vi.fn().mockResolvedValue({ id: 1 }),
+    getEvent: vi.fn().mockResolvedValue({ id: 1, category: "NOTE" }),
+  } as unknown as IIntervalsClient;
+}
+
+describe("CLI describe command", () => {
+  it("emits 23 tools and instructions when called with no names", async () => {
+    const io = makeIO();
+    await runCli(["describe"], () => makeClient(), io);
+
+    expect(io.exitCode).toBeNull();
+    expect(io.outLines).toHaveLength(1);
+    const doc = JSON.parse(io.outLines[0]);
+    expect(doc.tools).toHaveLength(23);
+    expect(typeof doc.instructions).toBe("string");
+    expect(doc.instructions.length).toBeGreaterThan(0);
+  });
+
+  it("narrows to matching tools when names given", async () => {
+    const io = makeIO();
+    await runCli(
+      ["describe", "get_athlete", "create_workout"],
+      () => makeClient(),
+      io
+    );
+
+    expect(io.exitCode).toBeNull();
+    const doc = JSON.parse(io.outLines[0]);
+    expect(doc.tools).toHaveLength(2);
+    const names = doc.tools.map((t: { name: string }) => t.name);
+    expect(names).toContain("get_athlete");
+    expect(names).toContain("create_workout");
+  });
+
+  it("each tool entry has name, description, annotations, inputSchema", async () => {
+    const io = makeIO();
+    await runCli(["describe", "get_athlete"], () => makeClient(), io);
+
+    const doc = JSON.parse(io.outLines[0]);
+    const t = doc.tools[0];
+    expect(t.name).toBe("get_athlete");
+    expect(typeof t.description).toBe("string");
+    expect(t.annotations).toBeDefined();
+    expect(t.inputSchema).toBeDefined();
+    expect(t.inputSchema.type).toBe("object");
+  });
+
+  it("exits 1 when a named tool does not exist", async () => {
+    const io = makeIO();
+    await runCli(["describe", "nonexistent_tool"], () => makeClient(), io);
+
+    expect(io.exitCode).toBe(1);
+    expect(io.errLines[0]).toContain("nonexistent_tool");
+  });
+
+  it("pretty-prints when isTTY=true", async () => {
+    const io = makeIO(true);
+    await runCli(["describe", "get_athlete"], () => makeClient(), io);
+
+    expect(io.exitCode).toBeNull();
+    expect(io.outLines[0]).toContain("\n");
+  });
+
+  it("compact output when isTTY=false", async () => {
+    const io = makeIO(false);
+    await runCli(["describe", "get_athlete"], () => makeClient(), io);
+
+    expect(io.outLines[0]).not.toContain("\n");
+  });
+
+  it("does not call clientFactory for describe", async () => {
+    const factory = vi.fn().mockReturnValue(makeClient());
+    const io = makeIO();
+    await runCli(["describe"], factory, io);
+
+    expect(factory).not.toHaveBeenCalled();
+  });
+});
+
+describe("CLI tool invocation", () => {
+  it("runs get_athlete with empty JSON input", async () => {
+    const client = makeClient();
+    const io = makeIO();
+    await runCli(["get_athlete", "--json", "{}"], () => client, io);
+
+    expect(io.exitCode).toBeNull();
+    const result = JSON.parse(io.outLines[0]);
+    expect(result.name).toBe("Test");
+  });
+
+  it("runs get_athlete with no --json (empty input implied)", async () => {
+    const client = makeClient();
+    const io = makeIO();
+    await runCli(["get_athlete"], () => client, io);
+
+    expect(io.exitCode).toBeNull();
+    const result = JSON.parse(io.outLines[0]);
+    expect(result.name).toBe("Test");
+  });
+
+  it("exits 1 when tool not found", async () => {
+    const io = makeIO();
+    await runCli(["no_such_tool"], () => makeClient(), io);
+
+    expect(io.exitCode).toBe(1);
+    expect(io.errLines[0]).toContain("no_such_tool");
+  });
+
+  it("exits 1 on Zod validation failure", async () => {
+    const io = makeIO();
+    await runCli(
+      ["get_events", "--json", '{"oldest":"bad-date","newest":"2026-01-01"}'],
+      () => makeClient(),
+      io
+    );
+
+    expect(io.exitCode).toBe(1);
+    expect(io.errLines[0]).toContain("Validation error");
+  });
+
+  it("exits 1 on handler error", async () => {
+    const client = makeClient();
+    (client.getAthlete as ReturnType<typeof vi.fn>).mockRejectedValue(
+      new Error("API down")
+    );
+    const io = makeIO();
+    await runCli(["get_athlete"], () => client, io);
+
+    expect(io.exitCode).toBe(1);
+    expect(io.errLines[0]).toContain("API down");
+  });
+});
+
+describe("CLI --yes guard for destructive tools", () => {
+  it("refuses delete_events without --yes", async () => {
+    const client = makeClient();
+    const io = makeIO();
+    await runCli(
+      ["delete_events", "--json", '{"ids":[{"id":1}]}'],
+      () => client,
+      io
+    );
+
+    expect(io.exitCode).toBe(1);
+    expect(io.errLines[0]).toContain("--yes");
+    expect(client.deleteEvents).not.toHaveBeenCalled();
+  });
+
+  it("runs delete_events with --yes", async () => {
+    const client = makeClient();
+    const io = makeIO();
+    await runCli(
+      ["delete_events", "--json", '{"ids":[{"id":1}]}', "--yes"],
+      () => client,
+      io
+    );
+
+    expect(io.exitCode).toBeNull();
+    expect(client.deleteEvents).toHaveBeenCalled();
+  });
+
+  it("refuses update_event without --yes", async () => {
+    const client = makeClient();
+    const io = makeIO();
+    await runCli(
+      ["update_event", "--json", '{"id":1,"name":"Renamed"}'],
+      () => client,
+      io
+    );
+
+    expect(io.exitCode).toBe(1);
+    expect(io.errLines[0]).toContain("--yes");
+  });
+});
+
+describe("CLI --help", () => {
+  it("exits 0 and mentions describe", async () => {
+    const io = makeIO();
+    await runCli(["--help"], () => makeClient(), io);
+
+    expect(io.exitCode).toBe(0);
+    const output = io.outLines.join("\n") + io.errLines.join("\n");
+    expect(output).toContain("describe");
+  });
+});

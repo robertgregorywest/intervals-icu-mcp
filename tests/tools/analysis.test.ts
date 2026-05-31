@@ -2,8 +2,8 @@ import { describe, it, expect, vi } from "vitest";
 import {
   getAerobicDecoupling,
   compareIntervalsHandler,
-} from "../../../src/mcp/tools/analysis.js";
-import type { IIntervalsClient } from "../../../src/index.js";
+} from "../../src/tools/analysis.js";
+import type { IIntervalsClient } from "../../src/index.js";
 
 function createMockClient(): IIntervalsClient {
   return {

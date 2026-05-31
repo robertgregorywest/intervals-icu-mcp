@@ -1,0 +1,18 @@
+#!/usr/bin/env -S npx tsx
+import { IntervalsClient } from "../src/index.js";
+import { runCli } from "../src/cli/main.js";
+
+await runCli(
+  process.argv.slice(2),
+  () =>
+    new IntervalsClient({
+      apiKey: process.env.INTERVALS_API_KEY ?? "",
+      athleteId: process.env.INTERVALS_ATHLETE_ID,
+    }),
+  {
+    stdout: (s) => process.stdout.write(s + "\n"),
+    stderr: (s) => process.stderr.write(s + "\n"),
+    exit: (code) => process.exit(code),
+    isTTY: Boolean(process.stdout.isTTY),
+  }
+);

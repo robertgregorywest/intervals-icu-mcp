@@ -4,8 +4,8 @@ import {
   getEvent,
   updateEvent,
   deleteEvents,
-} from "../../../src/mcp/tools/events.js";
-import type { IIntervalsClient } from "../../../src/index.js";
+} from "../../src/tools/events.js";
+import type { IIntervalsClient } from "../../src/index.js";
 
 function createMockClient(
   overrides: Partial<IIntervalsClient> = {}

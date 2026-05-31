@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { getTrainingWeekSummary } from "../../../src/mcp/tools/training-week.js";
-import type { IIntervalsClient } from "../../../src/index.js";
+import { getTrainingWeekSummary } from "../../src/tools/training-week.js";
+import type { IIntervalsClient } from "../../src/index.js";
 
 function createMockClient(): IIntervalsClient {
   return {

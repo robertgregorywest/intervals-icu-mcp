@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { getPowerCurve } from "../../../src/mcp/tools/power.js";
-import type { IIntervalsClient } from "../../../src/index.js";
+import { getPowerCurve } from "../../src/tools/power.js";
+import type { IIntervalsClient } from "../../src/index.js";
 
 function createMockClient(): IIntervalsClient {
   return {

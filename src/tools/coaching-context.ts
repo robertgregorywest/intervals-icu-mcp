@@ -1,9 +1,6 @@
 import { z } from "zod";
-import type { IIntervalsClient } from "../../index.js";
-import {
-  DEFAULT_DAYS,
-  MAX_DAYS,
-} from "../../services/coaching-context/index.js";
+import type { IIntervalsClient } from "../index.js";
+import { DEFAULT_DAYS, MAX_DAYS } from "../services/coaching-context/index.js";
 
 export const getCoachingContextSchema = z.object({
   days: z

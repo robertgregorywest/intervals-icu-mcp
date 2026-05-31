@@ -1,7 +1,7 @@
 import { z } from "zod";
-import type { IIntervalsClient } from "../../index.js";
-import type { WorkoutPlan } from "../../services/workout-builder/index.js";
-import { slugify } from "../../services/workout-builder/index.js";
+import type { IIntervalsClient } from "../index.js";
+import type { WorkoutPlan } from "../services/workout-builder/index.js";
+import { slugify } from "../services/workout-builder/index.js";
 import { dateString } from "./common.js";
 
 const sportTypeEnum = z.enum([

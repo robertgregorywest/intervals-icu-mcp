@@ -3,8 +3,8 @@ import {
   getActivities,
   getActivity,
   getActivityStreams,
-} from "../../../src/mcp/tools/activities.js";
-import type { IIntervalsClient } from "../../../src/index.js";
+} from "../../src/tools/activities.js";
+import type { IIntervalsClient } from "../../src/index.js";
 
 function createMockClient(
   overrides: Partial<IIntervalsClient> = {}

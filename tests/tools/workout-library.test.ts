@@ -5,8 +5,8 @@ import {
   seedWorkoutLibrary,
   refreshWorkoutLibrary,
   createWorkoutLibraryItem,
-} from "../../../src/mcp/tools/workout-library.js";
-import type { IIntervalsClient } from "../../../src/index.js";
+} from "../../src/tools/workout-library.js";
+import type { IIntervalsClient } from "../../src/index.js";
 
 function createMockClient(): IIntervalsClient {
   return {

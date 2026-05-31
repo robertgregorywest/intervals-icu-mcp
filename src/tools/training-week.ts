@@ -1,8 +1,8 @@
 import { z } from "zod";
-import type { IIntervalsClient } from "../../index.js";
-import type { Activity } from "../../services/activities/index.js";
-import type { WellnessRecord } from "../../services/wellness/index.js";
-import type { IntervalsEvent } from "../../types.js";
+import type { IIntervalsClient } from "../index.js";
+import type { Activity } from "../services/activities/index.js";
+import type { WellnessRecord } from "../services/wellness/index.js";
+import type { IntervalsEvent } from "../types.js";
 import { dateString } from "./common.js";
 
 export const getTrainingWeekSummarySchema = z.object({

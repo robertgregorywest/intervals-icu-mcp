@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { IIntervalsClient } from "../../index.js";
+import type { IIntervalsClient } from "../index.js";
 import { workoutStepSchema, repeatBlockSchema } from "./workouts.js";
 
 export const listWorkoutLibrarySchema = z.object({

@@ -2,10 +2,10 @@ import { describe, it, expect, vi } from "vitest";
 import {
   createWorkout,
   createStrengthWorkout,
-} from "../../../src/mcp/tools/workouts.js";
-import type { IIntervalsClient } from "../../../src/index.js";
-import { WorkoutBuilder } from "../../../src/services/workout-builder/index.js";
-import type { IntervalsEvent } from "../../../src/types.js";
+} from "../../src/tools/workouts.js";
+import type { IIntervalsClient } from "../../src/index.js";
+import { WorkoutBuilder } from "../../src/services/workout-builder/index.js";
+import type { IntervalsEvent } from "../../src/types.js";
 
 function createMockClient(
   returnEvents: IntervalsEvent[] = []

@@ -7,10 +7,13 @@ MCP server for the Intervals.icu API plus tools to support agentic coaching.
 - **Services** (`src/services/`) — business logic behind interfaces (`IWorkoutBuilder`, `IEventsApi`, `IWorkoutLibrary`). Each service has `types.ts`, implementation, and `index.ts` re-exporting the interface + factory. Larger services (`workout-library/`) split into multiple files (api/parser/seed/refresh/create/library) — same pattern, more surface.
 - **Client** (`src/client.ts`) — `HttpClient` with Basic auth, rate limiting, injectable `fetchFn` for testing.
 - **Facade** (`src/index.ts`) — `IntervalsClient` composes services, implements `IIntervalsClient`.
-- **MCP layer** (`src/mcp/`) — thin tool registrations in `tools/`, `server.ts` wires tools to client, `stdio.ts` is the entry point. `syntax-doc.ts` is the single source of truth for the `instructions` field — server-tool-binding guidance only (workout-text syntax, watts-at-API rule, tool inventory). `prompts/` registers user-invokable MCP prompts.
+- **Tool registry** (`src/registry.ts`) — single source of truth for all 23 Tools (`ToolDef[]`). Each entry has `name`, `description`, `schema`, `annotations`, `outputSchema`, `handler`. Both adapters iterate this list.
+- **Tools** (`src/tools/`) — handler implementations (schema + handler pairs) shared across adapters.
+- **MCP adapter** (`src/mcp/`) — `server.ts` iterates `TOOLS` and registers each via `registerTool()`. `syntax-doc.ts` is the single source of truth for `instructions`. `prompts/` registers user-invokable MCP prompts.
+- **CLI adapter** (`src/cli/main.ts`) — projects `TOOLS` as Bash subcommands; `bin/icu` is the checked-in entrypoint.
 - **Tests** (`tests/`) — mirror `src/` structure. Use injectable fetch (not global mocks).
 
-New tools/services should follow this pattern: service with interface → tool handler that delegates → register in `server.ts`.
+New tools/services should follow this pattern: service with interface → tool handler in `src/tools/` → entry in `src/registry.ts` → both adapters pick it up automatically.
 
 ## Ways of working
 
@@ -55,6 +58,34 @@ The server `instructions` field is intentionally lean — workout-text syntax, w
 - **MAP** — derived in the same tool: scans the last 90 days of activities, picks the most recent whose name (case-insensitive) starts with `"MAP ramp test"` and does **not** contain `"(skip)"`, runs `computeBestPower(stream, 60)` on its watts stream, returns `{ map: { watts, computedFrom: { metric, activityId, activityName, activityDate, daysAgo } } }`. No qualifying test → `map: null` plus a `mapWarning` for the LLM to act on. Athletes exclude botched tests by renaming the activity in Intervals.icu to include `(skip)`.
 
 Saved workouts can still encode %MAP/%FTP intent via the rationale block (see above) so `refresh_workout_library` can re-anchor them when test values change.
+
+## CLI adapter
+
+The `bin/icu` CLI is the agent's zero-reconnect dev surface. It runs via `npx tsx` so every invocation uses the latest source without a rebuild or MCP reconnect.
+
+```bash
+# Self-describe: full tool catalogue with input schemas
+./bin/icu describe
+
+# Narrow to specific tools
+./bin/icu describe get_athlete create_workout
+
+# Invoke a read-only tool
+./bin/icu get_athlete
+./bin/icu get_coaching_context --json '{"days":14}'
+echo '{}' | ./bin/icu get_athlete   # stdin also works (not yet; planned)
+
+# Invoke a mutating tool (requires --yes)
+./bin/icu delete_events --json '{"ids":[{"id":1}]}' --yes
+```
+
+**Allowlisting for agent use** — split by annotation prefix:
+
+- Read commands (`get_*`, `list_*`, `compute_*`, `compare_*`, `describe`): allowlist as read-only Bash.
+- Mutating commands (`delete_events`, `update_event`): require explicit `--yes`; prompt user before adding to allowlist.
+- Upsert commands (`create_*`, `refresh_*`, `seed_*`): run freely; idempotent.
+
+`--help` prints a breadcrumb pointing at `describe`. On TTY, output is pretty-printed (2-space JSON); piped/non-TTY output is compact single-line JSON.
 
 ## Config
 
