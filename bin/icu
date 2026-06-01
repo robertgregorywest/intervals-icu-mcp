@@ -1,4 +1,5 @@
 #!/usr/bin/env -S npx tsx
+import "dotenv/config";
 import { IntervalsClient } from "../src/index.js";
 import { runCli } from "../src/cli/main.js";
 
