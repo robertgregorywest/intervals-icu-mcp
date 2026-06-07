@@ -1,0 +1,13 @@
+{
+  "nodeModulesDir": "manual",
+  "unstable": ["sloppy-imports", "kv"],
+  "tasks": {
+    "serve": "deno run --sloppy-imports --node-modules-dir=manual --unstable-kv --allow-read --allow-env --allow-sys --allow-net src/mcp/http.ts",
+    "dev": "deno run --watch --sloppy-imports --node-modules-dir=manual --unstable-kv --allow-read --allow-env --allow-sys --allow-net src/mcp/http.ts"
+  },
+  "exclude": ["dist", "deno-spike"],
+  "deploy": {
+    "org": "swanny",
+    "app": "swanny-mcp"
+  }
+}

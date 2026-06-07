@@ -17,7 +17,11 @@ A transport that projects the Tool registry onto a surface. Owns transport conce
 _Avoid_: transport, layer (as synonyms for the module)
 
 **MCP adapter**:
-The Adapter at `src/mcp/` that projects Tools as Model Context Protocol tools. The production / distribution artifact (mcpb, manifest, desktop).
+The Adapter at `src/mcp/` that projects Tools as Model Context Protocol tools. Spans more than one **Transport**: a local stdio transport (the desktop/mcpb distribution artifact) and a remote hosted transport (reached over the public internet by claude.ai web/mobile).
+
+**Transport**:
+The wire mechanism an Adapter uses to reach a client. Adding a Transport to an Adapter is not adding a new Adapter — the remote MCP server is a second Transport of the **MCP adapter**, not its own Adapter, because it still projects Tools as MCP tools.
+_Avoid_: channel, surface (as synonyms for the wire mechanism)
 
 **CLI adapter**:
 The Adapter at `src/cli/` that projects Tools as Bash subcommands. The agent's zero-reconnect dev surface, run via `tsx`.
@@ -81,6 +85,7 @@ _Avoid_: confusing this with `get_coaching_context`'s output — that is live **
 - A **Workout template** is rendered by **Sync** into exactly one **Library workout**, found by its **Template marker**
 - A **Library workout** with no **Workout template** is an **Orphan**; a **Workout template** with no **Library workout** is created on the next **Sync**
 - An **Anchored target** moves when MAP/FTP moves; a **literal target** does not — that is the whole difference between them
+- An **Adapter** may expose its **Projections** over one or more **Transports** — the local stdio and remote hosted MCP servers are two **Transports** of the same **MCP adapter**
 
 ## Example dialogue
 
@@ -90,3 +95,4 @@ _Avoid_: confusing this with `get_coaching_context`'s output — that is live **
 ## Flagged ambiguities
 
 - "tool" was used for both the registered operation and its MCP form — resolved: the registered unit is a **Tool**; its MCP-surface form is an **MCP tool** (a **Projection**), and its CLI-surface form is a **CLI command**.
+- "the remote MCP server" could be read as a new Adapter — resolved: it is a second **Transport** of the **MCP adapter** (it still projects Tools as MCP tools and holds no business logic), not its own Adapter.
