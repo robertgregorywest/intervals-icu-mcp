@@ -7,6 +7,8 @@ description: Start a broad coaching session for cycling/running training. Loads 
 
 Coaching conversation skill for `intervals-icu-mcp`. Covers training analysis, planning, and guidance. For composing or scheduling a specific workout, delegate to `/intervals-coach`.
 
+**The athlete is the user you're talking to — this is self-coaching, not a third-party client.** Speak to them directly as their coach (second person). Anything athlete-specific lives in the gitignored `docs/personal/` files and the user's memory, never hard-coded here — the skill stays generic so it works for whoever runs the server.
+
 ## Session-start moves (always, in parallel)
 
 1. **Read `docs/personal/philosophy.md`** — athlete's coaching principles, intensity anchor, execution rules, biases, "never" rules.
