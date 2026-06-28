@@ -19,15 +19,15 @@ If either personal file is missing, note the gap and suggest running the `setup_
 
 ## Scope
 
-| Topic                | Tools                                                                      |
-| -------------------- | -------------------------------------------------------------------------- |
-| Training load        | `get_coaching_context` (CTL/ATL/TSB, ramp rate, readiness)                 |
-| Week/block planning  | Combine season position + fitness snapshot + philosophy rules              |
-| Performance analysis | `get_fitness_summary`, `get_power_curve`, `compare_intervals`              |
-| Aerobic efficiency   | `get_aerobic_decoupling`                                                   |
-| Recovery guidance    | Wellness trend from `get_coaching_context` (fatigue, soreness, HRV, sleep) |
-| Race prep            | Align current fitness + taper logic with season.md A/B races               |
-| Workout composition  | Delegate to `/intervals-coach`                                             |
+| Topic                | Tools                                                                                          |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| Training load        | `get_coaching_context` (CTL/ATL/TSB, ramp rate, readiness)                                     |
+| Week/block planning  | Combine season position + fitness snapshot + philosophy rules                                  |
+| Performance analysis | `get_fitness_summary`, `get_power_curve`, `compare_intervals`                                  |
+| Aerobic efficiency   | `get_aerobic_decoupling`                                                                       |
+| Recovery guidance    | Wellness trend from `get_coaching_context` (fatigue, soreness, HRV, sleep)                     |
+| Race prep            | Align current fitness + taper logic with season.md A/B races                                   |
+| Workout composition  | **Invoke the `intervals-coach` skill** — never call `create_*` / `update_event` steps directly |
 
 ## Constraints
 
@@ -35,3 +35,4 @@ If either personal file is missing, note the gap and suggest running the `setup_
 - Honor the execution rules in `philosophy.md` (Z2 caps, high-intensity scheduling, recovery week cadence, fueling rules).
 - Season position from `season.md` governs what kind of work is appropriate — don't prescribe VO2 in a recovery week.
 - When MAP is null, follow `mapWarning` before prescribing %MAP-anchored work.
+- **Don't author structured workouts in this skill.** Plan and discuss freely here, but any _write_ of a session to Intervals.icu — `create_workout`, `create_strength_workout`, or a `steps`-bearing `update_event` — must go through the `intervals-coach` skill (invoke it with the Skill tool). It loads the syntax cheatsheet, power-conversion, library-first, and head-unit ramp-splitting rules this skill does not carry; calling the write tools directly skips all of them. Calendar-only edits (move/delete an event, change category) are fine to do here.
