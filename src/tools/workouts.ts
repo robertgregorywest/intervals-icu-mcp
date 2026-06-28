@@ -30,14 +30,18 @@ export const workoutStepSchema = z.object({
     .optional()
     .describe(
       "Intensity target — prefer absolute watts when user gives specific power numbers. " +
-        'Examples: "200w" (watts), "160w-256w" (watt range for ramps), "75%" (FTP%), "Z2" (zone), "70% HR", "5:00/km Pace"'
+        'A range like "160w-256w" is a steady target BAND (ride held within the range), NOT a ramp. ' +
+        'Examples: "200w" (watts), "160w-256w" (watt band), "75%" (FTP%), "Z2" (zone), "70% HR", "5:00/km Pace"'
     ),
   cadence: z.string().optional().describe('Cadence target, e.g. "90rpm"'),
   ramp: z
     .boolean()
     .optional()
     .describe(
-      'If true, target is a ramp (use range like "160w-256w" or "50%-75%")'
+      "Set true ONLY for a genuine linear ramp where the target rises across the step (ramp test, warm-up build). " +
+        'A steady endurance/sweet-spot/recovery band must NOT set ramp — a plain range like "160w-256w" is already a held band; ' +
+        "setting ramp forces a linear sweep across the whole step. A long/wide ramp also collapses to one average wattage on " +
+        "head units, so split real ramps into steps of ≤ 2 min and ≤ ~25–30 W each."
     ),
 });
 
@@ -61,7 +65,7 @@ export const createWorkoutSchema = z.object({
     .min(1)
     .describe(
       "Workout steps — simple steps and/or repeat blocks. " +
-        'Example: [{ label: "Warmup", duration: "10m", target: "Z2", ramp: true }, ' +
+        'Example: [{ label: "Warmup", duration: "10m", target: "160w-200w" }, ' +
         '{ iterations: 4, steps: [{ duration: "5m", target: "240w" }, { duration: "3m", target: "150w" }] }]'
     ),
   externalId: z

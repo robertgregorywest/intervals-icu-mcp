@@ -68,3 +68,4 @@ Lines starting with `- ` are steps. `Nx` introduces a repeat block whose followi
 - **Blank lines around `Nx`** are load-bearing. Without them the parser loses the repeat boundary.
 - **Free-text workout notes** can sit above or between step blocks. They render as the workout's prose.
 - **Ranges** use `-` (hyphen): `220w-260w`, `95-102%`, `5:00/km Pace`. No spaces.
+- **`ramp` is only for genuine ramps — never for steady bands.** A watt range (`158w-217w`) is a held target band by default. When writing via `create_workout`, do **not** set `ramp: true` on an endurance/sweet-spot/recovery step — that forces a linear sweep across the whole step (and collapses to one average on head units). Reserve `ramp` for true progressions (warm-up build, ramp test), and split those into ≤ 2 min / ≤ ~25–30 W steps. In raw workout text the equivalent mistake is adding the word `ramp` before a steady band's range.
