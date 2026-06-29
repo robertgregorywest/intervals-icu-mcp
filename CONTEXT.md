@@ -25,6 +25,13 @@ The Adapter at `src/cli/` that projects Tools as Bash subcommands. The agent's z
 **Projection**:
 A single Tool as exposed by one Adapter. An **MCP tool** and a **CLI command** are two Projections of the same Tool.
 
+**MAP zones**:
+The canonical coaching training zones, anchored to MAP (Ric Stern / cyclecoach model). Derived live and surfaced by `get_coaching_context` as `mapZones`. The coaching skills reason in these.
+_Avoid_: "power zones" (ambiguous with the FTP set)
+
+**FTP zones**:
+Intervals.icu's native Coggan / %FTP power zones. Available on the raw `get_athlete` view; intentionally absent from the coaching context (see ADR 0003).
+
 ## Relationships
 
 - A **Tool** is registered once in the **Tool registry**

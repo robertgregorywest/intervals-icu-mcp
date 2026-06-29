@@ -1,7 +1,9 @@
 import type { IAthleteApi, SportSetting } from "../athlete/index.js";
 import type { IWellnessApi, WellnessRecord } from "../wellness/index.js";
 import type { IActivitiesApi } from "../activities/index.js";
+import type { IPowerCurvesApi } from "../power-curves/index.js";
 import { deriveLatestMap } from "../map/index.js";
+import { computeZones, extractPeaks } from "../power-profile/index.js";
 import type {
   AthleteSnapshot,
   CoachingContext,
@@ -13,6 +15,7 @@ export interface CoachingContextDeps {
   athleteApi: IAthleteApi;
   wellnessApi: IWellnessApi;
   activitiesApi: IActivitiesApi;
+  powerCurvesApi: IPowerCurvesApi;
 }
 
 export interface CoachingContextOptions {
@@ -31,9 +34,13 @@ export async function buildCoachingContext(
   const today = opts.today ?? new Date().toISOString().slice(0, 10);
   const oldest = addDays(today, -(days - 1));
 
-  const [athleteRaw, wellnessRaw] = await Promise.all([
+  const [athleteRaw, wellnessRaw, curveRaw] = await Promise.all([
     deps.athleteApi.getAthlete(),
     deps.wellnessApi.getWellness(oldest, today),
+    // p5s only caps the NMP zone; degrade gracefully if the curve is unavailable.
+    deps.powerCurvesApi
+      .getPowerCurve({ range: "90d", type: "Ride" })
+      .catch(() => null),
   ]);
 
   const athlete = summarizeAthlete(
@@ -45,6 +52,8 @@ export async function buildCoachingContext(
   const trend = summarizeTrend(wellnessRaw);
   const fitness = pickFitnessSnapshot(trend);
   const { map, mapWarning } = await deriveLatestMap(deps.activitiesApi, today);
+  const p5s = extractPeaks(curveRaw).p5s;
+  const mapZones = map ? computeZones(map.watts, p5s) : null;
 
   return {
     asOf: today,
@@ -53,6 +62,7 @@ export async function buildCoachingContext(
     fitness,
     wellnessTrend: trend,
     map,
+    mapZones,
     ...(mapWarning ? { mapWarning } : {}),
   };
 }
@@ -91,7 +101,6 @@ function summarizeAthlete(
     max_hr:
       pickNumber(raw, ["max_hr", "icu_max_hr"]) ?? cycling?.max_hr ?? null,
     resting_hr: pickNumber(raw, ["resting_hr", "icu_resting_hr"]),
-    power_zones: pickZones(cycling?.power_zones),
     hr_zones: pickZones(cycling?.hr_zones),
     pace_zones: pickZones(cycling?.pace_zones),
     sport_settings_count: sportSettings.length,

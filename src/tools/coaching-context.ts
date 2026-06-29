@@ -14,9 +14,25 @@ export const getCoachingContextSchema = z.object({
     ),
 });
 
-// Zones are arrays of boundary values (e.g. %FTP for power, bpm for HR);
+// HR/pace zones are arrays of boundary values (bpm for HR, pace for run);
 // `null` when the athlete hasn't configured that zone set for cycling.
 const zoneBoundariesSchema = z.array(z.number()).nullable();
+
+// MAP-anchored training zones — the canonical coaching zones. `null` when MAP is unavailable.
+const mapZonesSchema = z
+  .array(
+    z.object({
+      name: z.string(),
+      label: z.string(),
+      lowPct: z.number(),
+      highPct: z.number(),
+      lowW: z.number(),
+      highW: z.number(),
+      pctText: z.string(),
+      wattText: z.string(),
+    })
+  )
+  .nullable();
 
 export const getCoachingContextOutputSchema = z.object({
   asOf: z.string(),
@@ -29,7 +45,6 @@ export const getCoachingContextOutputSchema = z.object({
     lthr: z.number().nullable(),
     max_hr: z.number().nullable(),
     resting_hr: z.number().nullable(),
-    power_zones: zoneBoundariesSchema,
     hr_zones: zoneBoundariesSchema,
     pace_zones: zoneBoundariesSchema,
     sport_settings_count: z.number(),
@@ -71,6 +86,7 @@ export const getCoachingContextOutputSchema = z.object({
       }),
     })
     .nullable(),
+  mapZones: mapZonesSchema,
   mapWarning: z.string().optional(),
 });
 

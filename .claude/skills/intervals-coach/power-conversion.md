@@ -12,9 +12,9 @@ Reason about intensity in %MAP or %FTP per the coaching context. **Emit absolute
 
 Pull `ftp` and `map.watts` from `get_coaching_context`:
 
-- **`map.watts`** is derived server-side from the athlete's most recent `MAP ramp test*` activity in the last 90 days (best 60-sec power). `map.computedFrom` shows which activity was used.
+- **`map.watts`** is derived server-side; `map.computedFrom` shows which activity it came from.
 - If `map` is null, `mapWarning` will say so. Ask the athlete for a current MAP estimate before prescribing %MAP-anchored work; do not invent a value.
-- `ftp` is the static profile FTP. The Intervals.icu zones in `athlete.power_zones` are FTP-anchored (Coggan), not MAP-anchored — use them only for FTP-anchored prescriptions; map %MAP intent against `map.watts` directly.
+- `ftp` is the static profile FTP. For zone-based prescriptions use **`mapZones`** from `get_coaching_context` — MAP-anchored watt bands (REC / L1–L7 / NMP) that match the coaching philosophy. Intervals.icu's native FTP/Coggan zones are intentionally **not** in the coaching context; they remain on `get_athlete` if ever needed.
 
 **Pattern**: anchor × pct = watts, rounded to nearest 5 W.
 
@@ -42,7 +42,7 @@ Athlete: FTP 285 W, MAP 380 W.
 
 When the user gives a range (e.g. "95–105% MAP"), emit a watts range: `360w-400w`. The Intervals.icu parser supports `<min>w-<max>w`.
 
-**Ramps vs. bands for head units.** A long/wide ramp step displays as a single average wattage on a head unit, losing the progression. Split any ramp or progression into short steps of **≤ 2 min** and **≤ ~8% MAP (~25–30 W)** range each, stepping upward (e.g. a 20-min ramp 40→110% becomes ten 2-min steps). A steady-state **target band** (e.g. Z2 `60-72%`) is a deliberate range the rider holds — keep it as one step. The `expandRamp` helper applies this rule to the seed library.
+**Head-unit granularity (canonical rule — referenced elsewhere).** A long/wide ramp step displays as a single average wattage on a Wahoo/Garmin head unit, losing the progression. Split any ramp or progression into short steps of **≤ 2 min** and **≤ ~8% MAP (~25–30 W)** range each, stepping upward (e.g. a 20-min ramp 40→110% becomes ten 2-min steps). A steady-state **target band** (e.g. Z2 `60-72%`) is a deliberate range the rider holds — keep it as one step, never `ramp`. The `expandRamp` helper (`src/services/workout-library/ramp.ts`) applies this rule to the seed library.
 
 ## Rationale block (saved workouts only)
 

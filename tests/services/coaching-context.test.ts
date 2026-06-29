@@ -13,6 +13,10 @@ import type {
   ActivityStreams,
   IActivitiesApi,
 } from "../../src/services/activities/index.js";
+import type {
+  IPowerCurvesApi,
+  PowerCurvePoint,
+} from "../../src/services/power-curves/index.js";
 
 function fakeAthleteApi(profile: Partial<AthleteProfile>): IAthleteApi {
   return {
@@ -32,6 +36,25 @@ const emptyActivitiesApi: IActivitiesApi = {
   getActivity: async () => ({}) as Activity,
   getActivityStreams: async () => ({}) as ActivityStreams,
 };
+
+const emptyPowerCurvesApi: IPowerCurvesApi = {
+  getPowerCurve: async () => [],
+};
+
+function fakePowerCurvesApi(points: PowerCurvePoint[]): IPowerCurvesApi {
+  return { getPowerCurve: async () => points };
+}
+
+function fakeActivitiesApi(
+  activities: Partial<Activity>[],
+  streams: Partial<ActivityStreams>
+): IActivitiesApi {
+  return {
+    getActivities: async () => activities as Activity[],
+    getActivity: async () => activities[0] as Activity,
+    getActivityStreams: async () => streams as ActivityStreams,
+  };
+}
 
 describe("buildCoachingContext", () => {
   it("synthesises athlete + wellness into one snapshot", async () => {
@@ -62,16 +85,21 @@ describe("buildCoachingContext", () => {
       { id: "2026-04-30", ctl: 64, atl: 50, fatigue: 2 } as WellnessRecord,
     ]);
     const ctx = await buildCoachingContext(
-      { athleteApi, wellnessApi, activitiesApi: emptyActivitiesApi },
+      {
+        athleteApi,
+        wellnessApi,
+        activitiesApi: emptyActivitiesApi,
+        powerCurvesApi: emptyPowerCurvesApi,
+      },
       { days: 3, today: "2026-04-30" }
     );
 
     expect(ctx.asOf).toBe("2026-04-30");
     expect(ctx.daysWindow).toBe(3);
     expect(ctx.athlete.ftp).toBe(285);
-    expect(ctx.athlete.power_zones).toEqual([55, 75, 90, 105, 120, 150, 999]);
     expect(ctx.athlete.hr_zones).toEqual([127, 142, 148, 158, 162, 167, 175]);
     expect(ctx.athlete.pace_zones).toBeNull();
+    expect(ctx.mapZones).toBeNull(); // no ramp test in window → no MAP → no zones
     expect(ctx.fitness).toEqual({
       date: "2026-04-30",
       ctl: 64,
@@ -88,13 +116,18 @@ describe("buildCoachingContext", () => {
     const athleteApi = fakeAthleteApi({ id: "i2" });
     const wellnessApi = fakeWellnessApi([]);
     const ctx = await buildCoachingContext(
-      { athleteApi, wellnessApi, activitiesApi: emptyActivitiesApi },
+      {
+        athleteApi,
+        wellnessApi,
+        activitiesApi: emptyActivitiesApi,
+        powerCurvesApi: emptyPowerCurvesApi,
+      },
       { today: "2026-05-01" }
     );
 
     expect(ctx.daysWindow).toBe(7);
     expect(ctx.athlete.ftp).toBeNull();
-    expect(ctx.athlete.power_zones).toBeNull();
+    expect(ctx.mapZones).toBeNull();
     expect(ctx.athlete.sport_settings_count).toBe(0);
     expect(ctx.fitness).toEqual({
       date: null,
@@ -131,7 +164,12 @@ describe("buildCoachingContext", () => {
       { id: "2026-05-01", ctl: 50, atl: 50 } as WellnessRecord,
     ]);
     const ctx = await buildCoachingContext(
-      { athleteApi, wellnessApi, activitiesApi: emptyActivitiesApi },
+      {
+        athleteApi,
+        wellnessApi,
+        activitiesApi: emptyActivitiesApi,
+        powerCurvesApi: emptyPowerCurvesApi,
+      },
       { today: "2026-05-01", days: 1 }
     );
 
@@ -141,19 +179,63 @@ describe("buildCoachingContext", () => {
     expect(ctx.athlete.sport_settings_count).toBe(1);
   });
 
+  it("computes MAP zones from the ramp test, capping NMP with the 5s peak", async () => {
+    const athleteApi = fakeAthleteApi({ id: "i4", weight: 72 });
+    const wellnessApi = fakeWellnessApi([
+      { id: "2026-05-01", ctl: 50, atl: 50 } as WellnessRecord,
+    ]);
+    const activitiesApi = fakeActivitiesApi(
+      [
+        {
+          id: 1,
+          name: "MAP ramp test 2026-04-30",
+          start_date_local: "2026-04-30T10:00:00",
+        },
+      ],
+      { watts: new Array(120).fill(400) }
+    );
+    const powerCurvesApi = fakePowerCurvesApi([
+      { secs: 5, value: 900, activity_id: 1 },
+    ]);
+
+    const ctx = await buildCoachingContext(
+      { athleteApi, wellnessApi, activitiesApi, powerCurvesApi },
+      { today: "2026-05-01", days: 1 }
+    );
+
+    expect(ctx.map?.watts).toBe(400);
+    expect(ctx.mapZones).not.toBeNull();
+    const l2 = ctx.mapZones?.find((z) => z.name === "L2");
+    expect(l2?.lowW).toBe(200); // 0.50 * 400
+    expect(l2?.highW).toBe(260); // 0.65 * 400
+    const nmp = ctx.mapZones?.find((z) => z.name === "NMP");
+    expect(nmp?.lowW).toBe(600); // 1.50 * 400
+    expect(nmp?.highW).toBe(900); // capped by the 5s peak, not 2.0 * 400
+  });
+
   it("rejects out-of-range days", async () => {
     const athleteApi = fakeAthleteApi({});
     const wellnessApi = fakeWellnessApi([]);
 
     await expect(
       buildCoachingContext(
-        { athleteApi, wellnessApi, activitiesApi: emptyActivitiesApi },
+        {
+          athleteApi,
+          wellnessApi,
+          activitiesApi: emptyActivitiesApi,
+          powerCurvesApi: emptyPowerCurvesApi,
+        },
         { days: 0 }
       )
     ).rejects.toThrow(/days must be >= 1/);
     await expect(
       buildCoachingContext(
-        { athleteApi, wellnessApi, activitiesApi: emptyActivitiesApi },
+        {
+          athleteApi,
+          wellnessApi,
+          activitiesApi: emptyActivitiesApi,
+          powerCurvesApi: emptyPowerCurvesApi,
+        },
         { days: 31 }
       )
     ).rejects.toThrow(/days must be <= 30/);

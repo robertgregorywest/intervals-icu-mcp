@@ -1,6 +1,7 @@
 import type { AthleteProfile } from "../athlete/index.js";
 import type { WellnessRecord } from "../wellness/index.js";
 import type { MapInfo } from "../map/index.js";
+import type { ZoneRow } from "../power-profile/index.js";
 
 export interface AthleteSnapshot {
   id: string | null;
@@ -10,8 +11,9 @@ export interface AthleteSnapshot {
   lthr: number | null;
   max_hr: number | null;
   resting_hr: number | null;
-  // Zone boundaries (e.g. %FTP for power, bpm for HR). `null` when not configured for cycling.
-  power_zones: number[] | null;
+  // HR (bpm) and pace zone boundaries from Intervals.icu; `null` when not configured for cycling.
+  // Power zones are intentionally omitted — the coaching view uses MAP zones (`mapZones`),
+  // not FTP-anchored ones. The native FTP/Coggan zones remain available via `get_athlete`.
   hr_zones: number[] | null;
   pace_zones: number[] | null;
   sport_settings_count: number;
@@ -49,6 +51,9 @@ export interface CoachingContext {
   fitness: FitnessSnapshot;
   wellnessTrend: WellnessTrendPoint[];
   map: MapInfo | null;
+  // MAP-anchored training zones (Ric Stern / cyclecoach model) — the canonical coaching zones.
+  // `null` when MAP is unavailable (see mapWarning).
+  mapZones: ZoneRow[] | null;
   mapWarning?: string;
 }
 

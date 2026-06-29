@@ -280,6 +280,7 @@ export class IntervalsClient implements IIntervalsClient {
         athleteApi: this.athlete,
         wellnessApi: this.wellness,
         activitiesApi: this.activities,
+        powerCurvesApi: this.powerCurves,
       },
       opts
     );

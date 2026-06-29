@@ -63,9 +63,9 @@ Lines starting with `- ` are steps. `Nx` introduces a repeat block whose followi
 
 ## Gotchas
 
-- **Always emit absolute watts** — `220w`, `160w-256w` — when calling tools that write to Intervals.icu. `%MAP` is **not** parseable. `%FTP` works but is fragile (couples to current FTP).
-- **Split long ramps for head units.** A long/wide `ramp` step (e.g. `15m ramp 197w-236w`) collapses to a **single average wattage** on a Wahoo/Garmin — the rider loses the progression. Emit ramps and progressions as a series of short steps: **≤ 2 min** and **≤ ~8% MAP (~25–30 W)** range each, stepping upward. A steady-state target band (e.g. Z2 `60-72%`) is intentional and stays one step — only ramps/progressions get split.
+- **Always emit absolute watts** — `220w`, `160w-256w`. `%MAP` is **not** parseable; `%FTP` works but is fragile. Conversion + why in [power-conversion.md](power-conversion.md).
+- **Head-unit granularity** — split ramps/progressions into short steps; keep steady bands whole. Full rule in [power-conversion.md](power-conversion.md).
 - **Blank lines around `Nx`** are load-bearing. Without them the parser loses the repeat boundary.
 - **Free-text workout notes** can sit above or between step blocks. They render as the workout's prose.
 - **Ranges** use `-` (hyphen): `220w-260w`, `95-102%`, `5:00/km Pace`. No spaces.
-- **`ramp` is only for genuine ramps — never for steady bands.** A watt range (`158w-217w`) is a held target band by default. When writing via `create_workout`, do **not** set `ramp: true` on an endurance/sweet-spot/recovery step — that forces a linear sweep across the whole step (and collapses to one average on head units). Reserve `ramp` for true progressions (warm-up build, ramp test), and split those into ≤ 2 min / ≤ ~25–30 W steps. In raw workout text the equivalent mistake is adding the word `ramp` before a steady band's range.
+- **`ramp` is only for genuine ramps — never for steady bands.** A watt range (`158w-217w`) is a held target band by default. When writing via `create_workout`, do **not** set `ramp: true` on an endurance/sweet-spot/recovery step — that forces a linear sweep across the whole step. In raw workout text the equivalent mistake is adding the word `ramp` before a steady band's range.
