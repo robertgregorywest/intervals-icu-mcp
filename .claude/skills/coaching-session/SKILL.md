@@ -30,6 +30,15 @@ If `philosophy.md` or `season.md` is missing, note the gap and suggest running t
 | Race prep            | Align current fitness + taper logic with season.md A/B races               |
 | Workout composition  | Delegated to `intervals-coach` (see Constraints)                           |
 
+## Load check (when planning a week or block)
+
+Draft the sessions, then **verify the load — don't eyeball it.** Planning by session _type_ (VO2 + Z2 + long ride, constraints respected) reliably feels like a build week while quietly landing at maintenance load. Intervals.icu projects CTL/ATL onto planned events, so check the number:
+
+- After drafting, call `get_events` over the planned range, read the projected `icu_ctl` trajectory and summed `icu_training_load`, and compare the week's CTL delta to the block's ramp target in `season.md`.
+- **Quick check without the API:** weekly TSS ≈ **7 × CTL** holds fitness; add **~42 TSS/week for every +1 CTL/week** of intended ramp. (At CTL 50, a +5/wk build week wants ~560 TSS; ~350 is a maintenance week wearing a build label.)
+- **Weekend is the ramp lever.** Under a midweek time cap, weekday rides can't carry a build week alone — the long ride and any second weekend session are what move CTL. Size those first.
+- **Flag, don't silently choose.** Always present the plan's projected CTL ramp _vs_ the `season.md` target explicitly. When it undershoots target without a deliberate reason (deload/recovery week, illness, a readiness flag), say so, name the levers that would close the gap, and let the athlete decide. A deload week _should_ undershoot — the check is block-aware. Never quietly ship an under-loaded build week; never auto-raise one either.
+
 ## Logging the session
 
 Keep `coaching-log.md` current so future sessions inherit this one's decisions and context.
@@ -45,5 +54,6 @@ Keep `coaching-log.md` current so future sessions inherit this one's decisions a
 - **Keep `season.md` plan-level.** Running execution-state — current-block marker, momentary CTL/TSB readings, in-flight niggles and decisions — belongs in `coaching-log.md`, not `season.md`. Compute the current block live from the macro table + today's date. Durable outcomes (race results, confirmed benchmarks, lasting patterns) are promoted _up_ to `season.md` — see [coaching-log-format.md](coaching-log-format.md).
 - Honor the execution rules in `philosophy.md` (Z2 caps, high-intensity scheduling, recovery week cadence, fueling rules).
 - Season position from `season.md` governs what kind of work is appropriate — don't prescribe VO2 in a recovery week.
+- **Show projected load with every plan.** State the week's projected CTL ramp vs the `season.md` target before the athlete signs off — an under-target build week may be right, but only as a visible, deliberate choice, never an accident. See _Load check_ above.
 - When MAP is null, follow `mapWarning` before prescribing %MAP-anchored work.
 - **Don't author structured workouts in this skill.** Plan and discuss freely here, but any _write_ of a session to Intervals.icu — `create_workout`, `create_strength_workout`, or a `steps`-bearing `update_event` — must go through the `intervals-coach` skill (invoke it with the Skill tool). It loads the syntax cheatsheet, power-conversion, library-first, and head-unit ramp-splitting rules this skill does not carry; calling the write tools directly skips all of them. Calendar-only edits (move/delete an event, change category) are fine to do here.
