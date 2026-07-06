@@ -25,12 +25,15 @@ describe("registerSetupCoachingPrompt", () => {
     expect(result.messages[0].content.text).toBe(SETUP_COACHING_PROMPT);
   });
 
-  it("interview text directs output to Claude Project knowledge and points at get_coaching_context", () => {
-    expect(SETUP_COACHING_PROMPT).toContain("philosophy.md");
+  it("interview text bootstraps personal season + steering files and points at the philosophy skill", () => {
     expect(SETUP_COACHING_PROMPT).toContain("season.md");
+    expect(SETUP_COACHING_PROMPT).toContain("steering.md");
+    expect(SETUP_COACHING_PROMPT).toContain("coaching-philosophy");
+    expect(SETUP_COACHING_PROMPT).toContain("docs/personal/");
     expect(SETUP_COACHING_PROMPT).toContain("get_coaching_context");
     expect(SETUP_COACHING_PROMPT).toContain("intervals-coach");
-    expect(SETUP_COACHING_PROMPT).toMatch(/Project knowledge/i);
+    // The Claude-Project-knowledge upload path is retired.
+    expect(SETUP_COACHING_PROMPT).not.toMatch(/Project knowledge/i);
     expect(SETUP_COACHING_PROMPT).not.toContain("INTERVALS_COACHING_DIR");
     expect(SETUP_COACHING_PROMPT).not.toContain("athlete.md");
     expect(SETUP_COACHING_PROMPT).not.toMatch(

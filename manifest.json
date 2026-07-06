@@ -60,8 +60,8 @@
   "prompts": [
     {
       "name": "setup_coaching",
-      "description": "Walk the athlete through a short interview, then emit philosophy.md and season.md for them to upload as Claude Project knowledge.",
-      "text": "Run this prompt to bootstrap your training Project. The LLM will call get_coaching_context to seed itself with FTP, zones, and current fitness, then interview you on coaching philosophy and current season. The output is two markdown files you upload to a Claude Project — no server restart, no files on disk."
+      "description": "Walk the athlete through a short interview, then emit their personal season.md and steering.md for docs/personal/ (philosophy is the tracked coaching-philosophy skill).",
+      "text": "Run this prompt to bootstrap your personal coaching files. The LLM reads the coaching-philosophy skill (your durable principles, tracked in git), calls get_coaching_context for FTP/zones/fitness, then interviews you on your current season and any personal steering. The output is season.md and steering.md for docs/personal/ — layered on top of the philosophy skill, steering overrides on conflict."
     }
   ],
   "author": {

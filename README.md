@@ -7,7 +7,7 @@ An MCP (Model Context Protocol) server for accessing your [Intervals.icu](https:
 - **22 tools** covering activities, calendar events, fitness metrics, power curves, workout creation, a managed workout library, wellness, analysis, weekly summaries, and a one-call coaching snapshot
 - **Structured workout creation**: build interval sessions on your Intervals.icu calendar using the native workout text syntax
 - **Workout library as a coaching template store**: browse, author, seed, and refresh saved workouts in your Intervals.icu library. Workouts carry an embedded rationale block (%MAP / %FTP intent) so absolute watts can be regenerated when your fitness changes.
-- **Coach mode**: pair the bundled `intervals-coach` skill (workout-generation rules) with your own `philosophy.md` / `season.md` uploaded as Claude Project knowledge. Athlete state (FTP, zones, fitness) comes from the `get_coaching_context` tool — always fresh, no files to maintain.
+- **Coach mode**: bundled skills carry the coaching logic — `coaching-philosophy` (durable principles, tracked in git), `coaching-session`, and `intervals-coach` (workout generation). Personalise with your gitignored `docs/personal/steering.md` (overrides that win on conflict) and `season.md`. Athlete state (FTP, zones, fitness) comes from the `get_coaching_context` tool — always fresh, no files to maintain.
 - **Analysis tools**: aerobic decoupling, interval comparison, power curves, and fitness trends
 
 ## Quick Start
@@ -80,25 +80,28 @@ Requires **Node.js 20+**.
 
 ## MCP Prompts
 
-| Prompt           | Description                                                                                                         |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `setup_coaching` | Interviews the athlete and emits `philosophy.md` + `season.md` for upload to a Claude Project as Project knowledge. |
+| Prompt           | Description                                                                                                                                                                 |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `setup_coaching` | Interviews the athlete and emits their personal `season.md` + `steering.md` for `docs/personal/`. Philosophy is the tracked `coaching-philosophy` skill, not authored here. |
 
 ## Coach mode
 
-Coach mode is split across three surfaces — none of them require restarting the server:
+Coach mode is a four-tier context stack — most-durable first, later tiers override earlier ones on conflict — none of which require restarting the server:
 
-| Concern                           | Where it lives                                                                                  | How to update                                              |
-| --------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
-| Workout-generation rules          | `intervals-coach` skill at [`.claude/skills/intervals-coach/`](.claude/skills/intervals-coach/) | Edit the skill files; re-load Claude                       |
-| Coaching philosophy + season      | `philosophy.md` + `season.md` in your Claude Project                                            | Re-upload the file in Claude.ai                            |
-| Athlete state (FTP, MAP, fitness) | `get_coaching_context` tool                                                                     | Always fresh — re-tested values flow through automatically |
+| Concern                           | Where it lives                                                                                              | How to update                                              |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Coaching philosophy (durable)     | `coaching-philosophy` skill at [`.claude/skills/coaching-philosophy/`](.claude/skills/coaching-philosophy/) | Edit the skill files; commit                               |
+| Personal overrides + season       | `docs/personal/steering.md` (overrides, win on conflict) + `docs/personal/season.md` (gitignored)           | Edit the files                                             |
+| Workout-generation rules          | `intervals-coach` skill at [`.claude/skills/intervals-coach/`](.claude/skills/intervals-coach/)             | Edit the skill files; re-load Claude                       |
+| Athlete state (FTP, MAP, fitness) | `get_coaching_context` tool                                                                                 | Always fresh — re-tested values flow through automatically |
 
-**Bootstrapping**: in Claude Desktop, run the `setup_coaching` MCP prompt. The LLM calls `get_coaching_context` to seed itself with FTP/zones/current fitness, interviews you on philosophy and current season, then emits two markdown files for you to upload to a Claude Project as Project knowledge.
+The durable coaching **philosophy is tracked in git** as the `coaching-philosophy` skill — the base every install shares. A single athlete personalises it with the gitignored `docs/personal/steering.md` (overrides) and `season.md`; when a steering tweak proves durable, promote it up into the skill.
 
-**Skill installation**: the `intervals-coach` skill ships in this repo at `.claude/skills/intervals-coach/`. To use it across all your Claude Desktop projects: `cp -r .claude/skills/intervals-coach ~/.claude/skills/`. To use it locally in this repo: it's already there.
+**Bootstrapping**: run the `setup_coaching` MCP prompt. The LLM reads the `coaching-philosophy` skill, calls `get_coaching_context` for FTP/zones/current fitness, interviews you on your current season and any personal steering, then emits `season.md` + `steering.md` for `docs/personal/`.
 
-**Hand-authoring**: scaffolds for `philosophy.md` and `season.md` live at [`templates/project-knowledge/`](templates/project-knowledge/).
+**Skill installation**: the coaching skills ship in this repo at `.claude/skills/`. To use them across all your Claude Desktop projects: `cp -r .claude/skills/coaching-philosophy .claude/skills/coaching-session .claude/skills/intervals-coach ~/.claude/skills/`. To use them locally in this repo: they're already there.
+
+**Hand-authoring**: scaffolds for the personal `season.md` and `steering.md` live at [`templates/personal/`](templates/personal/).
 
 ## Workout library
 

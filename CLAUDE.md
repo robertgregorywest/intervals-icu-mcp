@@ -50,10 +50,18 @@ Saved workouts in the library can carry an HTML-comment rationale block at the e
 
 ### Coaching architecture
 
-The server `instructions` field is intentionally lean — workout-text syntax, watts-at-API rule, tool inventory. Anything that changes per-athlete or per-week lives elsewhere:
+The server `instructions` field is intentionally lean — workout-text syntax, watts-at-API rule, tool inventory. The coaching context is a **four-tier stack**, most-durable first; later tiers override earlier ones on conflict:
+
+1. **Coaching philosophy** (durable, tracked) — `coaching-philosophy` skill at `.claude/skills/coaching-philosophy/` (SKILL.md operative core — pillars, intensity anchor, execution rules, biases, test cadence — plus topic subfiles for progressive disclosure). The base every install shares; edit it (a commit) when training beliefs change.
+2. **Steering** (personal, gitignored) — `docs/personal/steering.md`, a thin per-athlete override layer that **wins on conflict** with the philosophy. Durable steering graduates _up_ into the skill.
+3. **Season** (personal, gitignored) — `docs/personal/season.md`: current block, races, macro structure, constraints.
+4. **Coaching log** (personal, gitignored) — `docs/personal/coaching-log.md`: session-by-session tier.
+
+Other coaching surfaces:
 
 - **Workout-generation rules** — `intervals-coach` skill at `.claude/skills/intervals-coach/` (SKILL.md entry, plus `power-conversion.md`, `session-patterns.md`, `library-vs-compose.md`, `syntax-cheatsheet.md` for progressive disclosure). Reloads per session.
-- **Coaching philosophy + season** — user uploads `philosophy.md` and `season.md` as Claude Project knowledge. The `setup_coaching` MCP prompt interviews and emits these as artifacts. Templates live at `templates/project-knowledge/`.
+- **Session orchestration** — `coaching-session` skill reads the four-tier stack at session-start and delegates workout writes to `intervals-coach`.
+- **Bootstrapping personal files** — the `setup_coaching` MCP prompt interviews for season + steering and emits `season.md`/`steering.md`; scaffolds live at `templates/personal/`. Philosophy is not authored here — it's the tracked skill.
 - **Athlete state** — `get_coaching_context` tool bundles `getAthlete` + `getWellness(days)` + computed CTL/ATL/TSB into one snapshot. Default 7-day wellness window, max 30. Always fresh — no files to maintain.
 - **MAP** — derived in the same tool: scans the last 90 days of activities, picks the most recent whose name (case-insensitive) starts with `"MAP ramp test"` and does **not** contain `"(skip)"`, runs `computeBestPower(stream, 60)` on its watts stream, returns `{ map: { watts, computedFrom: { metric, activityId, activityName, activityDate, daysAgo } } }`. No qualifying test → `map: null` plus a `mapWarning` for the LLM to act on. Athletes exclude botched tests by renaming the activity in Intervals.icu to include `(skip)`.
 

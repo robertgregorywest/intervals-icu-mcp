@@ -42,7 +42,7 @@ export const TOOL_INVENTORY = `## Tool inventory (high-level)
 - **Analysis** — \`get_power_curve\`, \`get_aerobic_decoupling\`, \`compare_intervals\`, \`get_training_week_summary\`: derived insights.
 - **Athlete** — \`get_athlete\`: profile, FTP, zones.
 - **Coaching** — \`get_coaching_context\`: one-call snapshot of athlete profile + today's fitness + recent wellness trend. Call at session start to ground workout decisions.
-- **Prompts** — \`setup_coaching\`: user-invokable; walks the athlete through an interview, then emits \`philosophy.md\` and \`season.md\` for the user to upload to their Claude Project.
+- **Prompts** — \`setup_coaching\`: user-invokable; walks the athlete through an interview and emits their personal \`season.md\` and \`steering.md\` for \`docs/personal/\`. The durable philosophy is the tracked \`coaching-philosophy\` skill.
 `;
 
 export const STATIC_INSTRUCTIONS =

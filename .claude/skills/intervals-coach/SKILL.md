@@ -14,7 +14,7 @@ Before composing or scheduling anything, do **both** of these in parallel:
 1. **`get_coaching_context`** — pulls today's snapshot: athlete profile (FTP, LTHR, max HR, weight, HR/pace zones), **MAP** (`map.watts`, with `map.computedFrom` naming the source test) and the **MAP-anchored power zones** derived from it (`mapZones` — REC / L1–L7 / NMP watt bands, the canonical coaching zones), today's CTL/ATL/TSB and ramp rate, and a 7-day wellness trend with subjective metrics (fatigue, soreness, motivation, sleep). Default 7-day window; pass `days` up to 30 when planning a longer block. Don't ask the athlete for FTP, MAP, zones, or current fitness — read them. If `map` is null, follow `mapWarning` — ask the athlete for a current MAP estimate before prescribing %MAP-anchored work.
 2. **`list_workout_library`** — surfaces saved workouts the athlete has curated. Their templates carry calibrated intent (rationale block: %MAP/%FTP basis + anchorWatts). Reusing a library workout is almost always preferable to composing fresh.
 
-The athlete's coaching philosophy and current season live in **`docs/personal/philosophy.md`** and **`docs/personal/season.md`** — read them for bias, execution rules, and "never" rules. If either is missing, suggest running the `setup_coaching` MCP prompt to generate it.
+The athlete's coaching philosophy is the tracked **`coaching-philosophy` skill** — read `.claude/skills/coaching-philosophy/SKILL.md` for pillars, intensity anchor, execution rules, biases, and "never" rules (drill into its topic subfiles as needed). Personal overrides live in **`docs/personal/steering.md`** (they **win on conflict** — apply them and say so) and the current season in **`docs/personal/season.md`**. The philosophy skill ships with the server; if `steering.md` or `season.md` is missing, suggest running the `setup_coaching` MCP prompt.
 
 ## Decision tree
 
@@ -50,7 +50,7 @@ Three things to get right:
 - **Never** invent FTP/MAP — always derive from `get_coaching_context`.
 - **Emit absolute watts**, never `%MAP` (unparseable) and not `%FTP` in saved workouts (fragile) — see [power-conversion.md](power-conversion.md).
 - **Defer** to library workouts when the intent matches. Calibration drift between library and ad-hoc is real.
-- **Respect** the philosophy/season docs in `docs/personal/`: bias, execution rules, "never" rules, weekly volume caps.
+- **Respect** the `coaching-philosophy` skill and the personal `docs/personal/` docs: bias, execution rules, "never" rules, weekly volume caps. `docs/personal/steering.md` overrides the philosophy on conflict.
 
 ## Ramp test naming convention
 
