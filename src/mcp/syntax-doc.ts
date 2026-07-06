@@ -21,6 +21,8 @@ Nx                                            # repeat block (blank lines around
 - **Cadence**: \`90rpm\`
 
 **Head-unit granularity**: a long/wide \`ramp\` (or wide-range) step collapses to a single average wattage on head units. Split ramps/progressions into steps of **≤ 2 min** and **≤ ~8% MAP (~25–30 W)** range each so the on-screen target steps upward. Steady-state target bands (e.g. a Z2 endurance block) are deliberate and stay as one step.
+
+**Step labels are plain text only**: keep \`number+unit\` tokens (\`60s\`, \`1m\`, \`220w\`, \`90rpm\`, \`75%\`) out of a step's label. On the text round-trip the parser reads the first such token in the line as the step's duration/target, so a label like \`Ramp — MAP = best 60s\` silently turns a 1-min step into a 2-min one and truncates the label. Put numeric detail in the workout's prose notes, not the step label.
 `;
 
 export const WATTS_AT_API_RULE = `## Power targets at the API boundary
