@@ -99,7 +99,13 @@ The durable coaching **philosophy is tracked in git** as the `coaching-philosoph
 
 **Bootstrapping**: run the `setup_coaching` MCP prompt. The LLM reads the `coaching-philosophy` skill, calls `get_coaching_context` for FTP/zones/current fitness, interviews you on your current season and any personal steering, then emits `season.md` + `steering.md` for `docs/personal/`.
 
-**Skill installation**: the coaching skills ship in this repo at `.claude/skills/`. To use them across all your Claude Desktop projects: `cp -r .claude/skills/coaching-philosophy .claude/skills/coaching-session .claude/skills/intervals-coach ~/.claude/skills/`. To use them locally in this repo: they're already there.
+**Skill installation**: the coaching skills ship in this repo at `.claude/skills/` and are already available locally. To use them in another project, install via the [`skills`](https://github.com/vercel-labs/skills) CLI:
+
+```bash
+npx skills add robertgregorywest/intervals-icu-mcp --skill coaching-philosophy --skill coaching-session --skill intervals-coach
+```
+
+Add `-g` to install globally instead of per-project. Drop the `--skill` flags to pick interactively from everything in `.claude/skills/`.
 
 **Hand-authoring**: scaffolds for the personal `season.md` and `steering.md` live at [`templates/personal/`](templates/personal/).
 
