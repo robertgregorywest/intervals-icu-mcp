@@ -10,7 +10,6 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "check:manifest": "node scripts/check-manifest.mjs",
-    "migrate:from-tp": "tsx scripts/migrate-from-tp.ts",
     "mcpb:pack": "mcpb pack",
     "prepare": "husky",
     "sandcastle": "npx tsx .sandcastle/main.ts"
@@ -39,12 +38,10 @@
   },
   "devDependencies": {
     "@ai-hero/sandcastle": "^0.6.5",
-    "@garmin/fitsdk": "^21.171.0",
     "@types/node": "^22.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
     "prettier": "^3.8.1",
-    "trainingpeaks-mcp": "file:../trainingpeaks-mcp",
     "tsx": "^4.0.0",
     "typescript": "^7.0.0",
     "vitest": "^2.0.0"
