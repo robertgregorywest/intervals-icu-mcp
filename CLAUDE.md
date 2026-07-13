@@ -71,6 +71,8 @@ Saved workouts can still encode %MAP/%FTP intent via the rationale block (see ab
 
 The `bin/icu` CLI is the agent's zero-reconnect dev surface. It runs via `npx tsx` so every invocation uses the latest source without a rebuild or MCP reconnect.
 
+**Which surface when.** The MCP server is a long-lived process: it serves the tool code loaded at session start and won't reflect `src/` edits until you reconnect it. So real/coaching use goes through the MCP tools (`mcp__intervals-icu__*`); when you're iterating on a tool's own source, drive it via `bin/icu` (fresh `src/` every call) and reconnect the MCP once you're done.
+
 ```bash
 # Self-describe: full tool catalogue with input schemas
 ./bin/icu describe
