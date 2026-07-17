@@ -61,8 +61,6 @@ How to think about training trade-offs.
 - **Repeatability over hero sessions** — fewer hard days done well > more done poorly.
 - **Pyramidal default** (Z2 base + MIET/sweetspot + smaller HIT dose) over polarised or
   threshold-heavy.
-- **For the 2 km IP, a flat back half beats a hot opening** — pace to defend the last 750 m.
-  → [pursuit-pacing.md](pursuit-pacing.md)
 - **Durability > fresh peak** (late-ride / back-half power) when forced to choose.
 - **Frequency over duration** when life is busy — preserve the rhythm.
 - **Masters: recovery quality is the rate-limiter** — protect it before adding load.
