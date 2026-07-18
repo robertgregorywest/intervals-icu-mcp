@@ -2,7 +2,7 @@
 
 Peden's catalogue, with the cyclist rationale, technique cues, and where each sits on the
 stimulus-to-fatigue ratio (SFR). Select by **SFR for the current phase** ([periodization.md](periodization.md)),
-not by what looks hardest. Loads are always **RPE / velocity auto-regulated**, never fixed kg.
+not by what looks hardest. (Loads auto-regulated by RPE / velocity, never fixed kg — SKILL.md Constraints.)
 
 Golden rule for selection: **"Stop asking what's the best exercise for cyclists. Start asking what's
 the best exercise _right now_."** The best exercise isn't the most impressive or the most tiring —

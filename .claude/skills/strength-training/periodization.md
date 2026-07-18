@@ -2,7 +2,7 @@
 
 "If your in-season gym looks like your off-season gym, you're doing it wrong." The exercises change
 less than the **dose and intent**. Read the current block from `docs/personal/season.md`; it sets
-frequency and phase. This file maps Peden's off/in-season model onto this athlete's blocks.
+frequency and phase. This file is Peden's off↔in-season model and how to map a block onto it.
 
 ## The two poles
 
@@ -41,34 +41,32 @@ maintain (sometimes even improve) while the bike stays the priority.
 - **GPP / re-entry after a break only:** higher reps (8–12) briefly to re-groove before loading.
 - Never prescribe kg — the athlete auto-regulates by RPE and by whether the bar/jump is still fast.
 
-## This athlete's season map
+## Mapping a block to a template
 
-The rider is a masters **2 km IP / 4 km TP** pursuiter; **standing-start force + RFD** is the headline
-strength target (see SKILL.md). Frequency below is what `season.md` currently specifies — **always
-re-read it**, don't trust these dates if the file has moved on.
+Read the **current block, its strength frequency, and phase intent** from `docs/personal/season.md`
+(with `steering.md` overrides), then map it onto the model above and pick a template in
+[sessions.md](sessions.md). The **phase**, not the calendar date, drives the choice:
 
-- **Re-build / durability (late Jun → early Aug, 2×/week — current).** Strength _reloaded_ to twice
-  weekly. This is the closest thing to a build in-season: rebuild the strength base and posterior
-  chain, and **re-establish power/RFD** for the gate. Two complementary sessions — one force-biased,
-  one single-leg/power-biased. Can afford a little more range and load than a pure race phase, but
-  it's still layered on a CTL re-build, so keep SFR honest and let readiness gate volume. → templates
-  A1/A2 in [sessions.md](sessions.md).
-- **Specific Prep III (Aug, 1×/week).** Drop to maintenance. One full-body session biased toward
-  **pursuit-specific force + RFD** — heavy low-rep hinge/squat, a single-leg builder, and jumps /
-  dead-stop accelerative work. Reduce ROM and volume per the rule of three. → template B.
-- **Pre-Competition II (Sep → early Oct, 1×/week).** Sharpen/maintain into Worlds. **Protect the
-  taper:** minimal fatigue, mostly **power/RFD** to hold neuromuscular sharpness — jumps, dead-stop
-  step-ups, a couple of crisp heavy singles/doubles. No grinding, no soreness. → template C.
-- **Competition (Oct).** Keep the nervous system sharp only — a short jumps/primer touch in race
-  week, nothing that leaves fatigue. → template C, trimmed.
+- **Build / reload phase (higher frequency, ~2×/week).** The closest thing to a build in-season:
+  rebuild the strength base and posterior chain, and **re-establish power/RFD** for the gate. Two
+  complementary sessions — one force-biased, one single-leg/power-biased. Can afford a little more
+  range and load than a pure race phase, but it's layered on a CTL re-build, so keep SFR honest and
+  let readiness gate volume. → force + single-leg/power templates.
+- **Specific-prep / maintenance phase (~1×/week).** One full-body session biased to the season's
+  headline target (for a pursuiter, pursuit-specific force + RFD) — heavy low-rep hinge/squat, a
+  single-leg builder, jumps / dead-stop accelerative work. Apply the rule of three. → maintenance
+  template.
+- **Pre-comp / taper phase (~1×/week).** Sharpen into the A race. **Protect the taper:** minimal
+  fatigue, mostly **power/RFD** to hold neuromuscular sharpness — jumps, dead-stop step-ups, a couple
+  of crisp heavy singles/doubles. No grinding, no soreness. → sharpen template.
+- **Competition.** Keep the nervous system sharp only — a short jumps/primer touch in race week,
+  nothing that leaves fatigue. → sharpen template, trimmed.
 
-## Placement within the week (hard constraints)
+## Placement within the week
 
-From the `coaching-philosophy` execution rules — these override any template:
+Placement is a hard constraint, governed by the **`coaching-philosophy` execution rules** (stack on a
+hard ride day; no HI bike day after heavy lifting; never before track; two-a-days weekends/WFH only) —
+summarised in SKILL.md Constraints. Two strength-specific applications:
 
-- **Stack strength on a hard ride day** (ride AM / gym PM, a few hours apart) so easy days stay easy.
-- **No high-intensity bike day the day _after_ heavy lifting.**
-- **Never a fatiguing gym day the day before a track session** — protect track quality.
-- **Two-a-days only on weekends / WFH days.** With 2×/week, that usually means both gym sessions land
-  on or beside the two weekend quality days.
-- Recovery weeks (every 3–4 build weeks) cut gym volume too — drop a session or halve the sets.
+- With **2×/week**, both gym sessions usually land on or beside the two weekend quality days.
+- **Recovery weeks** (every 3–4 build weeks) cut gym volume too — drop a session or halve the sets.

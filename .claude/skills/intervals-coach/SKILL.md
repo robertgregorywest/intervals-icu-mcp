@@ -7,14 +7,14 @@ description: Compose and schedule a single cycling/running workout on Intervals.
 
 Workout-generation skill for the `intervals-icu-mcp` server. Activates when the user asks for a workout — planning, building, scheduling, designing intervals — for Intervals.icu.
 
-## Session-start moves (always)
+## Session-start moves
 
-Before composing or scheduling anything, do **both** of these in parallel:
+**Reuse, don't repeat.** If you arrived from a `coaching-session` (or already pulled them this turn), the `get_coaching_context` snapshot and the personal files (`steering.md`, `season.md`) are already in context — reuse them, don't re-fetch. `list_workout_library` is _not_ usually among them, so run it regardless. Invoked cold, do both calls in parallel:
 
 1. **`get_coaching_context`** — pulls today's snapshot: athlete profile (FTP, LTHR, max HR, weight, HR/pace zones), **MAP** (`map.watts`, with `map.computedFrom` naming the source test) and the **MAP-anchored power zones** derived from it (`mapZones` — REC / L1–L7 / NMP watt bands, the canonical coaching zones), today's CTL/ATL/TSB and ramp rate, and a 7-day wellness trend with subjective metrics (fatigue, soreness, motivation, sleep). Default 7-day window; pass `days` up to 30 when planning a longer block. Don't ask the athlete for FTP, MAP, zones, or current fitness — read them. If `map` is null, follow `mapWarning` — ask the athlete for a current MAP estimate before prescribing %MAP-anchored work.
 2. **`list_workout_library`** — surfaces saved workouts the athlete has curated. Their templates carry calibrated intent (rationale block: %MAP/%FTP basis + anchorWatts). Reusing a library workout is almost always preferable to composing fresh.
 
-The athlete's coaching philosophy is the tracked **`coaching-philosophy` skill** — read `.claude/skills/coaching-philosophy/SKILL.md` for pillars, intensity anchor, execution rules, biases, and "never" rules (drill into its topic subfiles as needed). Personal overrides live in **`docs/personal/steering.md`** (they **win on conflict** — apply them and say so) and the current season in **`docs/personal/season.md`**. The philosophy skill ships with the server; if `steering.md` or `season.md` is missing, suggest running the `setup_coaching` MCP prompt.
+The athlete's coaching philosophy is the tracked **`coaching-philosophy` skill** — read `.claude/skills/coaching-philosophy/SKILL.md` for pillars, intensity anchor, execution rules, biases, and "never" rules (drill into its topic subfiles as needed) unless it's already in context. Personal overrides live in **`docs/personal/steering.md`** (they **win on conflict** — apply them and say so) and the current season in **`docs/personal/season.md`**. The philosophy skill ships with the server; if `steering.md` or `season.md` is missing, suggest running the `setup_coaching` MCP prompt.
 
 ## Decision tree
 

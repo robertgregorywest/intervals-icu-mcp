@@ -15,19 +15,22 @@ _serves_ the endurance goal, and the coach's real job is deciding what **not** t
 the operational "how"; the durable "why" lives in the `coaching-philosophy` skill's
 [strength pillar](../coaching-philosophy/strength.md).
 
-## Session-start moves (always)
+## Session-start moves
 
-Before composing a gym session, do these in parallel:
+**Reuse, don't repeat.** If you arrived from a `coaching-session` (or already gathered these this
+turn), the `get_coaching_context` snapshot and the personal files are already in context — reuse them,
+don't re-fetch. Re-fetch only what's missing. Invoked cold, gather 1–2 in parallel:
 
 1. **`get_coaching_context`** — today's CTL/ATL/TSB, ramp rate, readiness, and the 7-day wellness
    trend. Gym load is layered on top of an already-fatigued system; readiness gates volume. Don't
-   ask the athlete for fitness — read it.
-2. **Read `docs/personal/season.md`** — the **current block** sets strength **frequency and intent**
-   (build/reload vs maintain). Also read `docs/personal/steering.md` (overrides win on conflict).
+   ask the athlete for fitness — read it (or reuse the snapshot already in context).
+2. **`docs/personal/season.md`** — the **current block** sets strength **frequency and intent**
+   (build/reload vs maintain). Also `docs/personal/steering.md` (overrides win on conflict).
    The philosophy's [strength pillar](../coaching-philosophy/strength.md) and the execution rules in
    `.claude/skills/coaching-philosophy/SKILL.md` are the hard constraints.
 3. **Know the week's hard bike/track days** (ask, or `get_events`) — placement matters as much as
-   content (see Constraints).
+   content (see Constraints). This is usually the one item a delegating `coaching-session` hasn't
+   already gathered.
 
 ## Decision tree
 
@@ -46,7 +49,6 @@ Readiness OK + which bike days are hard this week?
     ▼
 Pick a template for the phase                              → sessions.md
     │   choose exercises by stimulus-to-fatigue ratio      → exercises.md
-    │   auto-regulate load by RPE / bar velocity (never fixed kg)
     ▼
 Place it right (stack on a hard ride day; never before track;
     never a HI bike day after heavy lifting)
@@ -57,18 +59,13 @@ create_strength_workout   (name, date, description = exercises · sets×reps · 
 
 ## The five principles (the lens for every decision)
 
-One line each; the reasoning and the source posts are in [principles.md](principles.md).
+One line each; the reasoning and source posts are in [principles.md](principles.md).
 
-1. **Strength serves the bike.** Aerobic work is always the higher priority; strength and fitness
-   are built _together_, never traded off.
-2. **Minimum effective dose.** As much as necessary, not as much as possible. Heavy, sore legs are a
-   programming error, not a badge. Ask "what can I _remove_?" before "what can I add?"
-3. **Train both ends of the force–velocity curve.** Heavy builds the force ceiling; speed/jumps
-   train how fast you reach it (rate of force development). Power needs both.
-4. **Pick exercises by stimulus-to-fatigue ratio, for the phase you're in.** Multi-joint over
-   isolation, stable over unstable, specificity over novelty. → [exercises.md](exercises.md)
-5. **Individualise; be evidence-informed, not evidence-blind.** No fixed template — decide for the
-   athlete and the moment in the season.
+1. **Strength serves the bike** — aerobic work is always the higher priority; strength and fitness are built _together_, never traded off.
+2. **Minimum effective dose** — as much as necessary, not as much as possible. Ask "what can I _remove_?" before "what can I add?"
+3. **Train both ends of the force–velocity curve** — heavy builds the force ceiling; speed/jumps train how fast you reach it (RFD).
+4. **Pick exercises by stimulus-to-fatigue ratio for the phase** — multi-joint over isolation, stable over unstable, specificity over novelty. → [exercises.md](exercises.md)
+5. **Individualise; evidence-informed, not evidence-blind** — no fixed template; decide for the athlete and the moment in the season.
 
 ## Constraints (respect the coaching-philosophy execution rules)
 
@@ -83,12 +80,13 @@ One line each; the reasoning and the source posts are in [principles.md](princip
 
 ## The pursuit application
 
-This athlete is a masters **2 km IP / 4 km TP** rider whose **standing start** regressed this season
-(strength supports the gate; note the 165 mm-crank leverage confound). That makes **maximal force +
-rate of force development from a dead stop** the headline strength target — heavy low-rep bilateral
-work, loaded jumps, and dead-stop/accelerative lifts. How this shifts across the Re-build →
-Specific Prep III → Pre-Competition blocks is in [periodization.md](periodization.md); ready-to-run
-sessions for each are in [sessions.md](sessions.md).
+For a track pursuiter the **standing start** is where strength transfers most directly to the bike.
+When the start is a limiter, that makes **maximal force + rate of force development from a dead stop**
+the headline strength target — heavy low-rep bilateral work, loaded jumps, and dead-stop/accelerative
+lifts. Read the season's **actual** strength target, limiters, and current block from
+`docs/personal/season.md` (with `steering.md` overrides) — it changes through the year, don't assume.
+How the dose shifts block-to-block is the off↔in-season model in
+[periodization.md](periodization.md); ready-to-run templates are in [sessions.md](sessions.md).
 
 ## Provenance
 
