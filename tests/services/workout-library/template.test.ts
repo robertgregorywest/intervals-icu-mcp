@@ -103,6 +103,49 @@ describe("targets", () => {
   });
 });
 
+// Intervals.icu re-reads a rendered line, so a label carrying a structural
+// token is silently eaten there rather than here — the workout on the head unit
+// is wrong while the file looks right. Fail at load instead.
+describe("labels", () => {
+  it.each([
+    ["a zone token", "- Z2 2h 60%", "Z2"],
+    ["watts", "- Openers 350w 5m 60%", "350w"],
+    ["a percentage", "- Best 75% 5m 60%", "75%"],
+    ["cadence", "- Spin 95rpm 5m 60%", "95rpm"],
+  ])("rejects a step label containing %s", (_what, body, token) => {
+    const parse = () =>
+      parseTemplate(tpl(`${BASIC}\nbasis: MAP`, body), "x.md");
+    expect(parse).toThrow(TemplateParseError);
+    // The message must name the offending token — the fix is to edit that word.
+    expect(parse).toThrow(new RegExp(token.replace(/[%$]/g, "\\$&")));
+  });
+
+  it("rejects a repeat-block label containing a duration", () => {
+    expect(() =>
+      parseTemplate(
+        tpl(
+          `${BASIC}\nbasis: MAP`,
+          ["Preload 2m 3x", "  - On 30s 100%"].join("\n")
+        ),
+        "x.md"
+      )
+    ).toThrow(/2m/);
+  });
+
+  // The rule targets tokens Intervals.icu parses as structure, not every token
+  // that merely contains digits — real labels like this must keep working.
+  it("allows plain-text labels with incidental numbers", () => {
+    const t = parseTemplate(
+      tpl(`${BASIC}\nbasis: FTP`, "- 20min effort 20m 95-105%"),
+      "x.md"
+    );
+    expect(t.steps[0]).toMatchObject({
+      label: "20min effort",
+      duration: "20m",
+    });
+  });
+});
+
 describe("basis", () => {
   it("requires a basis when a step is anchored", () => {
     expect(() => parseTemplate(tpl(BASIC, "- On 4m 95%"), "x.md")).toThrow(

@@ -98,6 +98,47 @@ const CADENCE_RE = /^\d+rpm$/i;
 const REPEAT_RE = /^(?:(.*?)\s+)?(\d+)x$/;
 const STEP_RE = /^-\s*(.*)$/;
 
+/**
+ * Tokens that Intervals.icu's own parser reads as duration, target or cadence.
+ * A label containing one is silently eaten on the round-trip — a step labelled
+ * `Z2` loses its label to the zone token, and `... best 60s` turns a 1-min step
+ * into a 1-min-then-60s misread. Labels must be plain text.
+ */
+const LABEL_BANNED_RE = new RegExp(
+  [
+    /(?:\d+(?:km|mtr|h|m|s))+/, // duration: 5m, 30s, 1h2m30s, 2km
+    /\d+(?:\.\d+)?(?:-\d+(?:\.\d+)?)?%/, // percentage: 75%, 95-102%
+    /\d+w(?:-\d+w)?/, // watts: 220w, 160w-256w
+    /\d+rpm/, // cadence: 90rpm
+    /z\d/, // zone: Z2
+  ]
+    .map((r) => `^(?:${r.source})$`)
+    .join("|"),
+  "i"
+);
+
+/**
+ * Reject a label carrying a token Intervals.icu will re-read as structure.
+ * Enforced at parse time so a bad template fails at load rather than silently
+ * shipping a mangled workout to the athlete's head unit.
+ */
+function assertLabelSafe(
+  label: string,
+  what: "step" | "repeat block",
+  file: string,
+  lineNo: number
+): void {
+  const bad = label.split(/\s+/).filter((t) => LABEL_BANNED_RE.test(t));
+  if (bad.length === 0) return;
+  throw new TemplateParseError(
+    file,
+    lineNo,
+    `${what} label ${JSON.stringify(label)} contains ${bad.map((t) => `\`${t}\``).join(", ")}, ` +
+      "which Intervals.icu reads as a duration, target, cadence or zone rather than as text. " +
+      "Labels must be plain text — put numeric detail in the template's prose."
+  );
+}
+
 interface RawLine {
   indent: number;
   text: string;
@@ -202,6 +243,7 @@ function parseStepLine(
   }
 
   const label = tokens.slice(0, durationIdx).join(" ") || undefined;
+  if (label) assertLabelSafe(label, "step", file, lineNo);
   const duration = tokens[durationIdx];
   const rest = tokens.slice(durationIdx + 1);
 
@@ -275,7 +317,11 @@ function parseNodes(
         iterations,
         children: inner.nodes,
       };
-      if (repeat[1]) block.label = repeat[1].trim();
+      if (repeat[1]) {
+        const label = repeat[1].trim();
+        assertLabelSafe(label, "repeat block", file, line.lineNo);
+        block.label = label;
+      }
       nodes.push(block);
       i = inner.next;
       continue;

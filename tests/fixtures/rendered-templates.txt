@@ -1,0 +1,429 @@
+# Rendered at MAP=415W FTP=290W
+
+========================================================================
+seedId: 20-min-warm-up
+name:   20 Min Warm Up
+folder: Coach: Race
+basis:  FTP @ 290w
+type:   Ride
+------------------------------------------------------------------------
+Pre-race warm-up. Progressive build to threshold, then short activations to prime the legs.
+
+Standardised pre-race warm-up: a graded build through endurance to a minute at threshold, then three 10-second activations and a final 5-second effort with full recoveries between.
+
+- 5m 145w-175w
+
+- 3m 175w-205w
+
+- 1m 220w-245w
+
+- 1m 275w-305w
+
+- Recovery 2m 130w-160w
+
+- Active 0m10s 435w-580w
+
+- Recovery 1m 130w-160w
+
+- Active 0m10s 435w-580w
+
+- Recovery 2m 130w-160w
+
+- Active 0m10s 435w-580w
+
+- Recovery 2m 130w-160w
+
+- Active 0m5s 435w-580w
+
+- Cooldown 10m 115w-145w
+
+<!-- template: 20-min-warm-up -->
+
+========================================================================
+seedId: 2s-and-3s
+name:   2's and 3's
+folder: Coach: VO2 Max
+basis:  FTP @ 290w
+type:   Ride
+------------------------------------------------------------------------
+Alternating 2- and 3-min efforts at 120–140% FTP with full recoveries. Repeatability above threshold.
+
+Alternating 2- and 3-minute efforts well above threshold with long, genuine recoveries. The last effort steps up to 130–140% — the session is about holding quality to the end, not accumulating time. If the final rep can't match the first, stop rather than dilute it.
+
+- Warm up 15m 115w-145w
+
+- Active 2m 350w-375w
+
+- Recovery 5m 145w-175w
+
+- Active 3m 350w-375w
+
+- Recovery 5m 145w-175w
+
+- Active 2m 365w-390w
+
+- Recovery 5m 145w-175w
+
+- Active 3m 350w-375w
+
+- Recovery 5m 145w-175w
+
+- Active 2m 375w-405w
+
+- Cool Down 10m 115w-145w
+
+- Cooldown 10m Z1
+
+<!-- template: 2s-and-3s -->
+
+========================================================================
+seedId: ftp-20min-test
+name:   FTP 20-min test
+folder: Coach: Tests
+basis:  FTP @ 290w
+type:   Ride
+------------------------------------------------------------------------
+Re-establish FTP when threshold targets need recalibrating. FTP = 95% of best 20-min power.
+
+20-minute FTP estimation test. Use FTP = 95% of best 20-min average. Pace target = bury yourself starting at minute 17. Standardise warm-up so retests are comparable.
+
+- Warm-up 15m 160w-190w
+
+- 1m 290w
+
+- 1m 175w
+
+- 1m 320w
+
+- 1m 175w
+
+- 1m 350w
+
+- 5m 175w
+
+- 20min effort 20m 275w-305w
+
+- Cooldown 10m 145w
+
+<!-- template: ftp-20min-test -->
+
+========================================================================
+seedId: in-the-red-pursuit-intervals-2km
+name:   In the red pursuit intervals (2km)
+folder: Coach: Race
+basis:  FTP @ 290w
+type:   Ride
+------------------------------------------------------------------------
+Race-specific 2 km pursuit simulation — sprint start, then decaying power through anaerobic and VO2 zones.
+
+Pursuit-style effort with a progressive ramp-up, two activation sprints, then 5 × pursuit intervals stepping down from peak sprint power through anaerobic and VO2max zones. Each rep rehearses the shape of the event: a standing-start surge, then settling into a decaying but sustainable pace.
+
+- Warm Up 5m 175w
+
+- Ramp 1 1m 205w
+
+- Ramp 2 1m 225w
+
+- Ramp 3 1m 245w
+
+- Ramp 4 1m 265w
+
+- Ramp 5 1m 285w
+
+- Ramp 6 1m 305w
+
+- Recovery 2m 160w
+
+Activation 2x
+- Activation Sprint 10s 725w
+- Easy 1m 160w
+
+- Recovery 3m 160w
+
+Main Set 4x
+- Sprint 20s 725w
+- Anaerobic 40s 375w
+- VO2 1m30s 320w
+- Recovery 8m 160w
+
+- Sprint 20s 725w
+
+- Anaerobic 40s 375w
+
+- VO2 1m30s 320w
+
+- Cool Down 5m 115w
+
+<!-- template: in-the-red-pursuit-intervals-2km -->
+
+========================================================================
+seedId: map-ramp-test
+name:   MAP ramp test
+folder: Coach: Tests
+basis:  (none)
+type:   Ride
+------------------------------------------------------------------------
+Re-establish MAP every 6–8 weeks or at a mesocycle start. Fixed protocol — never rescale it or retests stop being comparable.
+
+Ramp test to exhaustion. MAP = highest 60-second power. Watts are guidance — the test is open-ended, ride to failure. Standardise the warm-up across retests. Test every 6–8 weeks or at mesocycle starts.
+
+Stepped 1-min protocol (+25 W/min after a graded warm-up) so each target renders on the head unit — a single continuous ramp collapses to one average wattage and can't be executed. Fixed protocol, deliberately in absolute watts and never re-anchored: MAP gains show up as reaching higher steps and lasting longer, not as rescaled targets.
+
+- Warm-up (graded, standardised) 3m 150w
+
+- 3m 180w
+
+- 3m 210w
+
+- 3m 240w
+
+- Ramp to failure 1m 140w
+
+- 1m 165w
+
+- 1m 190w
+
+- 1m 215w
+
+- 1m 240w
+
+- 1m 265w
+
+- 1m 290w
+
+- 1m 315w
+
+- 1m 340w
+
+- 1m 365w
+
+- 1m 390w
+
+- 1m 415w
+
+- 1m 440w
+
+- 1m 465w
+
+- 1m 490w
+
+- Cooldown 10m 160w
+
+<!-- template: map-ramp-test -->
+
+========================================================================
+seedId: miet-60
+name:   MIET 60min
+folder: Coach: Endurance
+basis:  MAP @ 415w
+type:   Ride
+------------------------------------------------------------------------
+More aerobic stimulus per hour when Z2 volume is constrained by life. Masters-friendly.
+
+Moderately intensive endurance — masters-friendly aerobic load. Useful when Z2 volume is constrained by life and you want more aerobic stimulus per hour without entering fatigue territory.
+
+- Warm-up 10m 230w
+
+- MIET 45m 250w-290w
+
+- Cooldown 5m 185w
+
+<!-- template: miet-60 -->
+
+========================================================================
+seedId: openers
+name:   Openers
+folder: Coach: Race
+basis:  FTP @ 290w
+type:   Ride
+------------------------------------------------------------------------
+Day before a race or hard test. Opens the legs through to a sprint without accruing fatigue.
+
+Pre-race opener. Long steady base, one threshold block, then two short supra-threshold efforts and a single sprint to sharpen without cost. The intent is neuromuscular readiness, not stimulus — if it leaves you tired, it was ridden too hard.
+
+- Warm up 20m 155w-190w
+
+- 10m 210w-255w
+
+- 10m 170w-205w
+
+- 5m 260w-320w
+
+- 10m 155w-190w
+
+- 1m 330w-400w
+
+- 3m 155w-190w
+
+- 1m 330w-400w
+
+- 3m 155w-190w
+
+- Sprint 0m10s 655w-800w
+
+- Cool Down 15m 105w-130w
+
+- Cooldown 10m Z1
+
+<!-- template: openers -->
+
+========================================================================
+seedId: recovery-spin
+name:   Recovery spin
+folder: Coach: Recovery
+basis:  MAP @ 415w
+type:   Ride
+------------------------------------------------------------------------
+Circulation, not stimulus. High cadence, very low load; keep it short when fatigue is high.
+
+Active recovery. Easy spin, high cadence, very low load. Goal: circulation, not training stimulus. Keep it short if fatigue is high.
+
+- Easy 40m 125w-165w 95rpm
+
+<!-- template: recovery-spin -->
+
+========================================================================
+seedId: sweet-spot-3x12
+name:   Sweet Spot 3×12
+folder: Coach: Sweet Spot
+basis:  FTP @ 290w
+type:   Ride
+------------------------------------------------------------------------
+Sustained sub-threshold volume in build. Lower fatigue cost than threshold, so more per week.
+
+Sub-threshold steady work. Lower fatigue cost than threshold, allowing higher weekly volume of sustained efforts during build phases. Hold cadence ≥ 85.
+
+- Warm-up 12m 160w-205w
+
+3x
+- SST 12m 255w-275w
+- Recovery 4m 160w
+
+- Cooldown 10m 145w
+
+<!-- template: sweet-spot-3x12 -->
+
+========================================================================
+seedId: threshold-2x20
+name:   Threshold 2×20
+folder: Coach: Threshold
+basis:  FTP @ 290w
+type:   Ride
+------------------------------------------------------------------------
+Bread-and-butter threshold. Even pacing; if rep 2 drops >5 W the day was too fatigued for it.
+
+Bread-and-butter threshold session. Target NP within range, even pacing across reps. If second rep average drops >5W from first, start, the day was too fatigued for it.
+
+- Warm-up 15m 160w-205w
+
+2x
+- Threshold 20m 275w-305w
+- Recovery 5m 160w
+
+- Cooldown 10m 145w
+
+<!-- template: threshold-2x20 -->
+
+========================================================================
+seedId: vo2-30-30
+name:   VO2 30/30s
+folder: Coach: VO2 Max
+basis:  MAP @ 415w
+type:   Ride
+------------------------------------------------------------------------
+VO2 stimulus at lower peripheral cost per rep. Use when 4×4 has been overdone, or when targeting repeatability over peak elicitation.
+
+Microintervals: 30s on / 30s off keeps cumulative time at high aerobic strain while limiting peripheral fatigue per rep. Useful when 4×4 has been overdone or when targeting repeatability rather than peak elicitation.
+
+- Warm-up 15m 210w-250w
+
+16x
+- On 30s 455w
+- Off 30s 210w
+
+- Cooldown 10m 185w
+
+<!-- template: vo2-30-30 -->
+
+========================================================================
+seedId: vo2-4x4
+name:   VO2 4×4
+folder: Coach: VO2 Max
+basis:  MAP @ 415w
+type:   Ride
+------------------------------------------------------------------------
+Default VO2 session. Highest fraction of time at VO2max per minute of work.
+
+Classic VO₂max session. 4-minute hard with equal recovery elicits the highest fraction of time at VO₂max for a given session length (Seiler et al., 2013). Aim to hold final rep ≥ first rep power.
+
+- Warm-up 15m 210w-250w
+
+4x
+- On 4m 395w-425w
+- Off 4m 210w
+
+- Cooldown 10m 185w
+
+<!-- template: vo2-4x4 -->
+
+========================================================================
+seedId: vo2-preloaded-shorts
+name:   VO2 preloaded shorts
+folder: Coach: VO2 Max
+basis:  MAP @ 415w
+type:   Ride
+------------------------------------------------------------------------
+Advanced VO2 session — only once 30/30s are well tolerated, and never as the first VO2 session of a block.
+
+Each series opens with a ~2-min 'preload' interval to drive VO2 upward fast, then a short 30s recovery preserves the elevated state, so the short 30/15s reps that follow start already near 90% VO2peak instead of climbing into it. Net effect: more time at high fraction of VO2max per session than plain 30/30s. Use when 30/30s have been well tolerated and you want to extract more aerobic stimulus per session. Sources: Odden et al. 2024 (HIT time-at-fraction-of-VO2max); Vaccari et al. 2020 (VO2 kinetics, short vs long).
+
+- Warm-up 15m 210w-250w
+
+- Preload 2m 395w-415w 95rpm
+
+- Short rec 30s 210w
+
+12x
+- On 30s 415w-435w
+- Off 15s 210w
+
+- Series rec 3m 210w
+
+- Preload 2m 395w-415w 95rpm
+
+- Short rec 30s 210w
+
+12x
+- On 30s 415w-435w
+- Off 15s 210w
+
+- Series rec 3m 210w
+
+- Preload 2m 395w-415w 95rpm
+
+- Short rec 30s 210w
+
+12x
+- On 30s 415w-435w
+- Off 15s 210w
+
+- Series rec 3m 210w
+
+- Cooldown 10m 185w
+
+<!-- template: vo2-preloaded-shorts -->
+
+========================================================================
+seedId: z2-endurance-2h
+name:   Z2 endurance 2h
+folder: Coach: Endurance
+basis:  MAP @ 415w
+type:   Ride
+------------------------------------------------------------------------
+Aerobic durability. Cap NP ≤68% MAP — above that it stops counting as Z2.
+
+Aerobic durability work. Cap NP ≤ 68% MAP. Short excursions above range are fine if NP stays capped. If terrain or fatigue drives NP above the cap, this no longer counts as Z2.
+
+- Endurance 2h 210w-270w
+
+<!-- template: z2-endurance-2h -->
