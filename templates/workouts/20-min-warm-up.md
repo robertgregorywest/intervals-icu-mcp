@@ -13,11 +13,11 @@ Standardised pre-race warm-up: a graded build through endurance to a minute at t
 - 1m 75-85%
 - 1m 95-105%
 - Recovery 2m 45-55%
-- Active 0m10s 150-200%
+- Active 10s 150-200%
 - Recovery 1m 45-55%
-- Active 0m10s 150-200%
+- Active 10s 150-200%
 - Recovery 2m 45-55%
-- Active 0m10s 150-200%
+- Active 10s 150-200%
 - Recovery 2m 45-55%
-- Active 0m5s 150-200%
+- Active 5s 150-200%
 - Cooldown 10m 40-50%

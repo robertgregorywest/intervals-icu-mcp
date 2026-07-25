@@ -21,19 +21,19 @@ Standardised pre-race warm-up: a graded build through endurance to a minute at t
 
 - Recovery 2m 130w-160w
 
-- Active 0m10s 435w-580w
+- Active 10s 435w-580w
 
 - Recovery 1m 130w-160w
 
-- Active 0m10s 435w-580w
+- Active 10s 435w-580w
 
 - Recovery 2m 130w-160w
 
-- Active 0m10s 435w-580w
+- Active 10s 435w-580w
 
 - Recovery 2m 130w-160w
 
-- Active 0m5s 435w-580w
+- Active 5s 435w-580w
 
 - Cooldown 10m 115w-145w
 
