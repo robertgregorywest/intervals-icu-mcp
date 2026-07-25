@@ -22,6 +22,7 @@ const EXPECTED_DIFFS: Record<string, string> = {
     "expressed as a clean 12x nest, adding one trailing 15s Off",
   "z2-endurance-2h":
     'step label "Z2" was eaten by Intervals.icu as a zone token; renamed to "Endurance"',
+  "recovery-spin": "lengthened from 30m to 40m",
 };
 
 function loadBaseline(): Map<string, string> {

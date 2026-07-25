@@ -8,4 +8,4 @@ purpose: Circulation, not stimulus. High cadence, very low load; keep it short w
 
 Active recovery. Easy spin, high cadence, very low load. Goal: circulation, not training stimulus. Keep it short if fatigue is high.
 
-- Easy 30m 30-40% 95rpm
+- Easy 40m 30-40% 95rpm
