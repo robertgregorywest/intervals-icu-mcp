@@ -7,7 +7,7 @@ The athlete may have curated a library of saved workouts in Intervals.icu. **Alw
 Reuse when **all** of these hold:
 
 - A library workout matches the **intent** (session type, duration, intensity).
-- The workout's calibration is current — either it's anchored on watts directly, or it has a rationale block and the anchor in the rationale matches the athlete's current MAP/FTP from `get_coaching_context`.
+- The workout's calibration is current. `hasTemplate: true` means `sync_workout_library` maintains it, so its watts track the athlete's tests; treat those as calibrated. A workout without a template is unmanaged and may sit at a stale anchor.
 - The athlete hasn't asked for explicit variation ("not 4×4 again, do something different").
 
 To reuse: pull the body via `get_workout_library_item`, then schedule with `create_workout` using the workout's description text.
@@ -22,17 +22,18 @@ Compose when:
 
 After composing, ask: **should this be saved to the library?**
 
-- Yes → `create_workout_library_item` with a rationale block (`basis`, `anchorWatts`, `seedId`, `intensities`). Now `refresh_workout_library` can re-anchor it on test changes.
-- No → `create_workout` only. Calendar event, no library entry.
+- Yes → **write a Workout template** at `templates/workouts/<seedId>.md` (percentages, not watts), then run `sync_workout_library`. There is no tool that adds a library item: anything without a template would silently go stale at an old anchor. Writing the file is the curation act.
+- No → `create_workout` only. Calendar event, no library entry — which is the right home for most one-offs.
 
 ## Don't
 
 - **Don't compose silently** when a library workout fits — surprises the athlete and creates calibration drift.
-- **Don't reuse blindly** when the rationale block's `anchorWatts` is far from current MAP/FTP without flagging it. Suggest a `refresh_workout_library` first.
+- **Don't reuse blindly** when `hasTemplate` is false and the watts look anchored to an old test. Flag it, and offer to bring the workout under a template.
 - **Don't save every ad-hoc workout** to the library. Only save things the athlete will plausibly reuse.
 
 ## Edge cases
 
 - **Library exists, but nothing matches**: tell the user what's in the relevant folder, ask if a near-match would do, then compose if not.
-- **Library not seeded**: suggest `seed_workout_library` if the athlete wants a canonical starter set (FTP test, MAP ramp, VO2 4×4, threshold 2×20, etc.).
-- **MAP/FTP just changed**: run `refresh_workout_library` (dry-run first) before composing — re-anchors the seeded workouts so future reuse is calibrated.
+- **Library empty**: run `sync_workout_library` — it renders the tracked templates (FTP test, MAP ramp, VO2 4×4, threshold 2×20, and the athlete's own curated sessions) into Intervals.icu.
+- **MAP/FTP just changed**: run `sync_workout_library` with the new anchors (dry-run first) before composing, so every reusable workout is re-rendered at the current values.
+- **Athlete edited a workout in the Intervals.icu UI**: warn them it will be overwritten on the next sync, and offer to fold the change into the template file instead.

@@ -2,8 +2,8 @@ import { describe, it, expect } from "vitest";
 import { TOOLS, READ_ONLY, MUTATING, UPSERT } from "../src/registry.js";
 
 describe("TOOLS registry", () => {
-  it("has 23 tools", () => {
-    expect(TOOLS).toHaveLength(23);
+  it("has 21 tools", () => {
+    expect(TOOLS).toHaveLength(21);
   });
 
   it("every tool has required fields", () => {
@@ -30,7 +30,7 @@ describe("TOOLS registry", () => {
     expect(names.has("create_workout")).toBe(true);
     expect(names.has("delete_events")).toBe(true);
     expect(names.has("get_coaching_context")).toBe(true);
-    expect(names.has("seed_workout_library")).toBe(true);
+    expect(names.has("sync_workout_library")).toBe(true);
     expect(names.has("compute_power_profile")).toBe(true);
   });
 

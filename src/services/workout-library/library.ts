@@ -4,25 +4,17 @@ import type {
   LibraryNode,
   LibraryWorkout,
   LibraryWorkoutSummary,
-  Rationale,
   WorkoutSummary,
 } from "./types.js";
 import { isFolderNode } from "./types.js";
 import {
-  extractRationale,
+  extractPurpose,
   parseDescriptionSummary,
-  stripRationale,
+  stripMarkers,
 } from "./parser.js";
-import { runSeed } from "./seed.js";
-import type { SeedOptions, SeedReport } from "./seed.js";
-import { runRefresh } from "./refresh.js";
-import type { RefreshOptions, RefreshReport } from "./refresh.js";
-import { runCreate } from "./create.js";
-import type {
-  CreateLibraryItemInput,
-  CreateLibraryItemResult,
-} from "./create.js";
-import type { IWorkoutBuilder } from "../workout-builder/index.js";
+import { extractSeedId } from "./render.js";
+import { runSync } from "./sync.js";
+import type { SyncOptions, SyncReport } from "./sync.js";
 
 export interface LibraryListing {
   folders: Array<{ id: number; name: string; num_workouts: number }>;
@@ -32,39 +24,26 @@ export interface LibraryListing {
 export interface LibraryItem {
   workout: LibraryWorkout;
   description_text: string;
-  rationale: Rationale | null;
+  /** The template this workout came from, or null if nothing manages it. */
+  seedId: string | null;
   summary: ReturnType<typeof parseDescriptionSummary>;
 }
 
 export interface IWorkoutLibrary {
   list(folderName?: string): Promise<LibraryListing>;
   get(workoutId: number): Promise<LibraryItem>;
-  seed(opts?: SeedOptions): Promise<SeedReport>;
-  refresh(opts?: RefreshOptions): Promise<RefreshReport>;
-  create(input: CreateLibraryItemInput): Promise<CreateLibraryItemResult>;
+  sync(opts?: SyncOptions): Promise<SyncReport>;
 }
 
 export class WorkoutLibrary implements IWorkoutLibrary {
   private api: IWorkoutLibraryApi;
-  private builder: IWorkoutBuilder;
 
-  constructor(api: IWorkoutLibraryApi, builder: IWorkoutBuilder) {
+  constructor(api: IWorkoutLibraryApi) {
     this.api = api;
-    this.builder = builder;
   }
 
-  async seed(opts: SeedOptions = {}): Promise<SeedReport> {
-    return runSeed(this.api, this.builder, opts);
-  }
-
-  async refresh(opts: RefreshOptions = {}): Promise<RefreshReport> {
-    return runRefresh(this.api, this.builder, opts);
-  }
-
-  async create(
-    input: CreateLibraryItemInput
-  ): Promise<CreateLibraryItemResult> {
-    return runCreate(this.api, this.builder, input);
+  async sync(opts: SyncOptions = {}): Promise<SyncReport> {
+    return runSync(this.api, opts);
   }
 
   async list(folderName?: string): Promise<LibraryListing> {
@@ -85,14 +64,16 @@ export class WorkoutLibrary implements IWorkoutLibrary {
         num_workouts: collected.length,
       });
       for (const w of collected) {
-        const summary = parseDescriptionSummary(w.description ?? "");
+        const description = w.description ?? "";
+        const purpose = extractPurpose(description);
         workouts.push({
           id: w.id,
           name: w.name,
           type: w.type,
           folder_id: folder.id,
           folder_name: folder.name,
-          ...summary,
+          ...parseDescriptionSummary(description),
+          ...(purpose ? { purpose } : {}),
         });
       }
     }
@@ -105,8 +86,8 @@ export class WorkoutLibrary implements IWorkoutLibrary {
     const description = workout.description ?? "";
     return {
       workout,
-      description_text: stripRationale(description),
-      rationale: extractRationale(description),
+      description_text: stripMarkers(description),
+      seedId: extractSeedId(description),
       summary: parseDescriptionSummary(description),
     };
   }
@@ -125,14 +106,8 @@ function collectWorkouts(
   }
 }
 
-export function createWorkoutLibrary(
-  api: IWorkoutLibraryApi,
-  builder: IWorkoutBuilder
-): WorkoutLibrary {
-  return new WorkoutLibrary(api, builder);
+export function createWorkoutLibrary(api: IWorkoutLibraryApi): WorkoutLibrary {
+  return new WorkoutLibrary(api);
 }
-
-// re-export for callers that want them via library facade
-export { extractRationale, stripRationale };
 
 export type { LibraryFolder };

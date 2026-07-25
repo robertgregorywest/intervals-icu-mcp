@@ -2,26 +2,25 @@ import { describe, it, expect, vi } from "vitest";
 import {
   listWorkoutLibrary,
   getWorkoutLibraryItem,
-  seedWorkoutLibrary,
-  refreshWorkoutLibrary,
-  createWorkoutLibraryItem,
+  syncWorkoutLibrary,
 } from "../../src/tools/workout-library.js";
 import type { IIntervalsClient } from "../../src/index.js";
 
 function createMockClient(): IIntervalsClient {
   return {
     listWorkoutLibrary: vi.fn().mockResolvedValue({
-      folders: [{ id: 1, name: "Coach Templates", num_workouts: 1 }],
+      folders: [{ id: 1, name: "Coach: VO2 Max", num_workouts: 1 }],
       workouts: [
         {
           id: 10,
           name: "VO2 4x4",
           type: "Ride",
           folder_id: 1,
-          folder_name: "Coach Templates",
+          folder_name: "Coach: VO2 Max",
           stepCount: 8,
           totalSeconds: 1920,
-          hasRationale: true,
+          hasTemplate: true,
+          purpose: "Default VO2 session.",
           oneLine: "8 steps, 32m",
         },
       ],
@@ -29,51 +28,30 @@ function createMockClient(): IIntervalsClient {
     getWorkoutLibraryItem: vi.fn().mockResolvedValue({
       workout: { id: 10, name: "VO2 4x4", description: "..." },
       description_text: "...",
-      rationale: { basis: "MAP", anchorWatts: 380 },
+      seedId: "vo2-4x4",
       summary: {
         stepCount: 8,
         totalSeconds: 1920,
-        hasRationale: true,
+        hasTemplate: true,
         oneLine: "8 steps, 32m",
       },
     }),
-    seedWorkoutLibrary: vi.fn().mockResolvedValue({
-      dryRun: false,
-      created: [
-        {
-          seedId: "vo2-4x4",
-          name: "VO2 4×4",
-          folder: "Coach Templates/VO2 Max",
-          basis: "MAP",
-          anchorWatts: 380,
-          description: "...",
-          workoutId: 1000,
-        },
-      ],
-      skipped: [],
-      warnings: [],
-    }),
-    refreshWorkoutLibrary: vi.fn().mockResolvedValue({
-      dryRun: false,
+    syncWorkoutLibrary: vi.fn().mockResolvedValue({
+      dryRun: true,
+      created: [{ seedId: "openers", name: "Openers", folder: "Coach: Race" }],
       updated: [
         {
-          workoutId: 1000,
+          seedId: "vo2-4x4",
           name: "VO2 4×4",
           folder: "Coach: VO2 Max",
-          seedId: "vo2-4x4",
-          basis: "MAP",
-          oldAnchorWatts: 380,
-          newAnchorWatts: 394,
+          workoutId: 10,
+          changed: ["description"],
         },
       ],
+      unchanged: [],
       skipped: [],
+      orphans: [],
       warnings: [],
-    }),
-    createWorkoutLibraryItem: vi.fn().mockResolvedValue({
-      workoutId: 999,
-      name: "Custom VO2",
-      folder: "Coach: Custom",
-      description: "stub",
     }),
   } as unknown as IIntervalsClient;
 }
@@ -87,6 +65,13 @@ describe("listWorkoutLibrary handler", () => {
     expect(client.listWorkoutLibrary).toHaveBeenCalledWith(undefined);
   });
 
+  it("surfaces purpose so the coach can select by intent", async () => {
+    const client = createMockClient();
+    const result = await listWorkoutLibrary(client, {});
+    expect(result.workouts[0].purpose).toBe("Default VO2 session.");
+    expect(result.workouts[0].hasTemplate).toBe(true);
+  });
+
   it("passes folder filter through", async () => {
     const client = createMockClient();
     await listWorkoutLibrary(client, { folder: "VO2" });
@@ -98,55 +83,27 @@ describe("getWorkoutLibraryItem handler", () => {
   it("delegates to client.getWorkoutLibraryItem", async () => {
     const client = createMockClient();
     const result = (await getWorkoutLibraryItem(client, { id: 10 })) as {
-      rationale: { basis: string };
+      seedId: string;
     };
-    expect(result.rationale.basis).toBe("MAP");
+    expect(result.seedId).toBe("vo2-4x4");
     expect(client.getWorkoutLibraryItem).toHaveBeenCalledWith(10);
   });
 });
 
-describe("seedWorkoutLibrary handler", () => {
-  it("forwards anchors and dryRun to client.seedWorkoutLibrary", async () => {
+describe("syncWorkoutLibrary handler", () => {
+  it("forwards anchors and dryRun to client.syncWorkoutLibrary", async () => {
     const client = createMockClient();
-    const result = await seedWorkoutLibrary(client, {
-      mapWatts: 380,
+    const result = await syncWorkoutLibrary(client, {
+      mapWatts: 415,
       ftpWatts: 290,
       dryRun: true,
     });
     expect(result.created).toHaveLength(1);
-    expect(client.seedWorkoutLibrary).toHaveBeenCalledWith({
-      mapWatts: 380,
+    expect(result.updated[0].changed).toEqual(["description"]);
+    expect(client.syncWorkoutLibrary).toHaveBeenCalledWith({
+      mapWatts: 415,
       ftpWatts: 290,
       dryRun: true,
-    });
-  });
-});
-
-describe("refreshWorkoutLibrary handler", () => {
-  it("forwards anchors to client.refreshWorkoutLibrary", async () => {
-    const client = createMockClient();
-    const result = await refreshWorkoutLibrary(client, { mapWatts: 394 });
-    expect(result.updated).toHaveLength(1);
-    expect(result.updated[0].newAnchorWatts).toBe(394);
-    expect(client.refreshWorkoutLibrary).toHaveBeenCalledWith({
-      mapWatts: 394,
-    });
-  });
-});
-
-describe("createWorkoutLibraryItem handler", () => {
-  it("forwards the input to client.createWorkoutLibraryItem", async () => {
-    const client = createMockClient();
-    const result = await createWorkoutLibraryItem(client, {
-      name: "Custom VO2",
-      folder: "Coach: Custom",
-      steps: [{ duration: "4m", target: "375w" }],
-    });
-    expect(result.workoutId).toBe(999);
-    expect(client.createWorkoutLibraryItem).toHaveBeenCalledWith({
-      name: "Custom VO2",
-      folder: "Coach: Custom",
-      steps: [{ duration: "4m", target: "375w" }],
     });
   });
 });

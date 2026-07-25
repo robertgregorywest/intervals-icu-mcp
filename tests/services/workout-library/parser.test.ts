@@ -1,64 +1,64 @@
 import { describe, it, expect } from "vitest";
 import {
-  extractRationale,
-  embedRationale,
-  stripRationale,
+  stripMarkers,
+  extractProse,
+  extractPurpose,
+  hasTemplateMarker,
   parseDescriptionSummary,
 } from "../../../src/services/workout-library/parser.js";
 
-describe("extractRationale", () => {
-  it("returns null when no rationale block present", () => {
-    expect(extractRationale("- 5m 95%")).toBeNull();
+describe("stripMarkers", () => {
+  it("removes the template marker", () => {
+    const desc = "- 4m 360w\n\n<!-- template: vo2-4x4 -->";
+    expect(stripMarkers(desc)).toBe("- 4m 360w");
   });
 
-  it("parses an embedded JSON rationale", () => {
+  it("removes a legacy rationale block", () => {
     const desc =
       '- 4m 360w\n\n<!-- rationale {"basis":"MAP","anchorWatts":380} -->';
-    const r = extractRationale(desc);
-    expect(r).toEqual({ basis: "MAP", anchorWatts: 380 });
+    expect(stripMarkers(desc)).toBe("- 4m 360w");
   });
 
-  it("rejects rationale without a valid basis", () => {
-    const desc = '- 4m\n\n<!-- rationale {"basis":"WATTS"} -->';
-    expect(extractRationale(desc)).toBeNull();
-  });
-
-  it("returns null on malformed JSON", () => {
-    const desc = "- 4m\n\n<!-- rationale not-json -->";
-    expect(extractRationale(desc)).toBeNull();
+  it("leaves an unmarked description alone", () => {
+    expect(stripMarkers("- 5m 95%")).toBe("- 5m 95%");
   });
 });
 
-describe("embedRationale + stripRationale", () => {
-  it("round-trips", () => {
-    const body = "- 4m 360w";
-    const rationale = {
-      basis: "MAP" as const,
-      anchorWatts: 380,
-      seedId: "vo2-4x4",
-    };
-    const embedded = embedRationale(body, rationale);
-    expect(embedded).toContain(body);
-    expect(extractRationale(embedded)).toEqual(rationale);
-    expect(stripRationale(embedded)).toBe(body);
+describe("hasTemplateMarker", () => {
+  it("is true only for the current marker", () => {
+    expect(hasTemplateMarker("x\n<!-- template: openers -->")).toBe(true);
+    expect(hasTemplateMarker('x\n<!-- rationale {"basis":"MAP"} -->')).toBe(
+      false
+    );
+    expect(hasTemplateMarker("- 5m 95%")).toBe(false);
+  });
+});
+
+describe("extractProse / extractPurpose", () => {
+  const desc = [
+    "Day before a race. Opens the legs without cost.",
+    "",
+    "Longer rationale paragraph explaining the session.",
+    "",
+    "- Warm up 20m 160w",
+    "",
+    "<!-- template: openers -->",
+  ].join("\n");
+
+  it("returns the text preceding the first step", () => {
+    expect(extractProse(desc)).toBe(
+      "Day before a race. Opens the legs without cost.\n\nLonger rationale paragraph explaining the session."
+    );
   });
 
-  it("replaces an existing rationale block", () => {
-    const original = embedRationale("- 4m 360w", {
-      basis: "MAP",
-      anchorWatts: 380,
-    });
-    const replaced = embedRationale(original, {
-      basis: "FTP",
-      anchorWatts: 290,
-    });
-    expect(extractRationale(replaced)).toEqual({
-      basis: "FTP",
-      anchorWatts: 290,
-    });
-    // Only one rationale block remains
-    const matches = replaced.match(/<!--\s*rationale/g) ?? [];
-    expect(matches).toHaveLength(1);
+  it("purpose is the first paragraph only", () => {
+    expect(extractPurpose(desc)).toBe(
+      "Day before a race. Opens the legs without cost."
+    );
+  });
+
+  it("purpose is undefined when there is no prose", () => {
+    expect(extractPurpose("- 5m 95%")).toBeUndefined();
   });
 });
 
@@ -69,7 +69,7 @@ describe("parseDescriptionSummary", () => {
     expect(s.stepCount).toBe(2);
     expect(s.totalSeconds).toBe(15 * 60);
     expect(s.oneLine).toBe("2 steps, 15m");
-    expect(s.hasRationale).toBe(false);
+    expect(s.hasTemplate).toBe(false);
   });
 
   it("expands repeat blocks", () => {
@@ -94,12 +94,27 @@ describe("parseDescriptionSummary", () => {
     expect(s.oneLine).toContain("includes distance steps");
   });
 
-  it("ignores rationale block when summarizing", () => {
-    const desc =
-      '- 4m 360w\n\n<!-- rationale {"basis":"MAP","anchorWatts":380} -->';
+  // Intervals.icu accepts a dash with no following space, and workouts authored
+  // in its UI commonly use it. Previously these parsed as "Empty workout".
+  it("accepts a step line with no space after the dash", () => {
+    const desc = "-Warm-up 5m 160w\n-Pre-load 2m 350w";
+    const s = parseDescriptionSummary(desc);
+    expect(s.stepCount).toBe(2);
+    expect(s.totalSeconds).toBe(7 * 60);
+  });
+
+  it("counts a repeat block written without the space", () => {
+    const desc = "-Warm-up 5m 160w\n\n10x\n-Hard 30s 375w\n-Recovery 30s 190w";
+    const s = parseDescriptionSummary(desc);
+    expect(s.stepCount).toBe(21);
+    expect(s.totalSeconds).toBe(5 * 60 + 10 * 60);
+  });
+
+  it("ignores the marker when summarizing", () => {
+    const desc = "- 4m 360w\n\n<!-- template: vo2-4x4 -->";
     const s = parseDescriptionSummary(desc);
     expect(s.stepCount).toBe(1);
-    expect(s.hasRationale).toBe(true);
+    expect(s.hasTemplate).toBe(true);
   });
 
   it("returns empty summary for blank descriptions", () => {

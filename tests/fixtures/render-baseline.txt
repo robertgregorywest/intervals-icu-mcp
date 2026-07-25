@@ -1,0 +1,179 @@
+# Render baseline — MAP=415W FTP=290W
+# Generated from CANONICAL_TEMPLATES before the templates/*.md rewrite.
+# See docs/adr/0005-workout-templates-as-tracked-files.md
+
+========================================================================
+seedId: ftp-20min-test
+name:   FTP 20-min test
+folder: Coach: Tests
+basis:  FTP @ 290w
+------------------------------------------------------------------------
+- Warm-up 15m 160w-190w
+
+- 1m 290w
+
+- 1m 175w
+
+- 1m 320w
+
+- 1m 175w
+
+- 1m 350w
+
+- 5m 175w
+
+- 20min effort 20m 275w-305w
+
+- Cooldown 10m 145w
+
+========================================================================
+seedId: map-ramp-test
+name:   MAP ramp test
+folder: Coach: Tests
+basis:  MAP @ 415w
+------------------------------------------------------------------------
+- Warm-up 5m 165w
+
+- Ramp 2m 165w-195w
+
+- Ramp 2m 195w-225w
+
+- Ramp 2m 225w-255w
+
+- Ramp 2m 255w-280w
+
+- Ramp 2m 280w-310w
+
+- Ramp 2m 310w-340w
+
+- Ramp 2m 340w-370w
+
+- Ramp 2m 370w-400w
+
+- Ramp 2m 400w-425w
+
+- Ramp 2m 425w-455w
+
+- Cooldown 5m 145w
+
+========================================================================
+seedId: vo2-4x4
+name:   VO2 4×4
+folder: Coach: VO2 Max
+basis:  MAP @ 415w
+------------------------------------------------------------------------
+- Warm-up 15m 210w-250w
+
+4x
+- On 4m 395w-425w
+- Off 4m 210w
+
+- Cooldown 10m 185w
+
+========================================================================
+seedId: vo2-30-30
+name:   VO2 30/30s
+folder: Coach: VO2 Max
+basis:  MAP @ 415w
+------------------------------------------------------------------------
+- Warm-up 15m 210w-250w
+
+16x
+- On 30s 455w
+- Off 30s 210w
+
+- Cooldown 10m 185w
+
+========================================================================
+seedId: vo2-preloaded-shorts
+name:   VO2 preloaded shorts
+folder: Coach: VO2 Max
+basis:  MAP @ 415w
+------------------------------------------------------------------------
+- Warm-up 15m 210w-250w
+
+Series 3x
+- Preload 2m 395w-415w 95rpm
+- Short rec 30s 210w
+- On 30s 415w-435w
+- Off 15s 210w
+- On 30s 415w-435w
+- Off 15s 210w
+- On 30s 415w-435w
+- Off 15s 210w
+- On 30s 415w-435w
+- Off 15s 210w
+- On 30s 415w-435w
+- Off 15s 210w
+- On 30s 415w-435w
+- Off 15s 210w
+- On 30s 415w-435w
+- Off 15s 210w
+- On 30s 415w-435w
+- Off 15s 210w
+- On 30s 415w-435w
+- Off 15s 210w
+- On 30s 415w-435w
+- Off 15s 210w
+- On 30s 415w-435w
+- Off 15s 210w
+- On 30s 415w-435w
+- Series rec 3m 210w
+
+- Cooldown 10m 185w
+
+========================================================================
+seedId: threshold-2x20
+name:   Threshold 2×20
+folder: Coach: Threshold
+basis:  FTP @ 290w
+------------------------------------------------------------------------
+- Warm-up 15m 160w-205w
+
+2x
+- Threshold 20m 275w-305w
+- Recovery 5m 160w
+
+- Cooldown 10m 145w
+
+========================================================================
+seedId: sweet-spot-3x12
+name:   Sweet Spot 3×12
+folder: Coach: Sweet Spot
+basis:  FTP @ 290w
+------------------------------------------------------------------------
+- Warm-up 12m 160w-205w
+
+3x
+- SST 12m 255w-275w
+- Recovery 4m 160w
+
+- Cooldown 10m 145w
+
+========================================================================
+seedId: z2-endurance-2h
+name:   Z2 endurance 2h
+folder: Coach: Endurance
+basis:  MAP @ 415w
+------------------------------------------------------------------------
+- Z2 2h 210w-270w
+
+========================================================================
+seedId: miet-60
+name:   MIET 60min
+folder: Coach: Endurance
+basis:  MAP @ 415w
+------------------------------------------------------------------------
+- Warm-up 10m 230w
+
+- MIET 45m 250w-290w
+
+- Cooldown 5m 185w
+
+========================================================================
+seedId: recovery-spin
+name:   Recovery spin
+folder: Coach: Recovery
+basis:  MAP @ 415w
+------------------------------------------------------------------------
+- Easy 30m 125w-165w 95rpm

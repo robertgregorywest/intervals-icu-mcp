@@ -1,0 +1,7 @@
+# Workout templates are data, not prose. Their repeat blocks nest by
+# indentation (ADR 0005) and Prettier's Markdown list normalisation flattens
+# that nesting, which makes the template fail to parse. Keep them out.
+templates/workouts/*.md
+
+# Pre-rewrite render baseline — byte-for-byte comparison fixture.
+tests/fixtures/render-baseline.txt

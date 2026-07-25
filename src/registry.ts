@@ -66,15 +66,9 @@ import {
   listWorkoutLibraryOutputSchema,
   getWorkoutLibraryItemSchema,
   getWorkoutLibraryItem,
-  seedWorkoutLibrarySchema,
-  seedWorkoutLibrary,
-  seedWorkoutLibraryOutputSchema,
-  refreshWorkoutLibrarySchema,
-  refreshWorkoutLibrary,
-  refreshWorkoutLibraryOutputSchema,
-  createWorkoutLibraryItemSchema,
-  createWorkoutLibraryItem,
-  createWorkoutLibraryItemOutputSchema,
+  syncWorkoutLibrarySchema,
+  syncWorkoutLibrary,
+  syncWorkoutLibraryOutputSchema,
 } from "./tools/workout-library.js";
 
 export const READ_ONLY: ToolAnnotations = {
@@ -263,7 +257,9 @@ export const TOOLS: ToolDef[] = [
       "List the athlete's saved workouts (folders + workouts with name and a one-line summary). " +
       "Use this BEFORE composing an ad-hoc session so you reuse the athlete's curated templates. " +
       'Optional "folder" arg filters by folder name. ' +
-      "Returns: { folders: [...], workouts: [{ id, name, folder_id, stepCount, totalSeconds, hasRationale, oneLine }] }.",
+      "Each workout carries a `purpose` saying what it is FOR — use that to pick the right one. " +
+      "`hasTemplate` marks workouts maintained by sync_workout_library. " +
+      "Returns: { folders: [...], workouts: [{ id, name, folder_id, stepCount, totalSeconds, hasTemplate, purpose, oneLine }] }.",
     schema: listWorkoutLibrarySchema,
     annotations: READ_ONLY,
     outputSchema: listWorkoutLibraryOutputSchema,
@@ -276,9 +272,9 @@ export const TOOLS: ToolDef[] = [
   {
     name: "get_workout_library_item",
     description:
-      "Get the full body of a saved workout including its rationale (intent, %MAP/%FTP basis, source). " +
-      "Returns: { workout, description_text, rationale, summary } where rationale is the parsed coaching context " +
-      "(null when the workout has no embedded rationale block).",
+      "Get the full body of a saved workout: prose rationale, steps and provenance. " +
+      "Returns: { workout, description_text, seedId, summary } where seedId names the template " +
+      "the workout is rendered from (null when nothing manages it).",
     schema: getWorkoutLibraryItemSchema,
     annotations: READ_ONLY,
     outputSchema: null,
@@ -289,59 +285,24 @@ export const TOOLS: ToolDef[] = [
       ),
   },
   {
-    name: "create_workout_library_item",
+    name: "sync_workout_library",
     description:
-      "Author and persist a new workout to the athlete's library. Use when you've " +
-      "composed a session that doesn't already exist in the library and want it " +
-      "saved for reuse. Folder is created if missing (defaults to 'Coach: Custom'). " +
-      "Fails if a workout with this name already exists in the target folder. " +
-      "Provide a rationale block with basis/anchorWatts/seedId/intensities to make " +
-      "the workout refreshable via refresh_workout_library when MAP or FTP changes. " +
-      "Returns: { workoutId, name, folder, description }.",
-    schema: createWorkoutLibraryItemSchema,
-    annotations: UPSERT,
-    outputSchema: createWorkoutLibraryItemOutputSchema,
-    handler: (client, args) =>
-      createWorkoutLibraryItem(
-        client,
-        args as z.infer<typeof createWorkoutLibraryItemSchema>
-      ),
-  },
-  {
-    name: "refresh_workout_library",
-    description:
-      "Regenerate watts on every seeded workout in the library when MAP or FTP changes. " +
-      "Walks all folders, finds workouts whose rationale block has a known seedId, and " +
-      "rewrites the step body using the new anchor while preserving any free-text prose " +
-      "the user has added above the steps. Skips workouts already at the new anchor. " +
+      "Reconcile the Intervals.icu library against the tracked Workout templates. " +
+      "The template files are the source of truth: each is rendered at the supplied " +
+      "MAP/FTP and upserted, matched by its template marker — creating what is missing, " +
+      "updating what changed (steps, prose, name or folder), and re-anchoring watts when " +
+      "MAP or FTP has moved. Run it after editing a template AND after a new test result. " +
+      "Never deletes: a library workout whose template has gone is reported as an orphan. " +
+      "Hand edits made in the Intervals.icu UI are overwritten — edit the template file instead. " +
       "Use dryRun=true to preview. " +
-      "Returns: { dryRun, updated: [...], skipped: [...], warnings: [...] }.",
-    schema: refreshWorkoutLibrarySchema,
+      "Returns: { dryRun, created, updated, unchanged, skipped, orphans, warnings }.",
+    schema: syncWorkoutLibrarySchema,
     annotations: UPSERT,
-    outputSchema: refreshWorkoutLibraryOutputSchema,
+    outputSchema: syncWorkoutLibraryOutputSchema,
     handler: (client, args) =>
-      refreshWorkoutLibrary(
+      syncWorkoutLibrary(
         client,
-        args as z.infer<typeof refreshWorkoutLibrarySchema>
-      ),
-  },
-  {
-    name: "seed_workout_library",
-    description:
-      "Populate the athlete's library with a canonical set of cycling templates " +
-      "(FTP test, MAP ramp, VO2 4x4, VO2 30/30, threshold 2x20, sweet spot 3x12, Z2, MIET, recovery). " +
-      'Authors templates under a "Coach Templates" folder hierarchy. ' +
-      "Provide mapWatts and/or ftpWatts to materialize templates anchored on each. " +
-      "Idempotent: skips workouts whose name already exists in the target folder. " +
-      "Use dryRun=true to preview without writing. " +
-      "Returns: { dryRun, created: [...], skipped: [...], warnings: [...] }.",
-    schema: seedWorkoutLibrarySchema,
-    annotations: UPSERT,
-    outputSchema: seedWorkoutLibraryOutputSchema,
-    handler: (client, args) =>
-      seedWorkoutLibrary(
-        client,
-        args as z.infer<typeof seedWorkoutLibrarySchema>
+        args as z.infer<typeof syncWorkoutLibrarySchema>
       ),
   },
 

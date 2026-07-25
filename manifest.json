@@ -3,7 +3,7 @@
   "version": "0.6.0",
   "name": "intervals-icu-mcp",
   "display_name": "Intervals.icu",
-  "description": "Access your Intervals.icu training data — activities, calendar, fitness metrics, power curves, workout planning, and a managed library of saved workouts that can act as a coaching template store.",
+  "description": "Access your Intervals.icu training data \u2014 activities, calendar, fitness metrics, power curves, workout planning, and a managed library of saved workouts that can act as a coaching template store.",
   "server": {
     "type": "node",
     "entry_point": "dist/mcp/stdio.js",
@@ -20,7 +20,7 @@
     "intervals_api_key": {
       "type": "string",
       "title": "Intervals.icu API Key",
-      "description": "Your Intervals.icu API key (Settings → API)",
+      "description": "Your Intervals.icu API key (Settings \u2192 API)",
       "required": true,
       "sensitive": true
     },
@@ -33,35 +33,75 @@
     }
   },
   "tools": [
-    { "name": "get_athlete" },
-    { "name": "get_activities" },
-    { "name": "get_activity" },
-    { "name": "get_activity_streams" },
-    { "name": "get_events" },
-    { "name": "get_event" },
-    { "name": "update_event" },
-    { "name": "delete_events" },
-    { "name": "create_workout" },
-    { "name": "create_strength_workout" },
-    { "name": "list_workout_library" },
-    { "name": "get_workout_library_item" },
-    { "name": "create_workout_library_item" },
-    { "name": "seed_workout_library" },
-    { "name": "refresh_workout_library" },
-    { "name": "get_wellness" },
-    { "name": "get_fitness_summary" },
-    { "name": "get_power_curve" },
-    { "name": "get_aerobic_decoupling" },
-    { "name": "compare_intervals" },
-    { "name": "compute_power_profile" },
-    { "name": "get_training_week_summary" },
-    { "name": "get_coaching_context" }
+    {
+      "name": "get_athlete"
+    },
+    {
+      "name": "get_activities"
+    },
+    {
+      "name": "get_activity"
+    },
+    {
+      "name": "get_activity_streams"
+    },
+    {
+      "name": "get_events"
+    },
+    {
+      "name": "get_event"
+    },
+    {
+      "name": "update_event"
+    },
+    {
+      "name": "delete_events"
+    },
+    {
+      "name": "create_workout"
+    },
+    {
+      "name": "create_strength_workout"
+    },
+    {
+      "name": "list_workout_library"
+    },
+    {
+      "name": "get_workout_library_item"
+    },
+    {
+      "name": "get_wellness"
+    },
+    {
+      "name": "get_fitness_summary"
+    },
+    {
+      "name": "get_power_curve"
+    },
+    {
+      "name": "get_aerobic_decoupling"
+    },
+    {
+      "name": "compare_intervals"
+    },
+    {
+      "name": "compute_power_profile"
+    },
+    {
+      "name": "get_training_week_summary"
+    },
+    {
+      "name": "get_coaching_context"
+    },
+    {
+      "name": "sync_workout_library"
+    }
   ],
   "prompts": [
     {
       "name": "setup_coaching",
       "description": "Walk the athlete through a short interview, then emit their personal season.md and steering.md for docs/personal/ (philosophy is the tracked coaching-philosophy skill).",
-      "text": "Run this prompt to bootstrap your personal coaching files. The LLM reads the coaching-philosophy skill (your durable principles, tracked in git), calls get_coaching_context for FTP/zones/fitness, then interviews you on your current season and any personal steering. The output is season.md and steering.md for docs/personal/ — layered on top of the philosophy skill, steering overrides on conflict."
+      "text": "Run this prompt to bootstrap your personal coaching files. The LLM reads the coaching-philosophy skill (your durable principles, tracked in git), calls get_coaching_context for FTP/zones/fitness, then interviews you on your current season and any personal steering. The output is season.md and steering.md for docs/personal/ \u2014 layered on top of the philosophy skill, steering overrides on conflict."
     }
   ],
   "author": {

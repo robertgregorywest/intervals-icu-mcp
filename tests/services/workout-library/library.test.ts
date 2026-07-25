@@ -1,9 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { WorkoutLibrary } from "../../../src/services/workout-library/library.js";
 import type { IWorkoutLibraryApi } from "../../../src/services/workout-library/api.js";
-import { createWorkoutBuilder } from "../../../src/services/workout-builder/index.js";
-
-const builder = createWorkoutBuilder();
 
 function fakeApi(
   overrides: Partial<IWorkoutLibraryApi> = {}
@@ -58,7 +55,7 @@ describe("WorkoutLibrary.list", () => {
         },
       ]),
     });
-    const lib = new WorkoutLibrary(api, builder);
+    const lib = new WorkoutLibrary(api);
 
     const result = await lib.list();
 
@@ -99,7 +96,7 @@ describe("WorkoutLibrary.list", () => {
         },
       ]),
     });
-    const lib = new WorkoutLibrary(api, builder);
+    const lib = new WorkoutLibrary(api);
     const result = await lib.list();
     expect(result.workouts).toHaveLength(1);
     expect(result.workouts[0].name).toBe("Buried");
@@ -132,7 +129,7 @@ describe("WorkoutLibrary.list", () => {
         },
       ]),
     });
-    const lib = new WorkoutLibrary(api, builder);
+    const lib = new WorkoutLibrary(api);
 
     const result = await lib.list("Coach Templates");
 
@@ -147,7 +144,7 @@ describe("WorkoutLibrary.list", () => {
         .fn()
         .mockResolvedValue([{ id: 1, name: "Empty", type: "FOLDER" }]),
     });
-    const lib = new WorkoutLibrary(api, builder);
+    const lib = new WorkoutLibrary(api);
     const result = await lib.list();
     expect(result.workouts).toHaveLength(0);
     expect(result.folders[0].num_workouts).toBe(0);
@@ -155,9 +152,8 @@ describe("WorkoutLibrary.list", () => {
 });
 
 describe("WorkoutLibrary.get", () => {
-  it("returns workout, stripped description, parsed rationale, and summary", async () => {
-    const description =
-      '- 4m 360w\n- 4m 180w\n\n<!-- rationale {"basis":"MAP","anchorWatts":380} -->';
+  it("returns workout, stripped description, seedId, and summary", async () => {
+    const description = "- 4m 360w\n- 4m 180w\n\n<!-- template: vo2-4x4 -->";
     const api = fakeApi({
       getWorkout: vi.fn().mockResolvedValue({
         id: 42,
@@ -166,17 +162,17 @@ describe("WorkoutLibrary.get", () => {
         description,
       }),
     });
-    const lib = new WorkoutLibrary(api, builder);
+    const lib = new WorkoutLibrary(api);
 
     const item = await lib.get(42);
 
     expect(item.workout.id).toBe(42);
     expect(item.description_text).toBe("- 4m 360w\n- 4m 180w");
-    expect(item.rationale).toEqual({ basis: "MAP", anchorWatts: 380 });
+    expect(item.seedId).toBe("vo2-4x4");
     expect(item.summary.stepCount).toBe(2);
   });
 
-  it("returns null rationale when none present", async () => {
+  it("returns null seedId when nothing manages the workout", async () => {
     const api = fakeApi({
       getWorkout: vi.fn().mockResolvedValue({
         id: 1,
@@ -185,8 +181,8 @@ describe("WorkoutLibrary.get", () => {
         description: "- 30m 75%",
       }),
     });
-    const lib = new WorkoutLibrary(api, builder);
+    const lib = new WorkoutLibrary(api);
     const item = await lib.get(1);
-    expect(item.rationale).toBeNull();
+    expect(item.seedId).toBeNull();
   });
 });

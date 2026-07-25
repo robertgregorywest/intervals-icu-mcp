@@ -4,10 +4,10 @@ MCP server for the Intervals.icu API plus tools to support agentic coaching.
 
 ## Architecture
 
-- **Services** (`src/services/`) — business logic behind interfaces (`IWorkoutBuilder`, `IEventsApi`, `IWorkoutLibrary`). Each service has `types.ts`, implementation, and `index.ts` re-exporting the interface + factory. Larger services (`workout-library/`) split into multiple files (api/parser/seed/refresh/create/library) — same pattern, more surface.
+- **Services** (`src/services/`) — business logic behind interfaces (`IWorkoutBuilder`, `IEventsApi`, `IWorkoutLibrary`). Each service has `types.ts`, implementation, and `index.ts` re-exporting the interface + factory. Larger services (`workout-library/`) split into multiple files (api/parser/template/render/loader/sync/library) — same pattern, more surface.
 - **Client** (`src/client.ts`) — `HttpClient` with Basic auth, rate limiting, injectable `fetchFn` for testing.
 - **Facade** (`src/index.ts`) — `IntervalsClient` composes services, implements `IIntervalsClient`.
-- **Tool registry** (`src/registry.ts`) — single source of truth for all 23 Tools (`ToolDef[]`). Each entry has `name`, `description`, `schema`, `annotations`, `outputSchema`, `handler`. Both adapters iterate this list.
+- **Tool registry** (`src/registry.ts`) — single source of truth for all 21 Tools (`ToolDef[]`). Each entry has `name`, `description`, `schema`, `annotations`, `outputSchema`, `handler`. Both adapters iterate this list.
 - **Tools** (`src/tools/`) — handler implementations (schema + handler pairs) shared across adapters.
 - **MCP adapter** (`src/mcp/`) — `server.ts` iterates `TOOLS` and registers each via `registerTool()`. `syntax-doc.ts` is the single source of truth for `instructions`. `prompts/` registers user-invokable MCP prompts.
 - **CLI adapter** (`src/cli/main.ts`) — projects `TOOLS` as Bash subcommands; `bin/icu` is the checked-in entrypoint.
@@ -44,9 +44,36 @@ Nx                                            # repeat block (blank lines around
 - Pace: `60% Pace`, `Z2 Pace`, `5:00/km Pace`
 - Cadence: `90rpm`
 
-### Saved-workout rationale block
+### Workout templates
 
-Saved workouts in the library can carry an HTML-comment rationale block at the end of their description that captures the %MAP/%FTP intent behind the absolute watts. Format: `<!-- rationale {"basis":"MAP","anchorWatts":380,"seedId":"vo2-4x4","intensities":[{"stepRef":"On","pct":[95,102]},...]} -->`. The block is invisible in the Intervals.icu UI; it makes a workout refreshable via `refresh_workout_library` when MAP or FTP changes (text-munges only the watts in step lines, leaves prose/labels/durations/cadence alone).
+Curated library workouts are **tracked Markdown files** in `templates/workouts/*.md`. (`templates/personal/` is a different thing entirely — scaffolds for the personal season/steering files.) The files are the source of truth and the Intervals.icu library is a rendered view: `sync_workout_library` renders each template at the current MAP/FTP and upserts it, matched by a `<!-- template: <seedId> -->` marker in the description. Hand edits in the Intervals.icu UI are overwritten. See ADR 0005.
+
+```markdown
+---
+seedId: vo2-4x4 # stable identity; matches the remote workout
+name: VO2 4×4
+folder: "Coach: VO2 Max" # created if missing
+basis: MAP # MAP | FTP; omit when nothing is anchored
+purpose: Default VO2 session. # REQUIRED — how the coach selects it
+---
+
+Free prose (rationale, citations) — rendered above the steps.
+
+- Warm-up 15m 50-60%
+
+4x
+
+- On 4m 95-102%
+- Off 4m 50%
+
+- Cooldown 10m 45%
+```
+
+- **Bare `%` is anchored** to `basis` and resolves to watts (rounded to 5 W) at render. **Everything else is verbatim** — `350w`, `Z2`, `64-75% LTHR`, `90rpm` — and never moves when MAP/FTP moves. A percentage is anchored only when _no modifier follows it_. A template with no bare `%` needs no `basis` and always syncs (that's how the fixed MAP ramp-test protocol stays comparable across retests).
+- **Repeats nest by indentation.** Blank lines are ignored; only indent matters. At render, a block containing another block is **unrolled** (label discarded) and a block of plain steps becomes a native `Nx` — Intervals.icu supports only one level.
+- **`ramp` is a parse error.** A ramp collapses to one averaged target on head units; write explicit steps.
+- **Adding a library workout means writing a file** in `templates/workouts/`. There is no tool that creates an unmanaged library item — anything without a template would silently sit at a stale anchor. One-off sessions go on the calendar via `create_workout`.
+- Sync **never deletes**: a marker-bearing workout with no template is reported as an orphan. A pre-marker workout is adopted only if its name _and_ folder match a template exactly and uniquely.
 
 ### Coaching architecture
 
@@ -65,7 +92,7 @@ Other coaching surfaces:
 - **Athlete state** — `get_coaching_context` tool bundles `getAthlete` + `getWellness(days)` + computed CTL/ATL/TSB into one snapshot. Default 7-day wellness window, max 30. Always fresh — no files to maintain.
 - **MAP** — derived in the same tool: scans the last 90 days of activities, picks the most recent whose name (case-insensitive) starts with `"MAP ramp test"` and does **not** contain `"(skip)"`, runs `computeBestPower(stream, 60)` on its watts stream, returns `{ map: { watts, computedFrom: { metric, activityId, activityName, activityDate, daysAgo } } }`. No qualifying test → `map: null` plus a `mapWarning` for the LLM to act on. Athletes exclude botched tests by renaming the activity in Intervals.icu to include `(skip)`.
 
-Saved workouts can still encode %MAP/%FTP intent via the rationale block (see above) so `refresh_workout_library` can re-anchor them when test values change.
+When a test value changes, run `sync_workout_library` with the new anchors — every MAP/FTP-anchored template is re-rendered from source, so watts, structure and prose all stay in step.
 
 ## CLI adapter
 
@@ -93,7 +120,7 @@ echo '{}' | ./bin/icu get_athlete   # stdin also works (not yet; planned)
 
 - Read commands (`get_*`, `list_*`, `compute_*`, `compare_*`, `describe`): allowlist as read-only Bash.
 - Mutating commands (`delete_events`, `update_event`): require explicit `--yes`; prompt user before adding to allowlist.
-- Upsert commands (`create_*`, `refresh_*`, `seed_*`): run freely; idempotent.
+- Upsert commands (`create_*`, `sync_*`): run freely; idempotent.
 
 `--help` prints a breadcrumb pointing at `describe`. On TTY, output is pretty-printed (2-space JSON); piped/non-TTY output is compact single-line JSON.
 

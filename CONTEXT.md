@@ -32,6 +32,30 @@ _Avoid_: "power zones" (ambiguous with the FTP set)
 **FTP zones**:
 Intervals.icu's native Coggan / %FTP power zones. Available on the raw `get_athlete` view; intentionally absent from the coaching context (see ADR 0003).
 
+**Workout template**:
+The tracked Markdown file in `templates/` that is the source of truth for one curated workout — frontmatter (identity, folder, purpose, basis) plus a body in Intervals.icu step syntax. Authored by hand; editing one is a commit.
+_Avoid_: "seed" or "canonical template" (both imply a one-time initial write, which is exactly what this is not)
+
+**Library workout**:
+The materialised copy of a Workout template on Intervals.icu. A **rendered view**, never a source — hand edits to it are overwritten on the next Sync. Every Library workout has a Workout template behind it.
+_Avoid_: calling it the workout "in the library" as though it were authoritative
+
+**Sync**:
+The single reconcile operation (`sync_workout_library`): render every Workout template at the current anchors and upsert it, matched by its Template marker. Creates what is missing, updates what differs, never deletes.
+_Avoid_: "seed" / "refresh" — both named halves of this one operation and are retired
+
+**Basis**:
+The anchor a template's percentages are read against — MAP or FTP — declared once per template. One basis per template; mixing is a parse error.
+
+**Anchored target**:
+A bare percentage in a step line, resolved against the template's Basis at render time. Everything else — literal watts, zones, HR, pace, cadence — is a **literal target**, emitted verbatim and unaffected by anchor changes. A template with no Anchored target needs no Basis and always syncs.
+
+**Template marker**:
+The HTML comment carrying a Workout template's identity on its Library workout, so Sync can find the copy it owns. Invisible in the Intervals.icu UI.
+
+**Orphan**:
+A marker-bearing Library workout whose Workout template no longer exists. Reported by Sync as a warning; never deleted automatically.
+
 **Coaching philosophy**:
 The athlete's durable, timeless training principles — foundational pillars, intensity anchor (MAP), execution rules, biases, test cadence. **Tracked in git** as the `coaching-philosophy` skill and shared by every install; the base layer of the Coaching-context stack. Editing it is a commit (see ADR 0004).
 _Avoid_: putting season-scoped or current-state facts here (those are **Season** / athlete state); calling one athlete's deviations "philosophy" (that's **Steering**).
@@ -54,6 +78,9 @@ _Avoid_: confusing this with `get_coaching_context`'s output — that is live **
 - Each **Adapter** iterates the **Tool registry** and produces one **Projection** per Tool
 - An **MCP tool** and a **CLI command** are **Projections** of the same **Tool**
 - An **Adapter** holds no business logic — that lives in the Tool's handler and the services it calls
+- A **Workout template** is rendered by **Sync** into exactly one **Library workout**, found by its **Template marker**
+- A **Library workout** with no **Workout template** is an **Orphan**; a **Workout template** with no **Library workout** is created on the next **Sync**
+- An **Anchored target** moves when MAP/FTP moves; a **literal target** does not — that is the whole difference between them
 
 ## Example dialogue
 

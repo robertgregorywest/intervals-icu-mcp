@@ -1,106 +1,61 @@
-import type { Rationale, RationaleIntensity, WorkoutSummary } from "./types.js";
+import type { WorkoutSummary } from "./types.js";
 
-const RATIONALE_RE = /<!--\s*rationale\s*([\s\S]+?)\s*-->/i;
+/** Provenance marker written by sync. */
+const TEMPLATE_MARKER_RE = /<!--\s*template:\s*[a-z0-9][a-z0-9-]*\s*-->/i;
+/** Legacy marker from the retired seed/refresh path — stripped, never written. */
+const LEGACY_RATIONALE_RE = /<!--\s*rationale\s*[\s\S]+?\s*-->/i;
+
 const DURATION_RE = /(\d+)(km|mtr|h|m|s)(?![a-z])/gi;
 const REPEAT_RE = /(?:^|\s)(\d+)x\s*$/;
 
-export function extractRationale(description: string): Rationale | null {
-  if (!description) return null;
-  const match = description.match(RATIONALE_RE);
-  if (!match) return null;
-  try {
-    const parsed = JSON.parse(match[1]) as Rationale;
-    if (parsed && (parsed.basis === "MAP" || parsed.basis === "FTP")) {
-      return parsed;
-    }
-    return null;
-  } catch {
-    return null;
-  }
+/**
+ * A step line. Intervals.icu accepts a dash with no following space
+ * (`-Warm-up 5m 160w`), which workouts authored in its UI commonly use, so the
+ * space is optional here. The negative class keeps a `---` rule from matching.
+ */
+const STEP_LINE_RE = /^\s*-\s*[^\s-]/;
+
+export function stripMarkers(description: string): string {
+  return description
+    .replace(TEMPLATE_MARKER_RE, "")
+    .replace(LEGACY_RATIONALE_RE, "")
+    .trimEnd();
 }
 
-export function stripRationale(description: string): string {
-  return description.replace(RATIONALE_RE, "").trimEnd();
-}
-
-export function embedRationale(
-  description: string,
-  rationale: Rationale
-): string {
-  const stripped = stripRationale(description);
-  const json = JSON.stringify(rationale);
-  return `${stripped}\n\n<!-- rationale ${json} -->`;
-}
-
-const WATTS_TARGET_RE = /\d+w(?:-\d+w)?/;
-const STEP_LINE_RE = /^\s*-\s/;
-
-// Round to nearest 5 W so refreshed targets match freshly-seeded ones (see
-// wattsFromPct in seed.ts) and stay clean on head units.
-function wattsFromPct(pct: number, anchorWatts: number): number {
-  return Math.round(((pct / 100) * anchorWatts) / 5) * 5;
-}
-
-function formatWatts(
-  pct: RationaleIntensity["pct"],
-  anchorWatts: number
-): string {
-  if (Array.isArray(pct)) {
-    return `${wattsFromPct(pct[0], anchorWatts)}w-${wattsFromPct(pct[1], anchorWatts)}w`;
-  }
-  return `${wattsFromPct(pct, anchorWatts)}w`;
-}
-
-export interface RegenerateResult {
-  description: string;
-  stepCount: number;
-  intensityCount: number;
-  matched: number;
+/** The step body of a line, or null when the line is not a step. */
+function stepBody(line: string): string | null {
+  if (!STEP_LINE_RE.test(line)) return null;
+  return line.trim().replace(/^-\s*/, "");
 }
 
 /**
- * Re-emits the watt target on each step line using the rationale's `intensities`
- * (matched in source order), then re-embeds the rationale with the new
- * `anchorWatts`. Anything that isn't a watts pattern (cadence, durations,
- * labels, prose) is left alone.
- *
- * If step-line count and intensity count don't agree, we apply what we can and
- * report the counts so the caller can warn.
+ * The human text preceding the first step or repeat header, markers removed.
  */
-export function regenerateWattsInDescription(
-  description: string,
-  rationale: Rationale,
-  newAnchorWatts: number
-): RegenerateResult {
-  const intensities = rationale.intensities ?? [];
-  const stripped = stripRationale(description);
-  const lines = stripped.split(/\r?\n/);
-
-  let stepCount = 0;
-  let matched = 0;
+export function extractProse(description: string): string {
+  const lines = stripMarkers(description).split(/\r?\n/);
+  let end = lines.length;
   for (let i = 0; i < lines.length; i++) {
-    if (!STEP_LINE_RE.test(lines[i])) continue;
-    const intensity = intensities[stepCount];
-    stepCount++;
-    if (!intensity) continue; // more step lines than intensities — skip silently here, caller compares counts
-    const newTarget = formatWatts(intensity.pct, newAnchorWatts);
-    if (WATTS_TARGET_RE.test(lines[i])) {
-      lines[i] = lines[i].replace(WATTS_TARGET_RE, newTarget);
-      matched++;
+    if (stepBody(lines[i]) !== null || REPEAT_RE.test(lines[i].trim())) {
+      end = i;
+      break;
     }
   }
+  return lines.slice(0, end).join("\n").trim();
+}
 
-  const newDescription = embedRationale(lines.join("\n"), {
-    ...rationale,
-    anchorWatts: newAnchorWatts,
-  });
+/**
+ * The template's `purpose`: sync renders it as the first paragraph of the
+ * description, so it is the first blank-line-delimited block of the prose.
+ */
+export function extractPurpose(description: string): string | undefined {
+  const prose = extractProse(description);
+  if (!prose) return undefined;
+  const first = prose.split(/\n\s*\n/)[0]?.trim();
+  return first || undefined;
+}
 
-  return {
-    description: newDescription,
-    stepCount,
-    intensityCount: intensities.length,
-    matched,
-  };
+export function hasTemplateMarker(description: string): boolean {
+  return TEMPLATE_MARKER_RE.test(description ?? "");
 }
 
 interface ParsedStep {
@@ -138,21 +93,12 @@ function parseDuration(token: string): {
 }
 
 function parseStepLine(line: string): ParsedStep | null {
-  const trimmed = line.trim();
-  if (!trimmed.startsWith("- ")) return null;
-  const body = trimmed.slice(2).trim();
-  // first token after optional label is the duration
-  // but our format puts duration after label: "- [label] 5m 95% 90rpm"
-  // try matching every token until we find a duration
-  const tokens = body.split(/\s+/);
-  for (const t of tokens) {
+  const body = stepBody(line);
+  if (body === null) return null;
+  for (const t of body.split(/\s+/)) {
     const { seconds, hasDistance } = parseDuration(t);
-    if (seconds !== null) {
-      return { durationSeconds: seconds };
-    }
-    if (hasDistance) {
-      return { durationSeconds: null };
-    }
+    if (seconds !== null) return { durationSeconds: seconds };
+    if (hasDistance) return { durationSeconds: null };
   }
   return { durationSeconds: 0 };
 }
@@ -160,33 +106,29 @@ function parseStepLine(line: string): ParsedStep | null {
 export function parseDescriptionSummary(
   description: string
 ): Omit<WorkoutSummary, "id" | "name" | "folder_id"> {
-  const stripped = stripRationale(description);
-  const lines = stripped.split(/\r?\n/);
+  const lines = stripMarkers(description).split(/\r?\n/);
   let totalSeconds = 0;
   let stepCount = 0;
   let hasDistance = false;
   let i = 0;
+
   while (i < lines.length) {
     const line = lines[i];
     const repeat = line.match(REPEAT_RE);
-    if (repeat) {
+    if (repeat && stepBody(line) === null) {
       const iterations = Number(repeat[1]);
       const blockSteps: ParsedStep[] = [];
       let j = i + 1;
       while (j < lines.length) {
-        const next = lines[j].trim();
-        if (next === "") break;
+        if (lines[j].trim() === "") break;
         const parsed = parseStepLine(lines[j]);
         if (parsed) blockSteps.push(parsed);
         j++;
       }
       stepCount += iterations * blockSteps.length;
       for (const s of blockSteps) {
-        if (s.durationSeconds === null) {
-          hasDistance = true;
-        } else {
-          totalSeconds += iterations * s.durationSeconds;
-        }
+        if (s.durationSeconds === null) hasDistance = true;
+        else totalSeconds += iterations * s.durationSeconds;
       }
       i = j;
       continue;
@@ -194,21 +136,17 @@ export function parseDescriptionSummary(
     const parsed = parseStepLine(line);
     if (parsed) {
       stepCount++;
-      if (parsed.durationSeconds === null) {
-        hasDistance = true;
-      } else {
-        totalSeconds += parsed.durationSeconds;
-      }
+      if (parsed.durationSeconds === null) hasDistance = true;
+      else totalSeconds += parsed.durationSeconds;
     }
     i++;
   }
 
-  const oneLine = formatOneLine(stepCount, totalSeconds, hasDistance);
   return {
     totalSeconds,
     stepCount,
-    hasRationale: extractRationale(description) !== null,
-    oneLine,
+    hasTemplate: hasTemplateMarker(description),
+    oneLine: formatOneLine(stepCount, totalSeconds, hasDistance),
   };
 }
 
@@ -219,12 +157,8 @@ function formatOneLine(
 ): string {
   if (steps === 0) return "Empty workout";
   const parts: string[] = [`${steps} step${steps === 1 ? "" : "s"}`];
-  if (seconds > 0) {
-    parts.push(formatDuration(seconds));
-  }
-  if (hasDistance) {
-    parts.push("includes distance steps");
-  }
+  if (seconds > 0) parts.push(formatDuration(seconds));
+  if (hasDistance) parts.push("includes distance steps");
   return parts.join(", ");
 }
 
@@ -232,11 +166,7 @@ function formatDuration(seconds: number): string {
   const h = Math.floor(seconds / 3600);
   const m = Math.floor((seconds % 3600) / 60);
   const s = seconds % 60;
-  if (h > 0) {
-    return m > 0 ? `${h}h${m}m` : `${h}h`;
-  }
-  if (m > 0) {
-    return s > 0 ? `${m}m${s}s` : `${m}m`;
-  }
+  if (h > 0) return m > 0 ? `${h}h${m}m` : `${h}h`;
+  if (m > 0) return s > 0 ? `${m}m${s}s` : `${m}m`;
   return `${s}s`;
 }

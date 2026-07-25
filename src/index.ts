@@ -32,12 +32,8 @@ import type {
   IWorkoutLibrary,
   LibraryListing,
   LibraryItem,
-  CreateLibraryItemInput,
-  CreateLibraryItemResult,
-  SeedOptions,
-  SeedReport,
-  RefreshOptions,
-  RefreshReport,
+  SyncOptions,
+  SyncReport,
 } from "./services/workout-library/index.js";
 import { computeAerobicDecoupling } from "./services/analysis/index.js";
 import type { DecouplingResult } from "./services/analysis/index.js";
@@ -93,11 +89,7 @@ export interface IIntervalsClient {
   // Workout library
   listWorkoutLibrary(folderName?: string): Promise<LibraryListing>;
   getWorkoutLibraryItem(workoutId: number): Promise<LibraryItem>;
-  seedWorkoutLibrary(opts?: SeedOptions): Promise<SeedReport>;
-  refreshWorkoutLibrary(opts?: RefreshOptions): Promise<RefreshReport>;
-  createWorkoutLibraryItem(
-    input: CreateLibraryItemInput
-  ): Promise<CreateLibraryItemResult>;
+  syncWorkoutLibrary(opts?: SyncOptions): Promise<SyncReport>;
 
   // Analysis
   getAerobicDecoupling(activityId: string): Promise<DecouplingResult>;
@@ -147,8 +139,7 @@ export class IntervalsClient implements IIntervalsClient {
     this.wellness = createWellnessApi(this.httpClient, athleteId);
     this.powerCurves = createPowerCurvesApi(this.httpClient, athleteId);
     this.workoutLibrary = createWorkoutLibrary(
-      createWorkoutLibraryApi(this.httpClient, athleteId),
-      this.workoutBuilder
+      createWorkoutLibraryApi(this.httpClient, athleteId)
     );
   }
 
@@ -232,18 +223,8 @@ export class IntervalsClient implements IIntervalsClient {
     return this.workoutLibrary.get(workoutId);
   }
 
-  async seedWorkoutLibrary(opts?: SeedOptions): Promise<SeedReport> {
-    return this.workoutLibrary.seed(opts);
-  }
-
-  async refreshWorkoutLibrary(opts?: RefreshOptions): Promise<RefreshReport> {
-    return this.workoutLibrary.refresh(opts);
-  }
-
-  async createWorkoutLibraryItem(
-    input: CreateLibraryItemInput
-  ): Promise<CreateLibraryItemResult> {
-    return this.workoutLibrary.create(input);
+  async syncWorkoutLibrary(opts?: SyncOptions): Promise<SyncReport> {
+    return this.workoutLibrary.sync(opts);
   }
 
   // Analysis
@@ -387,7 +368,5 @@ export type {
   LibraryWorkoutSummary,
   LibraryWorkoutInput,
   WorkoutSummary,
-  Rationale,
-  RationaleBasis,
-  RationaleIntensity,
+  AnchorBasis,
 } from "./services/workout-library/index.js";

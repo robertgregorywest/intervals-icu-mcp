@@ -1,12 +1,14 @@
 # Power conversion at the API boundary
 
-Reason about intensity in %MAP or %FTP per the coaching context. **Emit absolute watts** when calling any tool that writes to Intervals.icu (`create_workout`, `create_workout_library_item`).
+Reason about intensity in %MAP or %FTP per the coaching context. **Emit absolute watts** when calling any tool that writes to Intervals.icu (`create_workout`, `update_event`).
+
+This applies to _calendar_ writes. Workout templates in `templates/workouts/` are the exception — they are written in percentages and converted to watts by the renderer at sync time.
 
 ## Why
 
 - Intervals.icu's parser does **not** understand `%MAP`.
 - `%FTP` is supported but couples the workout to whatever FTP is on file at execution time. Watts are stable; if FTP changes the workout still expresses the original intent.
-- For library workouts, pair watts with a **rationale block** (see below) so `refresh_workout_library` can re-anchor when MAP/FTP changes.
+- Library workouts avoid the problem entirely: their template holds the percentages, and `sync_workout_library` re-renders the watts whenever a test value changes.
 
 ## Conversion
 
@@ -42,25 +44,32 @@ Athlete: FTP 285 W, MAP 380 W.
 
 When the user gives a range (e.g. "95–105% MAP"), emit a watts range: `360w-400w`. The Intervals.icu parser supports `<min>w-<max>w`.
 
-**Head-unit granularity (canonical rule — referenced elsewhere).** A long/wide ramp step displays as a single average wattage on a Wahoo/Garmin head unit, losing the progression. Split any ramp or progression into short steps of **≤ 2 min** and **≤ ~8% MAP (~25–30 W)** range each, stepping upward (e.g. a 20-min ramp 40→110% becomes ten 2-min steps). A steady-state **target band** (e.g. Z2 `60-72%`) is a deliberate range the rider holds — keep it as one step, never `ramp`. The `expandRamp` helper (`src/services/workout-library/ramp.ts`) applies this rule to the seed library.
+**Head-unit granularity (canonical rule — referenced elsewhere).** A long/wide ramp step displays as a single average wattage on a Wahoo/Garmin head unit, losing the progression. Split any ramp or progression into short steps of **≤ 2 min** and **≤ ~8% MAP (~25–30 W)** range each, stepping upward (e.g. a 20-min ramp 40→110% becomes ten 2-min steps). A steady-state **target band** (e.g. Z2 `60-72%`) is a deliberate range the rider holds — keep it as one step, never `ramp`. In a Workout template a `ramp` step is a **parse error** for this reason — write the explicit steps out.
 
-## Rationale block (saved workouts only)
+## Persisting to the library
 
-When persisting via `create_workout_library_item`, attach a rationale block so the workout becomes refreshable:
+Write a Workout template in percentages and let sync do the conversion:
 
-```json
-{
-  "basis": "MAP",
-  "anchorWatts": 380,
-  "seedId": "vo2-4x4",
-  "intensities": [
-    { "stepRef": "On", "pct": [95, 102] },
-    { "stepRef": "Off", "pct": [50] }
-  ]
-}
+```markdown
+---
+seedId: vo2-4x4
+name: VO2 4×4
+folder: "Coach: VO2 Max"
+basis: MAP
+purpose: Default VO2 session. Highest time-at-VO2max per minute of work.
+---
+
+- Warm-up 15m 50-60%
+
+4x
+
+- On 4m 95-102%
+- Off 4m 50%
+
+- Cooldown 10m 45%
 ```
 
-`refresh_workout_library` re-derives watts from `anchorWatts` × `pct` when MAP changes — text-munges the step lines only, leaves prose/labels/durations/cadence alone.
+Then `sync_workout_library` with the athlete's current anchors. A bare `%` resolves against `basis`; literal watts, zones, `% LTHR` and cadence pass through untouched.
 
 ## Rounding
 

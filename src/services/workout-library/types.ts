@@ -45,20 +45,8 @@ export interface LibraryWorkoutInput {
   type?: string;
 }
 
-export type RationaleBasis = "MAP" | "FTP";
-
-export interface RationaleIntensity {
-  stepRef: string;
-  pct: number | [number, number];
-}
-
-export interface Rationale {
-  basis: RationaleBasis;
-  anchorWatts: number;
-  anchorDate?: string;
-  seedId?: string;
-  intensities?: RationaleIntensity[];
-}
+/** The anchor a template's bare percentages are read against. */
+export type AnchorBasis = "MAP" | "FTP";
 
 export interface WorkoutSummary {
   id: number;
@@ -68,6 +56,9 @@ export interface WorkoutSummary {
   folder_name?: string;
   totalSeconds: number;
   stepCount: number;
-  hasRationale: boolean;
+  /** True when the workout carries a template marker, i.e. sync maintains it. */
+  hasTemplate: boolean;
+  /** What the workout is for — the template's purpose line. */
+  purpose?: string;
   oneLine: string;
 }

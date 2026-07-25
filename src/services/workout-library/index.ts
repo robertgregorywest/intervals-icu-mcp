@@ -12,42 +12,40 @@ export type {
   LibraryWorkoutSummary,
   LibraryWorkoutInput,
   WorkoutSummary,
-  Rationale,
-  RationaleBasis,
-  RationaleIntensity,
+  AnchorBasis,
 } from "./types.js";
 export {
-  extractRationale,
-  embedRationale,
-  stripRationale,
+  stripMarkers,
+  extractProse,
+  extractPurpose,
+  hasTemplateMarker,
   parseDescriptionSummary,
 } from "./parser.js";
 export type {
-  SeedTemplate,
-  SeedOptions,
-  SeedReport,
-  SeedAction,
-  SeedAnchors,
-  SeedStep,
-  SeedRepeat,
-  SeedIntensity,
-} from "./seed.js";
-export { CANONICAL_TEMPLATES, materializeTemplate, runSeed } from "./seed.js";
-export type { RampSpec } from "./ramp.js";
+  WorkoutTemplate,
+  TemplateNode,
+  TemplateStep,
+  TemplateRepeat,
+  Pct,
+} from "./template.js";
 export {
-  expandRamp,
-  DEFAULT_MAX_STEP_SEC,
-  DEFAULT_MAX_RANGE_PCT,
-} from "./ramp.js";
+  parseTemplate,
+  parseFrontmatter,
+  TemplateParseError,
+} from "./template.js";
+export type { RenderAnchors } from "./render.js";
+export {
+  renderBody,
+  renderDescription,
+  extractSeedId,
+  MissingAnchorError,
+} from "./render.js";
+export { loadTemplates, TEMPLATES_DIR } from "./loader.js";
 export type {
-  RefreshOptions,
-  RefreshReport,
-  RefreshAction,
-  RefreshSkip,
-} from "./refresh.js";
-export { runRefresh, extractProse } from "./refresh.js";
-export type {
-  CreateLibraryItemInput,
-  CreateLibraryItemResult,
-} from "./create.js";
-export { runCreate, DEFAULT_CUSTOM_FOLDER } from "./create.js";
+  SyncOptions,
+  SyncReport,
+  SyncAction,
+  SyncSkip,
+  SyncOrphan,
+} from "./sync.js";
+export { runSync, indexFolders, ensureFolder } from "./sync.js";
