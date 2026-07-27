@@ -12,9 +12,9 @@
 // issues are picked up after each round of merges.
 //
 // Usage:
-//   npx tsx .sandcastle/main.ts
+//   npx tsx .sandcastle/main.mts
 // Or add to package.json:
-//   "scripts": { "sandcastle": "npx tsx .sandcastle/main.ts" }
+//   "scripts": { "sandcastle": "npx tsx .sandcastle/main.mts" }
 
 import * as sandcastle from "@ai-hero/sandcastle";
 import { docker } from "@ai-hero/sandcastle/sandboxes/docker";
@@ -26,7 +26,7 @@ import { z } from "zod";
 // https://standardschema.dev.
 const planSchema = z.object({
   issues: z.array(
-    z.object({ id: z.string(), title: z.string(), branch: z.string() })
+    z.object({ id: z.string(), title: z.string(), branch: z.string() }),
   ),
 });
 
@@ -90,7 +90,7 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
   }
 
   console.log(
-    `Planning complete. ${issues.length} issue(s) to work in parallel:`
+    `Planning complete. ${issues.length} issue(s) to work in parallel:`,
   );
   for (const issue of issues) {
     console.log(`  ${issue.id}: ${issue.title} → ${issue.branch}`);
@@ -127,15 +127,15 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
           ISSUE_TITLE: issue.title,
           BRANCH: issue.branch,
         },
-      })
-    )
+      }),
+    ),
   );
 
   // Log any agents that threw (network error, sandbox crash, etc.).
   for (const [i, outcome] of settled.entries()) {
     if (outcome.status === "rejected") {
       console.error(
-        `  ✗ ${issues[i]!.id} (${issues[i]!.branch}) failed: ${outcome.reason}`
+        `  ✗ ${issues[i]!.id} (${issues[i]!.branch}) failed: ${outcome.reason}`,
       );
     }
   }
@@ -146,7 +146,7 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
     .map((outcome, i) => ({ outcome, issue: issues[i]! }))
     .filter(
       (
-        entry
+        entry,
       ): entry is {
         outcome: PromiseFulfilledResult<
           Awaited<ReturnType<typeof sandcastle.run>>
@@ -154,14 +154,14 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
         issue: (typeof issues)[number];
       } =>
         entry.outcome.status === "fulfilled" &&
-        entry.outcome.value.commits.length > 0
+        entry.outcome.value.commits.length > 0,
     )
     .map((entry) => entry.issue);
 
   const completedBranches = completedIssues.map((i) => i.branch);
 
   console.log(
-    `\nExecution complete. ${completedBranches.length} branch(es) with commits:`
+    `\nExecution complete. ${completedBranches.length} branch(es) with commits:`,
   );
   for (const branch of completedBranches) {
     console.log(`  ${branch}`);

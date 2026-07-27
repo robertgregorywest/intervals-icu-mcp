@@ -1,7 +1,7 @@
 # Sandcastle setup
 
 `npm run sandcastle` drives the three-phase planner→implementer→merger loop in
-`.sandcastle/main.ts` against open GitHub Issues labelled `sandcastle`. Each
+`.sandcastle/main.mts` against open GitHub Issues labelled `sandcastle`. Each
 agent runs inside a Docker container built from `.sandcastle/Dockerfile`, with
 the repo bind-mounted at `/home/agent/workspace`.
 
@@ -16,7 +16,7 @@ macOS, native Linux, and WSL — the differences live in the
 | Node               | ≥ 20 (project develops on 22+)                                        |
 | Docker             | A reachable Linux-container daemon (Docker Desktop, Podman, etc.)     |
 | Repo checkout      | Native filesystem of the OS that runs the Docker CLI (see below)      |
-| `.sandcastle/.env` | `CLAUDE_CODE_OAUTH_TOKEN` **or** `ANTHROPIC_API_KEY`, plus `GH_TOKEN` |
+| `.sandcastle/.env` | `ANTHROPIC_API_KEY` (a `sk-ant-api03-…` console key), plus `GH_TOKEN`  |
 
 The sandcastle container installs its own `gh` and Claude CLI (see
 `.sandcastle/Dockerfile`), so the host needs neither.
@@ -47,12 +47,11 @@ Copy from the example and fill in:
 cp .sandcastle/.env.example .sandcastle/.env
 ```
 
-For Claude auth set **`CLAUDE_CODE_OAUTH_TOKEN`** (generate with
-`claude setup-token` — a `sk-ant-oat01-…` subscription token) **or**
-`ANTHROPIC_API_KEY` (a `sk-ant-api03-…` console key), not both. Also set a
-GitHub `GH_TOKEN` (Issues: read/write, Metadata: read). Sandcastle's
-`EnvResolver` forwards every key declared in this file into the sandbox
-container.
+For Claude auth set **`ANTHROPIC_API_KEY`** (a `sk-ant-api03-…` console key).
+`CLAUDE_CODE_OAUTH_TOKEN` was retired upstream over Anthropic legal ambiguity,
+so `ANTHROPIC_API_KEY` is now the only recommended method. Also set a GitHub
+`GH_TOKEN` (Issues: read/write, Metadata: read). Sandcastle's `EnvResolver`
+forwards every key declared in this file into the sandbox container.
 
 ## Environment-specific notes
 
@@ -97,7 +96,7 @@ docker: Error response from daemon: invalid volume specification:
 Run from inside WSL and `process.cwd()` becomes a native Linux path the daemon
 mounts cleanly; `:z` becomes a harmless no-op (WSL2's kernel doesn't enforce
 SELinux). **No code change is needed** — leave `selinuxLabel` at its default in
-`.sandcastle/main.ts`.
+`.sandcastle/main.mts`.
 
 Reference layout for that machine:
 
@@ -194,9 +193,9 @@ Windows-side over 9p (slow, and the terminal isn't in the distro).
 - **`Invalid API key · Fix external API key`** (agent exits code 1) — you put a
   subscription OAuth token (`sk-ant-oat01-…`) in `ANTHROPIC_API_KEY`. The
   Claude CLI sends that as an `x-api-key`, which the API rejects
-  (`invalid x-api-key`). Move the value to `CLAUDE_CODE_OAUTH_TOKEN` and remove
-  the `ANTHROPIC_API_KEY` line. Only `sk-ant-api03-…` console keys belong in
-  `ANTHROPIC_API_KEY`.
+  (`invalid x-api-key`). Only `sk-ant-api03-…` console keys belong in
+  `ANTHROPIC_API_KEY`. Subscription OAuth tokens (`CLAUDE_CODE_OAUTH_TOKEN`) are
+  no longer a supported auth method — use a console API key instead.
 - **File-ownership mismatch on the host after a run** _(native Linux)_ — make
   sure you ran `sandcastle docker build-image` as the host user that will
   invoke `npm run sandcastle`, so `AGENT_UID`/`AGENT_GID` match. Rebuilding the
