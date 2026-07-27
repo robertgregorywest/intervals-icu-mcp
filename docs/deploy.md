@@ -1,10 +1,10 @@
 # Deploying the remote MCP transport (Deno Deploy)
 
 The remote transport (`src/mcp/http.ts`) runs on the **new** Deno Deploy platform
-(org `swanny`, app `swanny-mcp`). See ADR 0006 (auth) and ADR 0007 (runtime).
+(org `swanny`, app `mcp`). See ADR 0006 (auth) and ADR 0007 (runtime).
 
-- **Production URL:** https://swanny-mcp.swanny.deno.net
-- **Dashboard:** https://console.deno.com/swanny/swanny-mcp
+- **Production URL:** https://mcp.swanny.deno.net
+- **Dashboard:** https://console.deno.com/swanny/mcp
 
 ## Prerequisites
 
@@ -19,7 +19,7 @@ The remote transport (`src/mcp/http.ts`) runs on the **new** Deno Deploy platfor
 
 ```bash
 DENO_DEPLOY_TOKEN="$(tr -d '\r\n' < ~/.deno-deploy-token)" deno deploy create \
-  --org swanny --app swanny-mcp --source local \
+  --org swanny --app mcp --source local \
   --do-not-use-detected-build-config \
   --region eu --runtime-mode dynamic \
   --entrypoint src/mcp/http.ts \
@@ -55,7 +55,7 @@ DENO_DEPLOY_TOKEN="$(tr -d '\r\n' < ~/.deno-deploy-token)" deno deploy --prod
 ## Smoke test
 
 ```bash
-curl -s https://swanny-mcp.swanny.deno.net/healthz
+curl -s https://mcp.swanny.deno.net/healthz
 # {"status":"ok","transport":"remote-http"}
 ```
 
@@ -80,7 +80,7 @@ Federated auth (ADR 0006) needs an Intervals.icu OAuth app. Registration is
 - [ ] Website URL
 - [ ] Logo URL — square, ≥128×128
 - [ ] Privacy policy URL
-- [ ] Redirect URI(s): `https://swanny-mcp.swanny.deno.net/oauth/callback`
+- [ ] Redirect URI(s): `https://mcp.swanny.deno.net/oauth/callback`
       (plus `http://localhost/...` for dev — localhost is always permitted)
 - [ ] Your Intervals.icu athlete ID (from `/settings`)
 

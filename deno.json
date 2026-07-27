@@ -8,6 +8,6 @@
   "exclude": ["dist", "deno-spike"],
   "deploy": {
     "org": "swanny",
-    "app": "swanny-mcp"
+    "app": "mcp"
   }
 }
