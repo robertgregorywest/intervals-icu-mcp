@@ -61,10 +61,12 @@ How to think about training trade-offs.
 - **Repeatability over hero sessions** — fewer hard days done well > more done poorly.
 - **Pyramidal default** (Z2 base + MIET/sweetspot + smaller HIT dose) over polarised or
   threshold-heavy.
-- **Sustained-threshold dose is the load-bearing metric — not CTL, not hours.** Judge a build
-  week first on its sustained minutes at/near threshold (≥20 min continuous ≥ sweetspot per
-  session), load number second. High volume with a hollowed-out middle reads as fitness on the
-  dashboard while the 20–60 min engine decays. → [structure.md](structure.md)
+- **Middle-band dose is the load-bearing metric — not CTL, not hours.** Judge a build week first on
+  its **time in the 76–106% FTP band** (tempo through threshold, stated with its block-length floor),
+  load number second. High volume with a hollowed-out middle reads as fitness on the dashboard while
+  the 20–60 min engine decays — and the classic failure is **polarisation by subtraction**, where the
+  middle empties, the hours become endurance, the HIT dose is unchanged, and volume and CTL both
+  rise. → [structure.md](structure.md)
 - **Durability > fresh peak** (late-ride / back-half power) when forced to choose.
 - **Frequency over duration** when life is busy — preserve the rhythm.
 - **Masters: recovery quality is the rate-limiter** — protect it before adding load.
