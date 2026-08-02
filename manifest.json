@@ -85,6 +85,9 @@
       "name": "compare_intervals"
     },
     {
+      "name": "compare_planned_vs_actual"
+    },
+    {
       "name": "compute_power_profile"
     },
     {

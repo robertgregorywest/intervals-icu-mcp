@@ -1,0 +1,38 @@
+{
+  "activity": {
+    "id": "i170000002",
+    "name": "Track session",
+    "type": "Ride",
+    "start_date_local": "2026-07-27T18:00:00",
+    "paired_event_id": 123780900,
+    "compliance": null,
+    "icu_training_load": 58,
+    "icu_ftp": 290,
+    "moving_time": 4200,
+    "elapsed_time": 5400,
+    "icu_intervals": [
+      {
+        "type": "WORK",
+        "label": null,
+        "group_id": null,
+        "start_time": 0,
+        "elapsed_time": 1800,
+        "moving_time": 1800,
+        "average_watts": 165,
+        "max_watts": 420,
+        "average_heartrate": 121,
+        "average_cadence": 88
+      }
+    ]
+  },
+  "event": {
+    "id": 123780900,
+    "name": "Track — coach-led session",
+    "category": "WORKOUT",
+    "type": "Ride",
+    "start_date_local": "2026-07-27T00:00:00",
+    "icu_training_load": null,
+    "icu_ftp": null,
+    "moving_time": null
+  }
+}

@@ -42,6 +42,12 @@ import type {
   CompareIntervalsResult,
   IntervalFilterOptions,
 } from "./services/analysis/index.js";
+import { createSessionReview } from "./services/session-review/index.js";
+import type {
+  ISessionReview,
+  ComparePlannedVsActualOptions,
+  PlannedVsActualResult,
+} from "./services/session-review/index.js";
 import { buildCoachingContext } from "./services/coaching-context/index.js";
 import type {
   CoachingContext,
@@ -98,6 +104,11 @@ export interface IIntervalsClient {
     options?: IntervalFilterOptions
   ): Promise<CompareIntervalsResult>;
 
+  // Session review
+  comparePlannedVsActual(
+    options: ComparePlannedVsActualOptions
+  ): Promise<PlannedVsActualResult>;
+
   // Coaching context
   getCoachingContext(opts?: CoachingContextOptions): Promise<CoachingContext>;
 
@@ -122,6 +133,7 @@ export class IntervalsClient implements IIntervalsClient {
   private wellness: IWellnessApi;
   private powerCurves: IPowerCurvesApi;
   private workoutLibrary: IWorkoutLibrary;
+  private sessionReview: ISessionReview;
 
   constructor(options: IntervalsClientOptions = {}) {
     const config = parseClientConfig({
@@ -141,6 +153,10 @@ export class IntervalsClient implements IIntervalsClient {
     this.workoutLibrary = createWorkoutLibrary(
       createWorkoutLibraryApi(this.httpClient, athleteId)
     );
+    this.sessionReview = createSessionReview({
+      activitiesApi: this.activities,
+      eventsApi: this.events,
+    });
   }
 
   // Events
@@ -252,6 +268,13 @@ export class IntervalsClient implements IIntervalsClient {
     return compareIntervalsAnalysis(activities, options);
   }
 
+  // Session review
+  async comparePlannedVsActual(
+    options: ComparePlannedVsActualOptions
+  ): Promise<PlannedVsActualResult> {
+    return this.sessionReview.comparePlannedVsActual(options);
+  }
+
   // Coaching context
   async getCoachingContext(
     opts?: CoachingContextOptions
@@ -330,6 +353,20 @@ export type {
   CompareIntervalsResult,
   IntervalFilterOptions,
 } from "./services/analysis/index.js";
+export type {
+  ISessionReview,
+  ComparePlannedVsActualOptions,
+  PlannedVsActualResult,
+  AlignedStep,
+  AlignmentBasis,
+  StepVerdict,
+  ReviewReason,
+  SessionRollup,
+  UnplannedInterval,
+  FlatPlannedStep,
+  DeliveredInterval,
+  PowerTarget,
+} from "./services/session-review/index.js";
 export type {
   CoachingContext,
   CoachingContextOptions,

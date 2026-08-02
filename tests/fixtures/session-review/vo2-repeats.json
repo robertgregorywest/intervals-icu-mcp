@@ -1,0 +1,185 @@
+{
+  "event": {
+    "id": 107665970,
+    "name": "30/30 VO2 Pursuit Block \u2014 10\u00d73",
+    "category": "WORKOUT",
+    "type": "Ride",
+    "start_date_local": "2026-05-10T00:00:00",
+    "icu_training_load": 96,
+    "icu_ftp": null,
+    "moving_time": 4050,
+    "workout_doc": {
+      "steps": [
+        {
+          "text": "Warm-up",
+          "power": {
+            "units": "w",
+            "value": 160
+          },
+          "duration": 300
+        },
+        {
+          "text": "Warm-up",
+          "power": {
+            "units": "w",
+            "value": 190
+          },
+          "duration": 300
+        },
+        {
+          "text": "Warm-up",
+          "power": {
+            "units": "w",
+            "value": 230
+          },
+          "duration": 300
+        },
+        {
+          "text": "Pre-load",
+          "power": {
+            "units": "w",
+            "value": 350
+          },
+          "duration": 120
+        },
+        {
+          "text": "Recover",
+          "power": {
+            "units": "w",
+            "value": 160
+          },
+          "duration": 30
+        },
+        {
+          "reps": 10,
+          "text": "10x",
+          "steps": [
+            {
+              "text": "Hard",
+              "power": {
+                "units": "w",
+                "value": 375
+              },
+              "duration": 30
+            },
+            {
+              "text": "Recovery",
+              "power": {
+                "units": "w",
+                "value": 190
+              },
+              "duration": 30
+            }
+          ],
+          "distance": 0,
+          "duration": 600
+        },
+        {
+          "text": "Recovery",
+          "power": {
+            "units": "w",
+            "value": 160
+          },
+          "duration": 300
+        },
+        {
+          "text": "Pre-load",
+          "power": {
+            "units": "w",
+            "value": 350
+          },
+          "duration": 120
+        },
+        {
+          "text": "Recover",
+          "power": {
+            "units": "w",
+            "value": 160
+          },
+          "duration": 30
+        },
+        {
+          "reps": 10,
+          "text": "10x",
+          "steps": [
+            {
+              "text": "Hard",
+              "power": {
+                "units": "w",
+                "value": 375
+              },
+              "duration": 30
+            },
+            {
+              "text": "Recovery",
+              "power": {
+                "units": "w",
+                "value": 190
+              },
+              "duration": 30
+            }
+          ],
+          "distance": 0,
+          "duration": 600
+        },
+        {
+          "text": "Recovery",
+          "power": {
+            "units": "w",
+            "value": 160
+          },
+          "duration": 300
+        },
+        {
+          "text": "Pre-load",
+          "power": {
+            "units": "w",
+            "value": 350
+          },
+          "duration": 120
+        },
+        {
+          "text": "Recover",
+          "power": {
+            "units": "w",
+            "value": 160
+          },
+          "duration": 30
+        },
+        {
+          "reps": 10,
+          "text": "10x",
+          "steps": [
+            {
+              "text": "Hard",
+              "power": {
+                "units": "w",
+                "value": 375
+              },
+              "duration": 30
+            },
+            {
+              "text": "Recovery",
+              "power": {
+                "units": "w",
+                "value": 190
+              },
+              "duration": 30
+            }
+          ],
+          "distance": 0,
+          "duration": 600
+        },
+        {
+          "text": "Cool-down",
+          "power": {
+            "units": "w",
+            "value": 160
+          },
+          "duration": 300
+        }
+      ],
+      "duration": 4050
+    }
+  }
+}

@@ -1,0 +1,169 @@
+{
+  "activity": {
+    "id": "i170317118",
+    "name": "Sweet Spot 3\u00d712",
+    "type": "Ride",
+    "start_date_local": "2026-07-29T06:23:10",
+    "paired_event_id": 123780516,
+    "compliance": 96.0,
+    "icu_training_load": 72,
+    "icu_ftp": 290,
+    "moving_time": 4121,
+    "elapsed_time": 4121,
+    "icu_intervals": [
+      {
+        "type": "WORK",
+        "label": null,
+        "group_id": "729s@154w76rpm",
+        "start_time": 0,
+        "elapsed_time": 729,
+        "moving_time": 729,
+        "average_watts": 154,
+        "max_watts": 244,
+        "average_heartrate": 109,
+        "average_cadence": 76.189224
+      },
+      {
+        "type": "WORK",
+        "label": null,
+        "group_id": "721s@259w86rpm",
+        "start_time": 729,
+        "elapsed_time": 723,
+        "moving_time": 723,
+        "average_watts": 244,
+        "max_watts": 340,
+        "average_heartrate": 140,
+        "average_cadence": 84.13194
+      },
+      {
+        "type": "WORK",
+        "label": null,
+        "group_id": "240s@158w77rpm",
+        "start_time": 1452,
+        "elapsed_time": 240,
+        "moving_time": 240,
+        "average_watts": 158,
+        "max_watts": 244,
+        "average_heartrate": 129,
+        "average_cadence": 77.291664
+      },
+      {
+        "type": "WORK",
+        "label": null,
+        "group_id": "721s@259w86rpm",
+        "start_time": 1692,
+        "elapsed_time": 720,
+        "moving_time": 720,
+        "average_watts": 270,
+        "max_watts": 346,
+        "average_heartrate": 148,
+        "average_cadence": 89.49167
+      },
+      {
+        "type": "WORK",
+        "label": null,
+        "group_id": "239s@111w56rpm",
+        "start_time": 2412,
+        "elapsed_time": 239,
+        "moving_time": 239,
+        "average_watts": 111,
+        "max_watts": 197,
+        "average_heartrate": 124,
+        "average_cadence": 55.585773
+      },
+      {
+        "type": "WORK",
+        "label": null,
+        "group_id": "721s@259w86rpm",
+        "start_time": 2651,
+        "elapsed_time": 721,
+        "moving_time": 721,
+        "average_watts": 264,
+        "max_watts": 338,
+        "average_heartrate": 147,
+        "average_cadence": 85.47573
+      },
+      {
+        "type": "WORK",
+        "label": null,
+        "group_id": "242s@82w48rpm",
+        "start_time": 3372,
+        "elapsed_time": 242,
+        "moving_time": 242,
+        "average_watts": 82,
+        "max_watts": 243,
+        "average_heartrate": 123,
+        "average_cadence": 48.4375
+      },
+      {
+        "type": "WORK",
+        "label": null,
+        "group_id": "508s@132w67rpm",
+        "start_time": 3614,
+        "elapsed_time": 508,
+        "moving_time": 508,
+        "average_watts": 132,
+        "max_watts": 260,
+        "average_heartrate": 120,
+        "average_cadence": 66.517715
+      }
+    ]
+  },
+  "event": {
+    "id": 123780516,
+    "name": "Sweet Spot 3\u00d712",
+    "category": "WORKOUT",
+    "type": "Ride",
+    "start_date_local": "2026-07-29T00:00:00",
+    "icu_training_load": 75,
+    "icu_ftp": null,
+    "moving_time": 4200,
+    "workout_doc": {
+      "steps": [
+        {
+          "text": "Warm-up",
+          "power": {
+            "end": 205,
+            "start": 160,
+            "units": "w"
+          },
+          "duration": 720
+        },
+        {
+          "reps": 3,
+          "text": "3x",
+          "steps": [
+            {
+              "text": "SST \u2014 hold cadence 85 plus",
+              "power": {
+                "end": 275,
+                "start": 255,
+                "units": "w"
+              },
+              "duration": 720
+            },
+            {
+              "text": "Recovery",
+              "power": {
+                "units": "w",
+                "value": 160
+              },
+              "duration": 240
+            }
+          ],
+          "distance": 0,
+          "duration": 2880
+        },
+        {
+          "text": "Cooldown",
+          "power": {
+            "units": "w",
+            "value": 145
+          },
+          "duration": 600
+        }
+      ],
+      "duration": 4200
+    }
+  }
+}

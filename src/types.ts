@@ -21,6 +21,49 @@ export type SportType =
   | "Hike"
   | "OpenWaterSwim";
 
+/**
+ * A power target on a planned step. Intervals.icu emits either a point value
+ * or a `start`/`end` band; `units` is `w` in practice but the field exists, so
+ * percent targets are handled rather than assumed away.
+ */
+export interface PlannedPower {
+  units?: string;
+  value?: number;
+  start?: number;
+  end?: number;
+}
+
+export interface PlannedCadence {
+  units?: string;
+  value?: number;
+  start?: number;
+  end?: number;
+}
+
+/**
+ * A step in `workout_doc` — Intervals.icu's own parse of the workout text, and
+ * the same structure the head unit receives. Either a simple step or a repeat
+ * block carrying `reps` over nested `steps`.
+ */
+export interface PlannedDocStep {
+  text?: string;
+  duration?: number;
+  /** True when the step ramps between `power.start` and `power.end`. */
+  ramp?: boolean;
+  distance?: number;
+  power?: PlannedPower;
+  cadence?: PlannedCadence;
+  reps?: number;
+  steps?: PlannedDocStep[];
+}
+
+export interface WorkoutDoc {
+  steps?: PlannedDocStep[];
+  duration?: number;
+  distance?: number;
+  [key: string]: unknown;
+}
+
 export interface IntervalsEvent {
   id?: number;
   uid?: string;
@@ -31,6 +74,13 @@ export interface IntervalsEvent {
   description: string;
   external_id?: string;
   color?: string;
+  /** Intervals.icu's structured parse of `description`. Absent on notes. */
+  workout_doc?: WorkoutDoc;
+  /** Planned training load. */
+  icu_training_load?: number;
+  /** FTP the event was planned against; often null. */
+  icu_ftp?: number | null;
+  moving_time?: number;
 }
 
 export interface ClientConfig {

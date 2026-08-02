@@ -1,0 +1,35 @@
+{
+  "activity": {
+    "id": "i170000001",
+    "name": "Outdoor Ride",
+    "type": "Ride",
+    "start_date_local": "2026-07-26T09:00:00",
+    "paired_event_id": 123780514,
+    "compliance": 61.5,
+    "icu_training_load": 44,
+    "icu_ftp": 290,
+    "moving_time": 3600,
+    "elapsed_time": 3720,
+    "icu_intervals": []
+  },
+  "event": {
+    "id": 123780514,
+    "name": "Easy Z2",
+    "category": "WORKOUT",
+    "type": "Ride",
+    "start_date_local": "2026-07-26T00:00:00",
+    "icu_training_load": 35,
+    "icu_ftp": null,
+    "moving_time": 2700,
+    "workout_doc": {
+      "steps": [
+        {
+          "text": "Easy — genuinely easy between quality days",
+          "power": { "units": "w", "start": 180, "end": 215 },
+          "duration": 2700
+        }
+      ],
+      "duration": 2700
+    }
+  }
+}

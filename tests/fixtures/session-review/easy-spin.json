@@ -1,0 +1,56 @@
+{
+  "activity": {
+    "id": "i170999939",
+    "name": "Cycling",
+    "type": "Ride",
+    "start_date_local": "2026-07-31T06:58:20",
+    "paired_event_id": 123780533,
+    "compliance": 94.117645,
+    "icu_training_load": 16,
+    "icu_ftp": 290,
+    "moving_time": 2417,
+    "elapsed_time": 2417,
+    "icu_intervals": [
+      {
+        "type": "RECOVERY",
+        "label": null,
+        "group_id": null,
+        "start_time": 0,
+        "elapsed_time": 2418,
+        "moving_time": 2418,
+        "average_watts": 133,
+        "max_watts": 226,
+        "average_heartrate": 107,
+        "average_cadence": 86.30935
+      }
+    ]
+  },
+  "event": {
+    "id": 123780533,
+    "name": "Easy spin \u2014 protect track quality",
+    "category": "WORKOUT",
+    "type": "Ride",
+    "start_date_local": "2026-07-31T00:00:00",
+    "icu_training_load": 17,
+    "icu_ftp": null,
+    "moving_time": 2400,
+    "workout_doc": {
+      "steps": [
+        {
+          "text": "Easy \u2014 nothing fatiguing before track",
+          "power": {
+            "end": 165,
+            "start": 125,
+            "units": "w"
+          },
+          "cadence": {
+            "units": "rpm",
+            "value": 95
+          },
+          "duration": 2400
+        }
+      ],
+      "duration": 2400
+    }
+  }
+}

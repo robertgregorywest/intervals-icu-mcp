@@ -1,0 +1,56 @@
+{
+  "activity": {
+    "id": "i169943737",
+    "name": "Cycling",
+    "type": "Ride",
+    "start_date_local": "2026-07-28T06:52:05",
+    "paired_event_id": 123780514,
+    "compliance": 88.57143,
+    "icu_training_load": 31,
+    "icu_ftp": 290,
+    "moving_time": 2539,
+    "elapsed_time": 2539,
+    "icu_intervals": [
+      {
+        "type": "RECOVERY",
+        "label": null,
+        "group_id": null,
+        "start_time": 0,
+        "elapsed_time": 2540,
+        "moving_time": 2540,
+        "average_watts": 180,
+        "max_watts": 276,
+        "average_heartrate": 123,
+        "average_cadence": 80.646454
+      }
+    ]
+  },
+  "event": {
+    "id": 123780514,
+    "name": "Easy Z2",
+    "category": "WORKOUT",
+    "type": "Ride",
+    "start_date_local": "2026-07-28T00:00:00",
+    "icu_training_load": 35,
+    "icu_ftp": null,
+    "moving_time": 2700,
+    "workout_doc": {
+      "steps": [
+        {
+          "text": "Easy \u2014 genuinely easy between quality days",
+          "power": {
+            "end": 215,
+            "start": 180,
+            "units": "w"
+          },
+          "cadence": {
+            "units": "rpm",
+            "value": 90
+          },
+          "duration": 2700
+        }
+      ],
+      "duration": 2700
+    }
+  }
+}

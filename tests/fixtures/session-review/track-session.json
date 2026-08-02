@@ -1,0 +1,139 @@
+{
+  "activity": {
+    "id": "i171371339",
+    "name": "Indoor Cycling",
+    "type": "VirtualRide",
+    "start_date_local": "2026-08-01T08:48:28",
+    "paired_event_id": 123780543,
+    "compliance": 73.9726,
+    "icu_training_load": 54,
+    "icu_ftp": 290,
+    "moving_time": 3296,
+    "elapsed_time": 7169,
+    "icu_intervals": [
+      {
+        "type": "WORK",
+        "label": null,
+        "group_id": "6451s@138w79rpm",
+        "start_time": 0,
+        "elapsed_time": 6451,
+        "moving_time": 6451,
+        "average_watts": 138,
+        "max_watts": 866,
+        "average_heartrate": 128,
+        "average_cadence": 78.60489
+      },
+      {
+        "type": "RECOVERY",
+        "label": null,
+        "group_id": null,
+        "start_time": 6451,
+        "elapsed_time": 156,
+        "moving_time": 156,
+        "average_watts": 384,
+        "max_watts": 850,
+        "average_heartrate": 116,
+        "average_cadence": 102.020836
+      },
+      {
+        "type": "WORK",
+        "label": null,
+        "group_id": "563s@76w63rpm",
+        "start_time": 6607,
+        "elapsed_time": 563,
+        "moving_time": 563,
+        "average_watts": 76,
+        "max_watts": 198,
+        "average_heartrate": 126,
+        "average_cadence": 62.536587
+      }
+    ]
+  },
+  "event": {
+    "id": 123780543,
+    "name": "Track \u2014 standing starts + flat pursuit distance (108 inch)",
+    "category": "WORKOUT",
+    "type": "Ride",
+    "start_date_local": "2026-08-01T00:00:00",
+    "icu_training_load": 73,
+    "icu_ftp": null,
+    "moving_time": 4560,
+    "workout_doc": {
+      "steps": [
+        {
+          "text": "Kit and gear: 64x16 (108 inch) on 165 mm cranks, TRAINING SUIT. The race suit is worth 0.33s per lap \u2014 save it for benchmarks so these splits stay comparable to 12 Jul. Warm up BEFORE you arrive; use the track allocation for rolling laps, three or four progressive half-lap accelerations, and one lap above target cadence. Nothing anaerobic.",
+          "power": {
+            "units": "w",
+            "value": 210
+          },
+          "duration": 1200
+        },
+        {
+          "text": "Gate one \u2014 standing start, one lap, full gas. THIS IS THE PRIORITY. Nationals standing lap was 23.21s and you were 0.33s down on 2025. Beat 23.21. Note the feel of the first three strokes. 108 inch gives about 1.5 percent less pedal force than the gear that produced it, but is still about 1.5 percent heavier than the 110 inch and 170 mm that produced the 2025 gate \u2014 a partial fix, not a full one.",
+          "power": {
+            "units": "w",
+            "value": 550
+          },
+          "duration": 30
+        },
+        {
+          "text": "Full recovery \u2014 easy rolling laps",
+          "power": {
+            "units": "w",
+            "value": 120
+          },
+          "duration": 600
+        },
+        {
+          "text": "Gate two \u2014 standing start, one lap, full gas. Two reps because one tells you nothing.",
+          "power": {
+            "units": "w",
+            "value": 550
+          },
+          "duration": 30
+        },
+        {
+          "text": "Full recovery \u2014 easy rolling laps",
+          "power": {
+            "units": "w",
+            "value": 120
+          },
+          "duration": 780
+        },
+        {
+          "text": "Main rep \u2014 standing start, full pursuit distance, eight laps. Hold laps two to eight FLAT at 16.35s, plus or minus 0.15. Cadence about 109 rpm. That is the Nationals flying-lap mean of 16.03s plus the training-suit offset, so holding it flat matches the title ride in a slower suit. Lap two must ALREADY be on target \u2014 opening slow and finishing fast is a failed rep whatever the total says. If protecting Sunday matters more, hold 16.60s instead: same shape, much cheaper. Judge on lap splits, not on the watts \u2014 the wattage here is only for load projection.",
+          "power": {
+            "units": "w",
+            "value": 380
+          },
+          "duration": 140
+        },
+        {
+          "text": "Full recovery \u2014 easy rolling laps",
+          "power": {
+            "units": "w",
+            "value": 120
+          },
+          "duration": 780
+        },
+        {
+          "text": "Optional gear comparison \u2014 only if the main rep held flat. Flying six laps, even, at 16.20s. Straight A-B against run one on 12 Jul, which averaged 16.19s on 110 inch. Compare cadence and RPE. Read it loosely: it is not fatigue-matched to 12 Jul.",
+          "power": {
+            "units": "w",
+            "value": 390
+          },
+          "duration": 100
+        },
+        {
+          "text": "Cooldown \u2014 easy spin. Record power. The track SRM looks 8 to 12 percent low against measured CdA, so log the numbers for a KICKR cross-check. Pacing note: flattening the race profile is worth only about 0.15s aerodynamically \u2014 the main rep is a physiological experiment (does a calmer open preserve back-half power?), and the gate is where the real time is.",
+          "power": {
+            "units": "w",
+            "value": 140
+          },
+          "duration": 900
+        }
+      ],
+      "duration": 4560
+    }
+  }
+}

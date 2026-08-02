@@ -1,0 +1,60 @@
+{
+  "event": {
+    "id": 107665964,
+    "name": "Pursuit VO\u2082 \u2014 4\u00d72:30 @ 88\u201395% MAP",
+    "category": "WORKOUT",
+    "type": "Ride",
+    "start_date_local": "2026-05-02T00:00:00",
+    "icu_training_load": 72,
+    "icu_ftp": null,
+    "moving_time": 3900,
+    "workout_doc": {
+      "steps": [
+        {
+          "ramp": true,
+          "text": "Warmup \u2014 build gradually",
+          "power": {
+            "end": 220,
+            "start": 130,
+            "units": "w"
+          },
+          "duration": 1200
+        },
+        {
+          "reps": 4,
+          "text": "Main Set 4x",
+          "steps": [
+            {
+              "text": "Interval",
+              "power": {
+                "end": 375,
+                "start": 348,
+                "units": "w"
+              },
+              "duration": 150
+            },
+            {
+              "text": "Recovery",
+              "power": {
+                "units": "w",
+                "value": 160
+              },
+              "duration": 300
+            }
+          ],
+          "distance": 0,
+          "duration": 1800
+        },
+        {
+          "text": "Cooldown",
+          "power": {
+            "units": "w",
+            "value": 150
+          },
+          "duration": 900
+        }
+      ],
+      "duration": 3900
+    }
+  }
+}

@@ -4,7 +4,7 @@ An MCP (Model Context Protocol) server for accessing your [Intervals.icu](https:
 
 ## Features
 
-- **22 tools** covering activities, calendar events, fitness metrics, power curves, workout creation, a managed workout library, wellness, analysis, weekly summaries, and a one-call coaching snapshot
+- **22 tools** covering activities, calendar events, fitness metrics, power curves, workout creation, a managed workout library, wellness, analysis, weekly summaries, planned-vs-actual session verification, and a one-call coaching snapshot
 - **Structured workout creation**: build interval sessions on your Intervals.icu calendar using the native workout text syntax
 - **Workout library as tracked files**: curated workouts live as Markdown templates in `templates/workouts/`, written in %MAP / %FTP. One command renders them at your current test values and reconciles your Intervals.icu library, so absolute watts follow your fitness.
 - **Coach mode**: bundled skills carry the coaching logic — `coaching-philosophy` (durable principles, tracked in git), `coaching-session`, and `intervals-coach` (workout generation). Personalise with your gitignored `docs/personal/steering.md` (overrides that win on conflict) and `season.md`. Athlete state (FTP, zones, fitness) comes from the `get_coaching_context` tool — always fresh, no files to maintain.
@@ -53,28 +53,29 @@ Requires **Node.js 20+**.
 
 ## Available Tools
 
-| Tool                        | Description                                                                                                                                                                              |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `get_athlete`               | Get athlete profile including FTP, LTHR, weight, HR/power/pace zones                                                                                                                     |
-| `get_activities`            | List activities in a date range with summary metrics (TSS, IF, NP, HR, power)                                                                                                            |
-| `get_activity`              | Get full details for a single activity, optionally with detected intervals                                                                                                               |
-| `get_activity_streams`      | Get raw time-series data for an activity (power, HR, cadence, speed, altitude)                                                                                                           |
-| `get_events`                | List calendar events (planned workouts, races, notes) in a date range                                                                                                                    |
-| `get_event`                 | Get details of a single calendar event including workout structure                                                                                                                       |
-| `update_event`              | Update an existing calendar event (name, description, date, category, type, colour)                                                                                                      |
-| `delete_events`             | Delete one or more calendar events by ID or external_id                                                                                                                                  |
-| `create_workout`            | Create a structured workout on the calendar with steps, ramps, and repeat blocks                                                                                                         |
-| `create_strength_workout`   | Create a strength/gym session as a WeightTraining event                                                                                                                                  |
-| `list_workout_library`      | List the athlete's saved workouts in Intervals.icu (folders + name + one-line summary). Optional `folder` filter                                                                         |
-| `get_workout_library_item`  | Get the full body of a saved workout, plus the `seedId` of the template it renders from                                                                                                  |
-| `sync_workout_library`      | Render every tracked template at the current MAP/FTP and upsert it: creates what's missing, updates what changed, re-anchors watts. Never deletes                                        |
-| `get_wellness`              | Get wellness data for a date range (CTL, ATL, weight, HRV, sleep, subjective metrics)                                                                                                    |
-| `get_fitness_summary`       | Today's fitness snapshot — CTL, ATL, TSB, HRV, sleep, and readiness                                                                                                                      |
-| `get_power_curve`           | Get the athlete's power-duration curve for a date range or all time                                                                                                                      |
-| `get_aerobic_decoupling`    | Calculate aerobic decoupling (Pw:Hr) for an activity — measures cardiac drift                                                                                                            |
-| `compare_intervals`         | Compare intervals across multiple activities side-by-side                                                                                                                                |
-| `get_training_week_summary` | Bundle activities + wellness + planned events for a week into one snapshot                                                                                                               |
-| `get_coaching_context`      | One-call snapshot — athlete profile, today's CTL/ATL/TSB, a wellness trend (default 7d, max 30d), and **MAP** derived from the most recent `MAP ramp test*` activity in the last 90 days |
+| Tool                        | Description                                                                                                                                                                                     |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `get_athlete`               | Get athlete profile including FTP, LTHR, weight, HR/power/pace zones                                                                                                                            |
+| `get_activities`            | List activities in a date range with summary metrics (TSS, IF, NP, HR, power)                                                                                                                   |
+| `get_activity`              | Get full details for a single activity, optionally with detected intervals                                                                                                                      |
+| `get_activity_streams`      | Get raw time-series data for an activity (power, HR, cadence, speed, altitude)                                                                                                                  |
+| `get_events`                | List calendar events (planned workouts, races, notes) in a date range                                                                                                                           |
+| `get_event`                 | Get details of a single calendar event including workout structure                                                                                                                              |
+| `update_event`              | Update an existing calendar event (name, description, date, category, type, colour)                                                                                                             |
+| `delete_events`             | Delete one or more calendar events by ID or external_id                                                                                                                                         |
+| `create_workout`            | Create a structured workout on the calendar with steps, ramps, and repeat blocks                                                                                                                |
+| `create_strength_workout`   | Create a strength/gym session as a WeightTraining event                                                                                                                                         |
+| `list_workout_library`      | List the athlete's saved workouts in Intervals.icu (folders + name + one-line summary). Optional `folder` filter                                                                                |
+| `get_workout_library_item`  | Get the full body of a saved workout, plus the `seedId` of the template it renders from                                                                                                         |
+| `sync_workout_library`      | Render every tracked template at the current MAP/FTP and upsert it: creates what's missing, updates what changed, re-anchors watts. Never deletes                                               |
+| `get_wellness`              | Get wellness data for a date range (CTL, ATL, weight, HRV, sleep, subjective metrics)                                                                                                           |
+| `get_fitness_summary`       | Today's fitness snapshot — CTL, ATL, TSB, HRV, sleep, and readiness                                                                                                                             |
+| `get_power_curve`           | Get the athlete's power-duration curve for a date range or all time                                                                                                                             |
+| `get_aerobic_decoupling`    | Calculate aerobic decoupling (Pw:Hr) for an activity — measures cardiac drift                                                                                                                   |
+| `compare_intervals`         | Compare intervals across multiple activities side-by-side                                                                                                                                       |
+| `compare_planned_vs_actual` | Verify a session was executed as prescribed — pairs an activity with its planned event and reports each step's prescription against delivery, rep by rep. Declines to guess when it can't align |
+| `get_training_week_summary` | Bundle activities + wellness + planned events for a week into one snapshot                                                                                                                      |
+| `get_coaching_context`      | One-call snapshot — athlete profile, today's CTL/ATL/TSB, a wellness trend (default 7d, max 30d), and **MAP** derived from the most recent `MAP ramp test*` activity in the last 90 days        |
 
 ## MCP Prompts
 

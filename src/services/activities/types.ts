@@ -19,6 +19,10 @@ export interface Activity {
   average_cadence: number;
   max_watts: number;
   icu_intervals: ActivityInterval[];
+  /** The planned event this activity was matched to, when one exists. */
+  paired_event_id?: number | null;
+  /** Intervals.icu's own scalar compliance figure (percent) for a paired activity. */
+  compliance?: number | null;
   [key: string]: unknown;
 }
 

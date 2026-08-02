@@ -56,6 +56,22 @@ The HTML comment carrying a Workout template's identity on its Library workout, 
 **Orphan**:
 A marker-bearing Library workout whose Workout template no longer exists. Reported by Sync as a warning; never deleted automatically.
 
+**Planned step**:
+One prescribed step of a workout after repeat blocks have been expanded — the unit of verification. A 3×(12min/4min) block is six Planned steps, each carrying its rep number, so decay across reps is visible. Read from the event's `workout_doc` (Intervals.icu's own parse), never re-parsed from the description text.
+_Avoid_: "interval" for the planned side — that is the recorded half (see **Delivered interval**)
+
+**Delivered interval**:
+One recorded lap of a completed activity (`icu_intervals`), reduced to duration and average power/cadence/HR. What was actually ridden, as against what a **Planned step** asked for.
+_Avoid_: "lap" (Intervals.icu's own term is interval); "actual step" (there are no steps on the recorded side)
+
+**Alignment basis**:
+How a comparison paired **Planned steps** to **Delivered intervals**, always reported so the caller can see how much to trust the pairing: `sequential` (all matched in order, no gaps), `duration` (partial — some steps or intervals unmatched), `none` (declined to pair). Pairing reads duration and position only, never power.
+_Avoid_: treating `none` as an error — it is a deliberate refusal, and the roll-up is still returned
+
+**Verdict**:
+The per-step judgement of delivery against prescription: `on-target`, `over`, `under`, `not-attempted` (delivered far less time than prescribed), `unmatched` (no interval could be paired). A range target is judged on its own band; a ramp is judged against its midpoint; `tolerance` governs point targets only.
+_Avoid_: "compliance" — that is Intervals.icu's own scalar figure, reported alongside but distinct from these Verdicts
+
 **Coaching philosophy**:
 The athlete's durable, timeless training principles — foundational pillars, intensity anchor (MAP), execution rules, biases, test cadence. **Tracked in git** as the `coaching-philosophy` skill and shared by every install; the base layer of the Coaching-context stack. Editing it is a commit (see ADR 0004).
 _Avoid_: putting season-scoped or current-state facts here (those are **Season** / athlete state); calling one athlete's deviations "philosophy" (that's **Steering**).
@@ -81,6 +97,8 @@ _Avoid_: confusing this with `get_coaching_context`'s output — that is live **
 - A **Workout template** is rendered by **Sync** into exactly one **Library workout**, found by its **Template marker**
 - A **Library workout** with no **Workout template** is an **Orphan**; a **Workout template** with no **Library workout** is created on the next **Sync**
 - An **Anchored target** moves when MAP/FTP moves; a **literal target** does not — that is the whole difference between them
+- A **Planned step** is paired to at most one **Delivered interval**; the pairing's **Alignment basis** says how it was reached, and each pair yields one **Verdict**
+- A **Planned step** with no pair, and a **Delivered interval** with no pair, are both reported rather than dropped — the latter as unplanned work
 
 ## Example dialogue
 
