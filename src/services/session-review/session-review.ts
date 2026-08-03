@@ -8,6 +8,7 @@ import {
   reviewSession,
   toDeliveredIntervals,
 } from "./review.js";
+import { resolvePair } from "./pair.js";
 import type {
   ComparePlannedVsActualOptions,
   ISessionReview,
@@ -16,13 +17,7 @@ import type {
   SessionRollup,
 } from "./types.js";
 
-/**
- * Days either side of a planned event to scan when resolving it to the activity
- * that was ridden. There is no endpoint that filters activities by
- * `paired_event_id`, and an activity paired to an event is dated at or adjacent
- * to it, so a narrow window is enough.
- */
-export const PAIR_SEARCH_WINDOW_DAYS = 2;
+export { PAIR_SEARCH_WINDOW_DAYS } from "./pair.js";
 
 export interface SessionReviewDeps {
   activitiesApi: IActivitiesApi;
@@ -35,19 +30,9 @@ export class SessionReview implements ISessionReview {
   async comparePlannedVsActual(
     options: ComparePlannedVsActualOptions
   ): Promise<PlannedVsActualResult> {
-    const { activityId, eventId } = options;
-    if (!!activityId === !!eventId) {
-      throw new Error(
-        "Supply exactly one of activityId or eventId — the other half of the " +
-          "pair is resolved from the activity's paired event."
-      );
-    }
-
     const tolerance = options.tolerance ?? DEFAULT_TOLERANCE;
 
-    const pair = activityId
-      ? await this.fromActivity(activityId)
-      : await this.fromEvent(eventId!);
+    const pair = await resolvePair(this.deps, options);
 
     if (pair.reason) {
       return this.refuse(
@@ -112,58 +97,6 @@ export class SessionReview implements ISessionReview {
     };
   }
 
-  /** Activity given: read its recorded pairing and fetch that event. */
-  private async fromActivity(activityId: string) {
-    const activity = await this.deps.activitiesApi.getActivity(
-      activityId,
-      true
-    );
-    const pairedId = activity.paired_event_id;
-
-    if (!pairedId) {
-      return {
-        activity,
-        reason: "no-paired-event" as ReviewReason,
-        message:
-          `Activity ${activity.id} is not paired to a planned workout, so there ` +
-          "is no prescription to compare it against.",
-      };
-    }
-
-    const event = await this.deps.eventsApi.getEvent(pairedId);
-    return { activity, event };
-  }
-
-  /** Event given: scan a narrow date window for the activity that points back. */
-  private async fromEvent(eventId: number) {
-    const event = await this.deps.eventsApi.getEvent(eventId);
-    const day = (event.start_date_local ?? "").slice(0, 10);
-
-    const activities = day
-      ? await this.deps.activitiesApi.getActivities(
-          shiftDate(day, -PAIR_SEARCH_WINDOW_DAYS),
-          shiftDate(day, PAIR_SEARCH_WINDOW_DAYS)
-        )
-      : [];
-
-    const activity = activities.find((a) => a.paired_event_id === eventId);
-
-    if (!activity) {
-      return {
-        event,
-        reason: "no-paired-activity" as ReviewReason,
-        message:
-          `No completed activity is paired to event ${eventId} within ` +
-          `${PAIR_SEARCH_WINDOW_DAYS} days of ${day || "its date"} — the session ` +
-          "was not executed, or has not been uploaded yet.",
-      };
-    }
-
-    // The list payload omits icu_intervals; fetch the full activity.
-    const full = await this.deps.activitiesApi.getActivity(activity.id, true);
-    return { activity: full, event };
-  }
-
   /**
    * Every dead end returns the same shape: an empty step list, a named reason,
    * and the roll-up, which still answers the coarse question.
@@ -205,13 +138,6 @@ export class SessionReview implements ISessionReview {
 
 function numberOrUndefined(v: unknown): number | undefined {
   return typeof v === "number" && Number.isFinite(v) ? v : undefined;
-}
-
-/** Shift a YYYY-MM-DD date by whole days, staying in UTC to avoid DST drift. */
-function shiftDate(day: string, days: number): string {
-  const d = new Date(`${day}T00:00:00Z`);
-  d.setUTCDate(d.getUTCDate() + days);
-  return d.toISOString().slice(0, 10);
 }
 
 export function createSessionReview(deps: SessionReviewDeps): SessionReview {
