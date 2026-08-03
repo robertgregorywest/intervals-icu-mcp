@@ -43,6 +43,14 @@ import type {
   IntervalFilterOptions,
 } from "./services/analysis/index.js";
 import { createSessionReview } from "./services/session-review/index.js";
+import { createIntensityDistribution } from "./services/intensity-distribution/index.js";
+import type {
+  IIntensityDistribution,
+  CompareIntensityDistributionOptions,
+  CompareIntensityDistributionRangeOptions,
+  IntensityDistributionResult,
+  IntensityDistributionRangeResult,
+} from "./services/intensity-distribution/index.js";
 import type {
   ISessionReview,
   ComparePlannedVsActualOptions,
@@ -108,6 +116,12 @@ export interface IIntervalsClient {
   comparePlannedVsActual(
     options: ComparePlannedVsActualOptions
   ): Promise<PlannedVsActualResult>;
+  compareIntensityDistribution(
+    options: CompareIntensityDistributionOptions
+  ): Promise<IntensityDistributionResult>;
+  compareIntensityDistributionRange(
+    options: CompareIntensityDistributionRangeOptions
+  ): Promise<IntensityDistributionRangeResult>;
 
   // Coaching context
   getCoachingContext(opts?: CoachingContextOptions): Promise<CoachingContext>;
@@ -134,6 +148,7 @@ export class IntervalsClient implements IIntervalsClient {
   private powerCurves: IPowerCurvesApi;
   private workoutLibrary: IWorkoutLibrary;
   private sessionReview: ISessionReview;
+  private intensityDistribution: IIntensityDistribution;
 
   constructor(options: IntervalsClientOptions = {}) {
     const config = parseClientConfig({
@@ -156,6 +171,17 @@ export class IntervalsClient implements IIntervalsClient {
     this.sessionReview = createSessionReview({
       activitiesApi: this.activities,
       eventsApi: this.events,
+    });
+    this.intensityDistribution = createIntensityDistribution({
+      activitiesApi: this.activities,
+      eventsApi: this.events,
+      // The full coaching context is more than the frame needs, but it is the
+      // one place MAP zones are derived; duplicating that derivation here would
+      // let the two drift apart.
+      getCoachingZones: async () => {
+        const ctx = await this.getCoachingContext();
+        return { zones: ctx.mapZones, ftp: ctx.athlete.ftp };
+      },
     });
   }
 
@@ -275,6 +301,21 @@ export class IntervalsClient implements IIntervalsClient {
     return this.sessionReview.comparePlannedVsActual(options);
   }
 
+  // Intensity distribution
+  async compareIntensityDistribution(
+    options: CompareIntensityDistributionOptions
+  ): Promise<IntensityDistributionResult> {
+    return this.intensityDistribution.compareIntensityDistribution(options);
+  }
+
+  async compareIntensityDistributionRange(
+    options: CompareIntensityDistributionRangeOptions
+  ): Promise<IntensityDistributionRangeResult> {
+    return this.intensityDistribution.compareIntensityDistributionRange(
+      options
+    );
+  }
+
   // Coaching context
   async getCoachingContext(
     opts?: CoachingContextOptions
@@ -367,6 +408,21 @@ export type {
   DeliveredInterval,
   PowerTarget,
 } from "./services/session-review/index.js";
+export type {
+  IIntensityDistribution,
+  CompareIntensityDistributionOptions,
+  CompareIntensityDistributionRangeOptions,
+  IntensityDistributionResult,
+  IntensityDistributionRangeResult,
+  DistributionReason,
+  PartitionBand,
+  ZoneComparisonRow,
+  MiddleBandRollup,
+  UnbucketedStep,
+  BoundarySpanningStep,
+  RangeSessionRow,
+  ExcludedSession,
+} from "./services/intensity-distribution/index.js";
 export type {
   CoachingContext,
   CoachingContextOptions,

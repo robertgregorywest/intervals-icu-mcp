@@ -52,6 +52,11 @@ import {
   comparePlannedVsActualOutputSchema,
 } from "./tools/session-review.js";
 import {
+  compareIntensityDistributionSchema,
+  compareIntensityDistribution,
+  compareIntensityDistributionOutputSchema,
+} from "./tools/intensity-distribution.js";
+import {
   getTrainingWeekSummarySchema,
   getTrainingWeekSummary,
   getTrainingWeekSummaryOutputSchema,
@@ -441,6 +446,47 @@ export const TOOLS: ToolDef[] = [
       comparePlannedVsActual(
         client,
         args as z.infer<typeof comparePlannedVsActualSchema>
+      ),
+  },
+
+  {
+    name: "compare_intensity_distribution",
+    description:
+      "Answer whether the prescribed dose was actually delivered, as time at " +
+      "intensity. The companion to compare_planned_vs_actual, not a replacement: " +
+      "that tool says what happened within reps, this one says how much of the " +
+      "prescribed dose landed. " +
+      "Both sides are computed here — the planned distribution from the event's " +
+      "own workout steps and the delivered one from the recorded power stream — " +
+      "never read from the platform's precomputed zone times, which are snapshots " +
+      "taken at authoring and at upload and can disagree for reasons unrelated to " +
+      "what was ridden. Because workouts are authored in absolute watts, a threshold " +
+      "change between prescribing and riding does not affect the comparison. " +
+      "Needs no step-to-interval alignment, so it works where compare_planned_vs_actual " +
+      "returns alignmentBasis 'none': track sessions, auto-lapped rides, abandoned sessions. " +
+      "Bucketing frame is a partition derived from the athlete's MAP coaching zones " +
+      "(which overlap, so each wattage is assigned to the highest zone whose floor it " +
+      "reaches); the boundaries used are reported with every result. The middle band " +
+      "(76–106% FTP) is reported separately from its own bounds, not by summing zones — " +
+      "it is the coaching philosophy's primary judge of a build week. " +
+      "Delivered seconds sum to recording time, not elapsed time: paused time belongs " +
+      "to no zone. Range targets are bucketed by midpoint, and any step whose range " +
+      "straddled a boundary is reported. " +
+      "Two forms: single session (exactly one of activityId or eventId) or date range " +
+      "(oldest and newest, max 28 days) which sums across paired sessions and lists " +
+      "per-session middle-band figures plus the sessions excluded from the sums. " +
+      "Refusals are explicit via reason: no-paired-event, no-paired-activity, " +
+      "no-structured-steps, no-recorded-power, no-coaching-zones. " +
+      "Returns: { boundaries, zones: [{ zone, plannedSeconds, deliveredSeconds, " +
+      "deltaSeconds }], middleBand, boundarySpanningSteps, unbucketedSteps, reason? } " +
+      "or, for a range, { zones, middleBand, sessions: [...], excluded: [...] }.",
+    schema: compareIntensityDistributionSchema,
+    annotations: READ_ONLY,
+    outputSchema: compareIntensityDistributionOutputSchema,
+    handler: (client, args) =>
+      compareIntensityDistribution(
+        client,
+        args as z.infer<typeof compareIntensityDistributionSchema>
       ),
   },
 

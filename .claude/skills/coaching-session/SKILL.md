@@ -21,17 +21,31 @@ Read the coaching context stack, most-durable first; **later layers override ear
 
 The `coaching-philosophy` skill ships with the server, so it's always present. If `season.md` or `steering.md` is missing, note the gap and suggest running the `setup_coaching` MCP prompt to generate them. `coaching-log.md` may not exist yet — that's fine, it's created on the first write.
 
+## Execution review (after the context stack, before anything else)
+
+**Open on what was delivered, not on what was planned.** Once the stack is loaded, review the elapsed window before offering analysis, drafting a plan, or composing a session — every downstream judgement should be conditioned on delivered work.
+
+1. **Window** — from `reviewed-through` in the log header to today; see the table in [coaching-log-format.md](coaching-log-format.md) for a missing, stale, or too-recent watermark. Skip the review when the window holds no key session, and leave the watermark alone.
+2. **Select from the planned side** — key sessions are those _prescribed_ at sweet spot or above, read off the planned events. Selecting on the planned side means a key session that was abandoned or never started gets selected rather than silently missed.
+3. **Read both lenses** — `compare_intensity_distribution` over the whole window for the dose, `compare_planned_vs_actual` per selected session for execution within reps.
+4. **Interpret** — read [execution-review.md](execution-review.md) at this point (not at session start): step roles, which verdicts are artefacts, how deep to read each kind of session, and what passes the reporting threshold.
+
+**Silence is the default output.** Nothing meeting the threshold produces a single line plus the window's middle-band figure — never a table, never a per-session rundown.
+
+**A narrow request doesn't skip the review.** If the athlete opens with something specific ("move Thursday's session"), run the review anyway so you hold full context, but **answer their request first** and raise findings only where they bear on it.
+
 ## Scope
 
-| Topic                | Tools                                                                                   |
-| -------------------- | --------------------------------------------------------------------------------------- |
-| Training load        | `get_coaching_context` (CTL/ATL/TSB, ramp rate, readiness)                              |
-| Week/block planning  | Combine season position + fitness snapshot + philosophy rules                           |
-| Performance analysis | `get_fitness_summary`, `get_power_curve`, `compare_intervals`                           |
-| Aerobic efficiency   | `get_aerobic_decoupling`                                                                |
-| Recovery guidance    | Wellness trend from `get_coaching_context` (fatigue, soreness, HRV, sleep)              |
-| Race prep            | Align current fitness + taper logic with season.md A/B races                            |
-| Workout composition  | Delegated — bike/run to `intervals-coach`, gym to `strength-training` (see Constraints) |
+| Topic                | Tools                                                                                                                                                    |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Training load        | `get_coaching_context` (CTL/ATL/TSB, ramp rate, readiness)                                                                                               |
+| Week/block planning  | Combine season position + fitness snapshot + philosophy rules                                                                                            |
+| Performance analysis | `get_fitness_summary`, `get_power_curve`, `compare_intervals`                                                                                            |
+| Execution review     | `compare_intensity_distribution` (dose delivered, window or session), `compare_planned_vs_actual` (execution within reps) — see _Execution review_ above |
+| Aerobic efficiency   | `get_aerobic_decoupling`                                                                                                                                 |
+| Recovery guidance    | Wellness trend from `get_coaching_context` (fatigue, soreness, HRV, sleep)                                                                               |
+| Race prep            | Align current fitness + taper logic with season.md A/B races                                                                                             |
+| Workout composition  | Delegated — bike/run to `intervals-coach`, gym to `strength-training` (see Constraints)                                                                  |
 
 ## Load check (when planning a week or block)
 
@@ -49,7 +63,9 @@ Keep `coaching-log.md` current so future sessions inherit this one's decisions a
 - **Loggable = not re-derivable.** Log only what a future session couldn't reconstruct from the `coaching-philosophy` skill, `steering.md`, `season.md`, `get_coaching_context`, or Intervals.icu data: decisions and their rationale, deviations from plan, subjective signals (niggles, life stress, how a session felt), things to watch. Not facts already on the calendar or in the snapshot.
 - **Checkpoint + confirm.** Draft the entry and any header changes, show them, and write only on confirmation — at the first of: (1) you ask to persist a plan to Intervals.icu, (2) the session is wrapping up and there's loggable context (offer proactively, but stay silent if nothing passes the test), (3) you ask to log. If nothing is loggable, write nothing.
 - **Local write, not delegated.** Writing the log is a local file edit — it does **not** go through `intervals-coach`. (When a session also persists a workout, that persistence delegates to `intervals-coach`; the log checkpoint fires here afterward.)
-- **Format + maintenance.** Entry/header schema, the 12-week compaction window, thread retirement, and promoting durable facts up to `season.md` live in [coaching-log-format.md](coaching-log-format.md) — read it at the checkpoint before writing.
+- **Review findings are logged as patterns and threads, not verdicts.** A pattern the review surfaced — with the sessions evidencing it and the decision taken — is loggable. Per-step verdicts are not: they're re-derivable from Intervals.icu. A pattern worth watching beyond this session opens a header thread with the condition that would close it, so the next review tests it explicitly.
+- **Advance the watermark on write.** `reviewed-through` moves to today as part of a confirmed log write, never before — see [coaching-log-format.md](coaching-log-format.md).
+- **Format + maintenance.** Entry/header schema, the watermark, the 12-week compaction window, thread retirement, and promoting durable facts up to `season.md` live in [coaching-log-format.md](coaching-log-format.md) — read it at the checkpoint before writing.
 
 ## Constraints
 

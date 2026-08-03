@@ -72,6 +72,22 @@ _Avoid_: treating `none` as an error — it is a deliberate refusal, and the rol
 The per-step judgement of delivery against prescription: `on-target`, `over`, `under`, `not-attempted` (delivered far less time than prescribed), `unmatched` (no interval could be paired). A range target is judged on its own band; a ramp is judged against its midpoint; `tolerance` governs point targets only.
 _Avoid_: "compliance" — that is Intervals.icu's own scalar figure, reported alongside but distinct from these Verdicts
 
+**Intensity distribution**:
+Time spent at each intensity across a session or window, computed on both sides — the planned side from the prescription's own **Planned steps**, the delivered side from the recorded power stream — and bucketed against one shared frame. The frame is a partition _derived_ from the athlete's **MAP zones**, whose bands deliberately overlap and so cannot be bucketed into directly: each wattage is assigned to the highest zone whose floor it reaches. Every result reports the boundaries it used.
+_Avoid_: reading either side off Intervals.icu's `workout_doc.zoneTimes` or `icu_zone_times` (authoring-time and upload-time snapshots, independently anchored, not the prescription); quoting a partition band as though it were the coaching band of the same name (the partition's L3 is narrower).
+
+**Middle-band dose**:
+Seconds in the 76–106% FTP window — tempo through threshold — the coaching philosophy's primary judge of a build week. Computed from its own bounds, never by summing whichever zones approximate it, and reported alongside the per-zone breakdown rather than derived from it. On the planned side a prescribed range contributes the share of its width that lies inside the window, not all-or-nothing by midpoint.
+_Avoid_: treating it as a roll-up of the zone breakdown (the two are anchored on FTP and MAP respectively, and neither derives from the other); calling a session "delivered" on duration when its middle-band dose fell short.
+
+**Review window / watermark**:
+The span an execution review sweeps, running from the `reviewed-through` date in the coaching log's live-state header to today. Advanced to today only as part of a confirmed log write, so an unconfirmed session leaves the window intact. Capped at 28 days (the block cadence); skipped when the window holds no key session.
+_Avoid_: "since last time" or any window derived from conversation history rather than the watermark — the watermark is what makes the review neither re-review nor silently skip.
+
+**Work step vs support step**:
+Whether a **Planned step** carries the session's prescribed intent (work) or serves it (warm-up, recovery, cool-down). **Derived in the coaching layer, not reported by any tool** — no marker exists on the planned side and the delivered `type` field is auto-detected and unreliable. Derived from prescribed intensity relative to the **MAP zones** together with structural position, both signals agreeing; where they disagree the role is stated as uncertain.
+_Avoid_: reporting a **Verdict** on a support step as a finding — `under` on a recovery step means recovery was taken as easily as prescribed, which is the session working.
+
 **Coaching philosophy**:
 The athlete's durable, timeless training principles — foundational pillars, intensity anchor (MAP), execution rules, biases, test cadence. **Tracked in git** as the `coaching-philosophy` skill and shared by every install; the base layer of the Coaching-context stack. Editing it is a commit (see ADR 0004).
 _Avoid_: putting season-scoped or current-state facts here (those are **Season** / athlete state); calling one athlete's deviations "philosophy" (that's **Steering**).
@@ -99,6 +115,11 @@ _Avoid_: confusing this with `get_coaching_context`'s output — that is live **
 - An **Anchored target** moves when MAP/FTP moves; a **literal target** does not — that is the whole difference between them
 - A **Planned step** is paired to at most one **Delivered interval**; the pairing's **Alignment basis** says how it was reached, and each pair yields one **Verdict**
 - A **Planned step** with no pair, and a **Delivered interval** with no pair, are both reported rather than dropped — the latter as unplanned work
+- **The prescription is the contract both lenses judge against.** Because workouts are authored in absolute watts, neither the **Verdict** nor the **Intensity distribution** moves when FTP or MAP moves between prescribing and riding
+- The two lenses answer different questions and **neither subsumes the other**: **Verdicts** say what happened _within_ the reps and need an **Alignment basis** better than `none`; the **Intensity distribution** says how much of the prescribed dose landed and needs no pairing at all, so it still reports where the step lens refuses
+- Per-zone seconds of an **Intensity distribution** sum to its total, because the frame is a partition; the **Middle-band dose** does not participate in that sum, being a separate window over the same seconds
+- Delivered seconds sum to the activity's **recording** time, not its elapsed time — paused time belongs to no zone
+- A **Work step vs support step** classification is never returned by a Tool; it is derived where **Verdicts** are read, so that an inference about coaching intent never travels as though it were data
 
 ## Example dialogue
 

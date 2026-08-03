@@ -1,0 +1,37 @@
+{
+  "activity": {
+    "id": "i170871150",
+    "name": "Strength B — Single-leg + Power",
+    "type": "WeightTraining",
+    "start_date_local": "2026-07-30T00:00:00",
+    "paired_event_id": 123780774,
+    "compliance": 100,
+    "icu_training_load": null,
+    "icu_ftp": null,
+    "moving_time": 2700,
+    "elapsed_time": 2700,
+    "icu_recording_time": null
+  },
+  "event": {
+    "id": 123780774,
+    "name": "Strength B — Single-leg + Power",
+    "category": "WORKOUT",
+    "type": "WeightTraining",
+    "start_date_local": "2026-07-30T00:00:00",
+    "icu_training_load": null,
+    "icu_ftp": null,
+    "moving_time": null,
+    "workout_doc": {
+      "steps": [],
+      "locales": [],
+      "options": {},
+      "distance": 0,
+      "duration": 0,
+      "description": "Single-leg and power day. Last gym session of the Re-build block — strength drops to 1×/week in August for Specific Prep III.",
+      "strain_score": null,
+      "average_watts": null,
+      "variability_index": null
+    }
+  },
+  "streams": {}
+}
