@@ -20,6 +20,7 @@ Domain vocabulary (Tool/Adapter/Projection/MAP zones/Workout template/Sync/Basis
 ## Ways of working
 
 - **Probe live before typing.** Before designing or implementing changes that touch Intervals.icu request bodies, response parsing, or query params, call a real endpoint and inspect the JSON — don't invent shapes from memory. The `intervals-api-research` skill holds the workflow and endpoint index.
+- **Commit straight to `main`.** Single-maintainer repo — no feature branches, no PRs. Don't branch before committing, even though that is the usual default. Conventional-commit subjects (`feat(scope):`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`); a husky pre-commit hook runs prettier, `tsc --noEmit`, and the full suite on every commit, so a commit that lands is already green. Split a change into commits along its natural seams — a behaviour-neutral refactor separate from the feature that needed it, the OpenSpec spec-sync and archive separate from the implementation.
 
 ## Intervals.icu API
 
