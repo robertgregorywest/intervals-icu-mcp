@@ -33,6 +33,37 @@ reviewed-through: YYYY-MM-DD
 2. One bullet per loggable item — apply the re-derivability test (see `SKILL.md`): log only what a future session couldn't re-derive from the `coaching-philosophy` skill, `steering.md`, `season.md`, `get_coaching_context`, or Intervals.icu data. Tag any line that opens or updates a live thread.
 3. Mirror new or changed threads into the header with an open-condition.
 
+## The log records conclusions, not the conversation
+
+The re-derivability test in `SKILL.md` screens against **data** — it asks whether a source could
+reconstruct the line. It does not screen against **conversation**, and that is the gap through which
+entries bloat: a correction made twenty minutes ago is not re-derivable from anything, so it passes,
+yet it is worthless to a future reader. Apply a second screen to every line:
+
+> **Reader test — would this mean anything to someone who was not in the session?**
+> If it only makes sense as a record of how the discussion moved, cut it.
+
+**Never log:**
+
+- **Corrections, retractions, and superseded claims.** Fix the wrong thing where it lives and log the
+  corrected fact only. Restating a retracted claim in order to retract it puts the wrong number back
+  in front of the next reader — the opposite of the intent.
+- **Attribution of who said what** — "athlete-raised", "I over-claimed", "challenged in session".
+  The decision stands on its merits, and the log is not a transcript.
+- **Process-compliance narration** — "flagged rather than silently shipped", "deliberate deviation,
+  not an oversight". Doing the right thing is the baseline, not a finding.
+- **Emphasis arguing with an objection already settled** — "this is the finding", "what is NOT
+  defensible". Assert once, plainly. Bold used for contrast against a position nobody holds is noise.
+- **Anything already written into a durable file.** If the fact now lives in `steering.md`,
+  `track-context.md`, `season.md`, or the philosophy skill, the entry gets a **pointer**, never a
+  copy. Duplicated facts drift, and then two files disagree.
+- **Figures a tool returns on demand** — weekly TSS, projected CTL, per-session load. Log the
+  _decision_ those numbers drove, not the numbers.
+
+**Shape.** One line per item, one sentence where possible. An entry is a handful of lines: if it
+reads like minutes, it is minutes. Prefer `Decided: X — because Y` and `Signal: X`, and let the
+header thread carry any state that must survive.
+
 ## At every checkpoint write — maintain
 
 1. **Compact** — for entries older than 12 weeks: promote any still-live thread into the header (if not already there), then drop the dated detail.
