@@ -112,3 +112,64 @@ describe("ActivitiesApi", () => {
     expect(result).toEqual(keyed);
   });
 });
+
+/**
+ * Laps come from the original upload, which not every activity has. Absence is
+ * ordinary — the caller falls back to the derived intervals — so every failure
+ * mode has to reduce to `null` rather than to an exception that loses the review.
+ */
+describe("ActivitiesApi.getActivityLaps", () => {
+  function binaryFetch(bytes: Uint8Array) {
+    return vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: "OK",
+      headers: new Headers({ "content-type": "application/octet-stream" }),
+      arrayBuffer: () => Promise.resolve(bytes.buffer),
+    } as unknown as Response);
+  }
+
+  it("GETs the original upload as bytes", async () => {
+    const mockFetch = binaryFetch(new Uint8Array([1, 2, 3]));
+    const api = new ActivitiesApi(
+      new HttpClient(config, mockFetch),
+      config.athleteId
+    );
+
+    await api.getActivityLaps("i42");
+
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe("https://intervals.icu/api/v1/activity/i42/file");
+    expect((init as RequestInit).method).toBe("GET");
+  });
+
+  it("returns null when the activity has no file (Strava sync)", async () => {
+    const mockFetch = createMockFetch(404, { message: "not found" });
+    const api = new ActivitiesApi(
+      new HttpClient(config, mockFetch),
+      config.athleteId
+    );
+
+    await expect(api.getActivityLaps("i42")).resolves.toBeNull();
+  });
+
+  it("returns null when the upload is not a FIT file", async () => {
+    const mockFetch = binaryFetch(new TextEncoder().encode("<gpx/>"));
+    const api = new ActivitiesApi(
+      new HttpClient(config, mockFetch),
+      config.athleteId
+    );
+
+    await expect(api.getActivityLaps("i42")).resolves.toBeNull();
+  });
+
+  it("returns null on an empty body", async () => {
+    const mockFetch = binaryFetch(new Uint8Array(0));
+    const api = new ActivitiesApi(
+      new HttpClient(config, mockFetch),
+      config.athleteId
+    );
+
+    await expect(api.getActivityLaps("i42")).resolves.toBeNull();
+  });
+});

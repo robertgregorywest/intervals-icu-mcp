@@ -93,4 +93,9 @@ export interface RequestOptions {
   method?: string;
   body?: unknown;
   headers?: Record<string, string>;
+  /**
+   * `binary` returns the raw bytes as a `Uint8Array` instead of parsing the
+   * body. Needed for the original-upload endpoint, which serves FIT files.
+   */
+  responseType?: "json" | "binary";
 }

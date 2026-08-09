@@ -26,10 +26,11 @@ export class HttpClient implements IHttpClient {
     const url = `${this.config.baseUrl}${endpoint}`;
     const method = options.method || "GET";
     const authHeader = `Basic ${btoa(`API_KEY:${this.config.apiKey}`)}`;
+    const binary = options.responseType === "binary";
     const headers: Record<string, string> = {
       Authorization: authHeader,
       "Content-Type": "application/json",
-      Accept: "application/json",
+      Accept: binary ? "application/octet-stream" : "application/json",
       ...options.headers,
     };
     const body = options.body ? JSON.stringify(options.body) : undefined;
@@ -57,6 +58,10 @@ export class HttpClient implements IHttpClient {
       this.lastRequestTime = Date.now();
 
       if (response.ok) {
+        if (binary) {
+          const buffer = await response.arrayBuffer();
+          return new Uint8Array(buffer) as T;
+        }
         return this.parseResponse<T>(response);
       }
 
