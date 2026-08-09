@@ -88,6 +88,9 @@
       "name": "compare_planned_vs_actual"
     },
     {
+      "name": "compare_intensity_distribution"
+    },
+    {
       "name": "compute_power_profile"
     },
     {
