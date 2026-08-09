@@ -69,6 +69,42 @@ The system SHALL read the planned session's structured steps from the event and 
 - **WHEN** the paired event carries no structured workout steps
 - **THEN** the system returns a result with no step alignment, an alignment basis of `none`, and a reason identifying that the planned event has no structured steps to compare against
 
+### Requirement: Read what was delivered from the device's own record
+
+The recorded intervals a comparison judges SHALL be taken from the laps the recording device wrote, decoded from the activity's original upload, whenever those laps are available and record structure. The platform's own interval analysis is a derived, editable segmentation that may re-cut step boundaries, and SHALL be used only as a fallback. Every result SHALL name which record it read.
+
+The system SHALL NOT choose between the two records by which of them aligns better. Detection re-cuts boundaries to fit the power trace, so it scores best precisely where it has invented the structure the comparison exists to check. The records SHALL be tried in preference order, and the derived one used only when the device's laps produce no alignment at all.
+
+#### Scenario: Laps preferred over the derived analysis
+
+- **WHEN** the activity's original upload yields laps recording more than one segment
+- **THEN** the comparison judges the prescribed steps against those laps and reports its execution record as the device's laps
+
+#### Scenario: Derived analysis scores better and is still not used
+
+- **WHEN** the device's laps produce an alignment and the platform's interval analysis would produce a more complete one
+- **THEN** the comparison reports the lap-based result, because a segmentation re-cut to fit is not evidence that it is right
+
+#### Scenario: Laps unavailable
+
+- **WHEN** the activity has no original upload, the upload is not readable as a lap-bearing file, or the recorded laps do not survive decoding
+- **THEN** the comparison falls back to the platform's interval analysis and reports that as its execution record, rather than refusing the comparison
+
+#### Scenario: Ride was never lapped
+
+- **WHEN** the original upload yields a single lap spanning the whole activity
+- **THEN** the comparison treats that as recording no structure, falls back to the platform's interval analysis, and does not warn about the difference
+
+#### Scenario: Derived analysis is known to have drifted
+
+- **WHEN** the platform's interval analysis is used and the activity reports that the analysis has been edited or re-detected, or that the device recorded a different number of laps than the analysis contains
+- **THEN** the comparison reports a note naming that drift, so per-step power is not read as though the boundaries were the ones ridden
+
+#### Scenario: Reading the laps never costs the comparison
+
+- **WHEN** the request for the original upload fails for any reason
+- **THEN** the comparison proceeds on the platform's interval analysis, and the failure is not surfaced as an error
+
 ### Requirement: Align conservatively and report the basis
 
 The system SHALL attempt to pair prescribed steps to recorded intervals, SHALL report which basis produced the pairing, and SHALL decline to pair rather than emit a pairing it cannot justify.
@@ -108,7 +144,7 @@ Alongside the basis the system SHALL report the fraction of prescribed steps tha
 
 #### Scenario: Activity has no recorded intervals
 
-- **WHEN** the completed activity carries no recorded intervals
+- **WHEN** the completed activity yields neither recorded laps nor a platform interval analysis
 - **THEN** the system returns a result with no step alignment, an alignment basis of `none`, and a reason identifying the absence of intervals — it SHALL NOT substitute whole-activity averages for per-step delivery
 
 ### Requirement: Report a per-step verdict against a tolerance

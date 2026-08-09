@@ -61,8 +61,12 @@ One prescribed step of a workout after repeat blocks have been expanded — the 
 _Avoid_: "interval" for the planned side — that is the recorded half (see **Delivered interval**)
 
 **Delivered interval**:
-One recorded lap of a completed activity (`icu_intervals`), reduced to duration and average power/cadence/HR. What was actually ridden, as against what a **Planned step** asked for.
-_Avoid_: "lap" (Intervals.icu's own term is interval); "actual step" (there are no steps on the recorded side)
+One segment of a completed activity, reduced to duration and average power/cadence/HR. What was actually ridden, as against what a **Planned step** asked for. Where the segment boundaries come from is the **Execution record**.
+_Avoid_: "actual step" (there are no steps on the recorded side)
+
+**Execution record**:
+Which reading of the ride a comparison drew its **Delivered intervals** from. `device-laps` is the laps the head unit wrote, decoded from the original upload — the faithful record of what the athlete marked. `detected-intervals` is Intervals.icu's `icu_intervals` analysis: derived, editable, and free to re-cut boundaries, used only when laps are unavailable (no FIT file, or a ride that was never lapped) or cannot explain the session. Always reported; a derived reading known to have drifted from the laps carries a note saying so (see ADR 0006).
+_Avoid_: treating `icu_intervals` as the recording — it is an interpretation of one; preferring whichever record aligns _better_ (detection re-cuts boundaries to fit, so it scores best exactly where it has invented the structure)
 
 **Alignment basis**:
 How a comparison paired **Planned steps** to **Delivered intervals**, always reported so the caller can see how much to trust the pairing: `sequential` (all matched in order, no gaps), `duration` (partial — some steps or intervals unmatched), `none` (declined to pair). Pairing reads duration and position only, never power.
@@ -114,6 +118,7 @@ _Avoid_: confusing this with `get_coaching_context`'s output — that is live **
 - A **Library workout** with no **Workout template** is an **Orphan**; a **Workout template** with no **Library workout** is created on the next **Sync**
 - An **Anchored target** moves when MAP/FTP moves; a **literal target** does not — that is the whole difference between them
 - A **Planned step** is paired to at most one **Delivered interval**; the pairing's **Alignment basis** says how it was reached, and each pair yields one **Verdict**
+- **Delivered intervals** come from exactly one **Execution record**, tried best-first and never mixed: the laps are preferred, and lose only when they align to nothing at all
 - A **Planned step** with no pair, and a **Delivered interval** with no pair, are both reported rather than dropped — the latter as unplanned work
 - **The prescription is the contract both lenses judge against.** Because workouts are authored in absolute watts, neither the **Verdict** nor the **Intensity distribution** moves when FTP or MAP moves between prescribing and riding
 - The two lenses answer different questions and **neither subsumes the other**: **Verdicts** say what happened _within_ the reps and need an **Alignment basis** better than `none`; the **Intensity distribution** says how much of the prescribed dose landed and needs no pairing at all, so it still reports where the step lens refuses

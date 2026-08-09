@@ -30,6 +30,8 @@ Step labels are a weak third signal: reliable across this athlete's own template
 
 **Range targets carry no tolerance.** The `tolerance` parameter applies to point targets only; a step prescribing 255–275 W is judged on its own band, so a delivery 2 W outside returns a directional verdict with no allowance. Small deltas on range targets are noise.
 
+**Check `executionRecord` before quoting a single watt.** `device-laps` means the steps were read from the laps the head unit wrote — that is the ride, and rep-by-rep figures can be quoted as fact. `detected-intervals` means Intervals.icu's derived segmentation was used instead, which is free to move rep boundaries: it can merge a rep into its recovery, or clip the opening seconds off a rep and inflate its average. Where `executionRecordNote` is present the payload is telling you it has drifted from the recorded laps — read decay across reps as a hypothesis, say the boundaries are uncertain, and lean on the band lens for anything load-bearing.
+
 **`alignmentBasis: none` is a refusal, not a failure.** The tool declined to guess a pairing. Report the session as _unverified on the step lens_ and fall back to the band lens. It is never evidence the athlete failed to complete the session.
 
 **Platform compliance is context, not the verdict.** `rollup.platformCompliance` may be cited. It never substitutes for your own reading — improving on it is why this review exists.
