@@ -23,12 +23,19 @@ export {
   normalisePowerTarget,
   plannedDuration,
 } from "./planned.js";
+export {
+  executionCandidates,
+  lapsToDeliveredIntervals,
+  MIN_LAPS_FOR_STRUCTURE,
+} from "./delivered.js";
+export type { ExecutionCandidate } from "./delivered.js";
 export type {
   ISessionReview,
   ComparePlannedVsActualOptions,
   PlannedVsActualResult,
   AlignedStep,
   AlignmentBasis,
+  ExecutionRecord,
   StepVerdict,
   ReviewReason,
   SessionRollup,

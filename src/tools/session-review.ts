@@ -75,6 +75,21 @@ export const comparePlannedVsActualOutputSchema = z.object({
   eventName: z.string().optional(),
   date: z.string().optional(),
   tolerance: z.number(),
+  executionRecord: z
+    .enum(["device-laps", "detected-intervals"])
+    .describe(
+      "Which record of the ride the step comparison was read from. " +
+        "'device-laps' is the faithful record the head unit wrote; " +
+        "'detected-intervals' is Intervals.icu's derived, editable segmentation, " +
+        "used only when laps are unavailable or cannot explain the session."
+    ),
+  executionRecordNote: z
+    .string()
+    .optional()
+    .describe(
+      "Present when the derived intervals were used and are known to have " +
+        "drifted from the recorded laps — read per-step power with caution."
+    ),
   alignmentBasis: z.enum(["sequential", "duration", "none"]),
   matchedFraction: z.number(),
   steps: z.array(alignedStepShape),

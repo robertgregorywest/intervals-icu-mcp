@@ -13,6 +13,17 @@ import type { IntervalsEvent } from "../../types.js";
 export type AlignmentBasis = "sequential" | "duration" | "none";
 
 /**
+ * Which record of the ride the comparison was built from.
+ *
+ * - `device-laps`        — the laps the head unit wrote, read from the original
+ *   upload. The faithful record of what the athlete marked.
+ * - `detected-intervals` — Intervals.icu's `icu_intervals` analysis: derived,
+ *   editable, and free to re-cut step boundaries. Used only when laps are
+ *   unavailable or cannot explain the session.
+ */
+export type ExecutionRecord = "device-laps" | "detected-intervals";
+
+/**
  * Why a comparison produced no step alignment. Machine-readable so callers can
  * distinguish "we could not align" from "there was nothing to align" — the tool
  * exists to stop silent gap-filling, so every empty result names its cause.
@@ -137,6 +148,10 @@ export interface PlannedVsActualResult {
   date?: string;
   /** The tolerance actually applied, echoed back. */
   tolerance: number;
+  /** Which record of the ride the step comparison was read from. */
+  executionRecord: ExecutionRecord;
+  /** Caveat about that record — set when the derived intervals were used and are known to have drifted. */
+  executionRecordNote?: string;
   alignmentBasis: AlignmentBasis;
   /** Fraction of planned steps that were matched, 0–1. */
   matchedFraction: number;

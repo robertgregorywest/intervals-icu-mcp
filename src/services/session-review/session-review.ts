@@ -3,11 +3,8 @@ import type { IEventsApi } from "../events/index.js";
 import type { Activity } from "../activities/types.js";
 import type { IntervalsEvent } from "../../types.js";
 import { flattenPlannedSteps, plannedDuration } from "./planned.js";
-import {
-  DEFAULT_TOLERANCE,
-  reviewSession,
-  toDeliveredIntervals,
-} from "./review.js";
+import { DEFAULT_TOLERANCE, reviewSession } from "./review.js";
+import { executionCandidates, type ExecutionCandidate } from "./delivered.js";
 import { resolvePair } from "./pair.js";
 import type {
   ComparePlannedVsActualOptions,
@@ -62,29 +59,38 @@ export class SessionReview implements ISessionReview {
       );
     }
 
-    const intervals = toDeliveredIntervals(activity.icu_intervals ?? []);
-    if (intervals.length === 0) {
+    const laps = await this.deps.activitiesApi.getActivityLaps(activity.id);
+    const candidates = executionCandidates(activity, laps);
+
+    if (candidates.length === 0) {
       return this.refuse(
         activity,
         event,
         tolerance,
         "no-intervals",
-        `Activity ${activity.id} has no recorded intervals, so per-step ` +
-          "delivery cannot be read. Whole-activity averages are not a substitute.",
+        `Activity ${activity.id} has neither recorded laps nor detected ` +
+          "intervals, so per-step delivery cannot be read. Whole-activity " +
+          "averages are not a substitute.",
         planned.length ? plannedDuration(planned) : undefined
       );
     }
 
-    const core = reviewSession({
-      planned,
-      intervals,
-      tolerance,
+    const rollupInputs = {
       plannedLoad: event.icu_training_load,
       actualLoad: numberOrUndefined(activity.icu_training_load),
       plannedDurationSeconds: plannedDuration(planned),
       actualDurationSeconds: numberOrUndefined(activity.moving_time),
       platformCompliance: numberOrUndefined(activity.compliance),
-    });
+    };
+
+    const chosen = pickCandidate(candidates, (candidate) =>
+      reviewSession({
+        planned,
+        intervals: candidate.intervals,
+        tolerance,
+        ...rollupInputs,
+      })
+    );
 
     return {
       activityId: activity.id,
@@ -93,13 +99,20 @@ export class SessionReview implements ISessionReview {
       eventName: event.name,
       date: activity.start_date_local,
       tolerance,
-      ...core,
+      executionRecord: chosen.candidate.source,
+      ...(chosen.candidate.note
+        ? { executionRecordNote: chosen.candidate.note }
+        : {}),
+      ...chosen.core,
     };
   }
 
   /**
    * Every dead end returns the same shape: an empty step list, a named reason,
    * and the roll-up, which still answers the coarse question.
+   *
+   * `executionRecord` reports the source that would have been read, so a refusal
+   * still says what it was looking at.
    */
   private refuse(
     activity: Activity | undefined,
@@ -126,6 +139,7 @@ export class SessionReview implements ISessionReview {
       eventName: event?.name,
       date: activity?.start_date_local ?? event?.start_date_local,
       tolerance,
+      executionRecord: "detected-intervals",
       alignmentBasis: "none",
       matchedFraction: 0,
       steps: [],
@@ -134,6 +148,33 @@ export class SessionReview implements ISessionReview {
       message,
     };
   }
+}
+
+type ReviewCore = ReturnType<typeof reviewSession>;
+
+/**
+ * Review each candidate reading in preference order and keep the first that
+ * aligns at all.
+ *
+ * Deliberately not "whichever aligns best". Detection re-cuts step boundaries
+ * to whatever the power trace suggests, so it can out-score the laps precisely
+ * on the sessions where it has invented the structure — the failure this
+ * comparison exists to catch. The laps only lose when they explain nothing.
+ * When no candidate aligns, the preferred one's refusal is the one reported.
+ */
+function pickCandidate(
+  candidates: ExecutionCandidate[],
+  review: (candidate: ExecutionCandidate) => ReviewCore
+): { candidate: ExecutionCandidate; core: ReviewCore } {
+  let first: { candidate: ExecutionCandidate; core: ReviewCore } | undefined;
+
+  for (const candidate of candidates) {
+    const core = review(candidate);
+    if (!first) first = { candidate, core };
+    if (core.alignmentBasis !== "none") return { candidate, core };
+  }
+
+  return first!;
 }
 
 function numberOrUndefined(v: unknown): number | undefined {

@@ -115,6 +115,7 @@ describe("compare_planned_vs_actual schemas", () => {
   it("accepts a refusal result against the output schema", () => {
     const parsed = comparePlannedVsActualOutputSchema.safeParse({
       tolerance: 0.05,
+      executionRecord: "detected-intervals",
       alignmentBasis: "none",
       matchedFraction: 0,
       steps: [],

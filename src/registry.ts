@@ -428,16 +428,22 @@ export const TOOLS: ToolDef[] = [
       "beside the delivered duration and average power, the deltas, and a verdict " +
       "(on-target / over / under / not-attempted / unmatched). Repeat blocks are " +
       "compared rep by rep, so decay across reps is visible. " +
+      "Steps are compared against the laps the head unit recorded, read from the " +
+      "original upload — the faithful record of what the athlete marked. " +
+      "Intervals.icu's own icu_intervals analysis is derived and editable and can " +
+      "re-cut rep boundaries, so it is used only when laps are unavailable (no FIT " +
+      "file, or the ride was never lapped) or cannot explain the session. " +
+      "executionRecord names which was used; executionRecordNote flags a derived " +
+      "reading known to have drifted from the laps. " +
       "Alignment is deliberately conservative and reads duration only, never power: " +
       "alignmentBasis is 'sequential' (matched in order), 'duration' (partial match), " +
       "or 'none' (declined to guess). A 'none' result still returns the roll-up. " +
-      "Auto-detected intervals are often coarser than the plan, so partial alignment " +
-      "is normal for sessions ridden without the structured workout on the head unit. " +
       "Refusals are explicit via reason: no-paired-event, no-paired-activity, " +
       "no-structured-steps, no-intervals, alignment-failed. " +
       "Optional tolerance (fraction, default 0.05) applies to point targets only; " +
       "range targets are judged on their own band. " +
-      "Returns: { alignmentBasis, matchedFraction, tolerance, steps: [...], " +
+      "Returns: { executionRecord, executionRecordNote?, alignmentBasis, matchedFraction, " +
+      "tolerance, steps: [...], " +
       "rollup: { plannedLoad, actualLoad, platformCompliance, unplannedIntervals }, reason? }.",
     schema: comparePlannedVsActualSchema,
     annotations: READ_ONLY,
