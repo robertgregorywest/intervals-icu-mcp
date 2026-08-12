@@ -3,11 +3,11 @@
  * run sits in which.
  *
  * Both halves exist because of the same failure. Searching the whole activity
- * with the rollout free returns a confident fiction: on the 2026-08-08 session
- * it found a 0.84 rpm residual and a "rollout" of 10.25 m inside a 133 W
+ * with development free returns a confident fiction: on the 2026-08-08 session
+ * it found a 0.84 rpm residual and a "development" of 10.25 m inside a 133 W
  * stretch of easy riding, because near-constant cadence fits any near-constant
  * speed profile once the scale is free. Constraining the search to stretches the
- * athlete was actually riding hard in is what makes the fitted rollout mean
+ * athlete was actually riding hard in is what makes the fitted development mean
  * something. And matching runs one-to-one in order is what stops two runs of the
  * same distance — runs 3 and 4 differ by 0.6 s over 2 km — from both claiming
  * the same window.
