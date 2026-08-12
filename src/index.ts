@@ -56,6 +56,12 @@ import type {
   ComparePlannedVsActualOptions,
   PlannedVsActualResult,
 } from "./services/session-review/index.js";
+import { createTrackLapAlignment } from "./services/track-lap-alignment/index.js";
+import type {
+  ITrackLapAlignment,
+  TrackLapPowerOptions,
+  TrackLapAlignmentResult,
+} from "./services/track-lap-alignment/index.js";
 import { buildCoachingContext } from "./services/coaching-context/index.js";
 import type {
   CoachingContext,
@@ -123,6 +129,11 @@ export interface IIntervalsClient {
     options: CompareIntensityDistributionRangeOptions
   ): Promise<IntensityDistributionRangeResult>;
 
+  // Track lap alignment
+  computeTrackLapPower(
+    options: TrackLapPowerOptions
+  ): Promise<TrackLapAlignmentResult>;
+
   // Coaching context
   getCoachingContext(opts?: CoachingContextOptions): Promise<CoachingContext>;
 
@@ -149,6 +160,7 @@ export class IntervalsClient implements IIntervalsClient {
   private workoutLibrary: IWorkoutLibrary;
   private sessionReview: ISessionReview;
   private intensityDistribution: IIntensityDistribution;
+  private trackLapAlignment: ITrackLapAlignment;
 
   constructor(options: IntervalsClientOptions = {}) {
     const config = parseClientConfig({
@@ -182,6 +194,9 @@ export class IntervalsClient implements IIntervalsClient {
         const ctx = await this.getCoachingContext();
         return { zones: ctx.mapZones, ftp: ctx.athlete.ftp };
       },
+    });
+    this.trackLapAlignment = createTrackLapAlignment({
+      activitiesApi: this.activities,
     });
   }
 
@@ -316,6 +331,13 @@ export class IntervalsClient implements IIntervalsClient {
     );
   }
 
+  // Track lap alignment
+  async computeTrackLapPower(
+    options: TrackLapPowerOptions
+  ): Promise<TrackLapAlignmentResult> {
+    return this.trackLapAlignment.computeTrackLapPower(options);
+  }
+
   // Coaching context
   async getCoachingContext(
     opts?: CoachingContextOptions
@@ -423,6 +445,21 @@ export type {
   RangeSessionRow,
   ExcludedSession,
 } from "./services/intensity-distribution/index.js";
+export type {
+  ITrackLapAlignment,
+  TrackLapPowerOptions,
+  TrackLapAlignmentResult,
+  AlignedRun,
+  AlignedLap,
+  AlignmentConfidence,
+  AlignmentThresholds,
+  AlignmentVerdict,
+  RolloutAgreement,
+  Reading,
+  RunSplits,
+  LapSplit,
+  CandidateWindow,
+} from "./services/track-lap-alignment/index.js";
 export type {
   CoachingContext,
   CoachingContextOptions,

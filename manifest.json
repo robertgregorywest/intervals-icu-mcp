@@ -94,6 +94,9 @@
       "name": "compute_power_profile"
     },
     {
+      "name": "compute_track_lap_power"
+    },
+    {
       "name": "get_training_week_summary"
     },
     {

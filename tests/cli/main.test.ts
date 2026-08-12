@@ -48,7 +48,7 @@ describe("CLI describe command", () => {
     expect(io.exitCode).toBeNull();
     expect(io.outLines).toHaveLength(1);
     const doc = JSON.parse(io.outLines[0]);
-    expect(doc.tools).toHaveLength(23);
+    expect(doc.tools).toHaveLength(24);
     expect(typeof doc.instructions).toBe("string");
     expect(doc.instructions.length).toBeGreaterThan(0);
   });

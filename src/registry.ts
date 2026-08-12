@@ -52,6 +52,11 @@ import {
   comparePlannedVsActualOutputSchema,
 } from "./tools/session-review.js";
 import {
+  computeTrackLapPowerSchema,
+  computeTrackLapPower,
+  computeTrackLapPowerOutputSchema,
+} from "./tools/track-lap-alignment.js";
+import {
   compareIntensityDistributionSchema,
   compareIntensityDistribution,
   compareIntensityDistributionOutputSchema,
@@ -493,6 +498,29 @@ export const TOOLS: ToolDef[] = [
       compareIntensityDistribution(
         client,
         args as z.infer<typeof compareIntensityDistributionSchema>
+      ),
+  },
+
+  {
+    name: "compute_track_lap_power",
+    description:
+      "Join a track lap-timer export to the activity's streams and return per-lap " +
+      "power, cadence and heart rate for each scored run, with the rolling entry " +
+      "excluded. Alignment is fitted by matching recorded cadence to the cadence each " +
+      "lap time implies, so every run reports its fit residual (rpm), the offset " +
+      "interval the fit cannot separate, and a verdict — a weak or ambiguous " +
+      "alignment withholds per-lap readings rather than returning plausible fiction. " +
+      "The drivetrain rollout is fitted, not assumed, and returned. " +
+      "Pass `splits` as the export text: run, cumulative distance, cumulative time, " +
+      "lap time. Returns: { runs: [{ run, startOffsetSeconds, fittedRolloutMeters, " +
+      "confidence, average, laps }], rolloutAgreement, thresholds }.",
+    schema: computeTrackLapPowerSchema,
+    annotations: READ_ONLY,
+    outputSchema: computeTrackLapPowerOutputSchema,
+    handler: (client, args) =>
+      computeTrackLapPower(
+        client,
+        args as z.infer<typeof computeTrackLapPowerSchema>
       ),
   },
 
