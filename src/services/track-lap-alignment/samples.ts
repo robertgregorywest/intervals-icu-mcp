@@ -91,6 +91,18 @@ export function medianSampleInterval(times: number[]): number | undefined {
   return deltas.length % 2 ? deltas[mid] : (deltas[mid - 1] + deltas[mid]) / 2;
 }
 
+/**
+ * Some activities return no `time` stream at all, in which case the samples are
+ * one per second by position. A supplied time base is used as given.
+ */
+export function normalizeTimes(
+  time: number[] | undefined,
+  length: number
+): number[] {
+  if (time?.length === length) return time;
+  return Array.from({ length }, (_, i) => i);
+}
+
 /** Value at the given quantile of the positive entries, or `undefined`. */
 export function positiveQuantile(
   values: number[],

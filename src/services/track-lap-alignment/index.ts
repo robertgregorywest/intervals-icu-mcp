@@ -47,7 +47,7 @@ export {
   OFFSET_STEP_SECONDS,
 } from "./fit.js";
 export type { RunFit, ResidualAt } from "./fit.js";
-export { windowMean, medianSampleInterval } from "./samples.js";
+export { windowMean, medianSampleInterval, normalizeTimes } from "./samples.js";
 export type { TimedStream } from "./samples.js";
 export type {
   LapSplit,

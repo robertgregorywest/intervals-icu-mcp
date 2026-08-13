@@ -14,6 +14,7 @@
 import type { IActivitiesApi } from "../activities/index.js";
 import {
   medianSampleInterval,
+  normalizeTimes,
   windowMean,
   type TimedStream,
 } from "./samples.js";
@@ -317,15 +318,6 @@ function rolloutAgreement(runs: AlignedRun[]): RolloutAgreement | undefined {
     maxMeters: round(max, 4),
     spreadPercent: round(((max - min) / mean) * 100, 2),
   };
-}
-
-/**
- * Some activities return no `time` stream at all, in which case the samples are
- * one per second by position. A supplied time base is used as given.
- */
-function normalizeTimes(time: number[] | undefined, length: number): number[] {
-  if (time?.length === length) return time;
-  return Array.from({ length }, (_, i) => i);
 }
 
 function round(value: number, places: number): number {
