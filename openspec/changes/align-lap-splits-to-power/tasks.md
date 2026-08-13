@@ -44,5 +44,5 @@
 ## 7. Documentation
 
 - [x] 7.1 Update `docs/personal/track-context.md` §8 — point the manual method at the Tool, and correct the 3-second-stride claim to the 1 Hz the API returns for this session, keeping the trap it documents
-- [x] 7.2 Record the fitted-development finding against `track-context.md` §1 — 8.332–8.369 m per assumed 250 m lap, ~2% below the 8.526 m/rev the 110" gear gives, with both candidate explanations left open
+- [x] 7.2 Record the fitted-development finding against `track-context.md` §1 — 0.51% under 8.396 m/rev on 64×16 (2026-08-08) and 0.34% under 8.526 on 65×16 (2026-07-12), plus the measured finding that a wheel speed stream is a worse alignment channel than cadence
 - [x] 7.3 Add the capability to `CONTEXT.md` vocabulary if alignment or rollout introduces a term the glossary does not already carry
