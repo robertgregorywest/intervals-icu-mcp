@@ -1,8 +1,10 @@
+# track-lap-alignment Specification
+
 ## Purpose
 
 Joins an external lap-timer record of a track session to the recorded activity's streams, so that each timed lap can be read with the power, cadence and heart rate that produced it, and so that the quality of that join is reported as a number rather than assumed.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Per-lap readings for every timed run
 
@@ -38,27 +40,29 @@ The system SHALL locate each run's scored start within the activity by fitting, 
 
 ### Requirement: Alignment is fitted against cadence, not assumed
 
-The system SHALL determine each run's position in the activity by fitting the recorded cadence against the cadence each timed lap implies, with the drivetrain rollout treated as a fitted parameter rather than a supplied constant.
+The system SHALL determine each run's position in the activity by fitting the recorded cadence against the cadence each timed lap implies, with the **fitted development** — metres of assumed lap distance per crank revolution — treated as a fitted parameter rather than a supplied constant.
 
 Each run SHALL be matched to exactly one candidate window of the activity, and runs SHALL be matched in the order the lap-split record gives them, so that two runs can never resolve to the same stretch of the session.
 
-The fitted rollout SHALL be returned for each run, and its spread across runs SHALL be reported.
+The fitted development SHALL be returned for each run, and its spread across runs SHALL be reported.
 
 #### Scenario: Two runs of identical length in one session
 
 - **WHEN** a session contains two runs of the same distance and near-identical lap times
 - **THEN** each run is matched to a distinct window of the activity and the two runs report different start offsets
 
-#### Scenario: Rollout recovered from the fit
+#### Scenario: Development recovered from the fit
 
 - **WHEN** a session of four runs is aligned successfully
-- **THEN** each run reports the rollout its own fit recovered, and the result reports the spread across the four as a consistency signal
+- **THEN** each run reports the development its own fit recovered, and the result reports the spread across the four as a consistency signal
 
 ### Requirement: Alignment confidence is quantified and reported
 
 Every run in the response SHALL carry a confidence report containing at minimum: the residual of the cadence fit in rpm, the margin by which the chosen alignment beat the next-best distinct alignment, and a verdict classifying the fit.
 
 The verdict SHALL be derived from published thresholds, and the response SHALL state the thresholds used so a reader can judge the verdict without re-deriving it.
+
+A low residual SHALL NOT on its own be taken as a good fit. Where the fit is no better at the offset it chose than across a large share of the range it searched, it has placed nothing, and the run SHALL be reported weak whatever its residual.
 
 #### Scenario: A good fit
 
@@ -74,6 +78,11 @@ The verdict SHALL be derived from published thresholds, and the response SHALL s
 
 - **WHEN** a second, materially different alignment fits the run nearly as well as the chosen one
 - **THEN** the run is reported as ambiguous and the competing alignment is disclosed
+
+#### Scenario: A fit that fits everywhere equally
+
+- **WHEN** the recorded cadence varies so little that the fit is no better where it settled than across most of the range it searched
+- **THEN** the run is reported weak and the reason names the flatness, even though the residual alone would have qualified as strong
 
 ### Requirement: The system fails loudly rather than returning a plausible fiction
 
@@ -117,4 +126,4 @@ The lap distance SHALL default to 250 m and SHALL be overridable for tracks of a
 #### Scenario: A track that is not 250 m
 
 - **WHEN** the caller supplies a lap distance of 333.33 m
-- **THEN** implied lap speeds and the fitted rollout are computed against that distance
+- **THEN** implied lap speeds and the fitted development are computed against that distance
