@@ -96,10 +96,9 @@ describe("fitRun on the 2026-08-08 session", () => {
     const max = Math.max(...rollouts);
     const mean = rollouts.reduce((a, b) => a + b, 0) / rollouts.length;
 
-    // ~8.35 m of assumed lap distance per revolution, against the 8.526 m
-    // development §1 gives for the 110" gear. The 2% gap is a finding about the
-    // session, not a tolerance: it is either a longer path than the pole line or
-    // a different gear, and the fit is what makes it visible.
+    // ~8.35 m of assumed lap distance per revolution. This session was ridden on
+    // 64x16, whose true development is 8.396 m/rev (§1), so the fit reads 0.5%
+    // short — as it does on the 12 Jul fixture's 65x16. See hand-fit.test.ts.
     expect(mean).toBeGreaterThan(8.2);
     expect(mean).toBeLessThan(8.5);
     expect(((max - min) / mean) * 100).toBeLessThan(0.5);
