@@ -29,6 +29,14 @@ Index of Intervals.icu endpoints currently used by this server, plus quirks wort
 - `GET /api/v1/activity/{activityId}` — full detail.
 - `GET /api/v1/activity/{activityId}/streams` — time-series streams (`watts`, `heartrate`, `cadence`, etc.). Sparse — confirm null handling live.
 - `GET /api/v1/athlete/{id}/power-curves` — power-duration curve.
+- `GET /api/v1/activity/{activityId}/intervals` — the interval analysis as its own document: `{ id, analyzed, icu_intervals[], icu_groups[] }`.
+- `PUT /api/v1/activity/{activityId}/intervals?all=true` — replace the interval set (`all=false` merges). Verified live 2026-08-13; four things the schema does not tell you:
+  - The body is a **bare JSON array**, not an object wrapping one.
+  - **Every metric is recomputed** from `start_index`/`end_index` — power, cadence, HR, distance, duration, training load, zone, even weather. Sending a metric is silently discarded, so send none.
+  - **`type` is not honoured.** An interval sent as `RECOVERY` comes back `WORK`. Only `start_index`, `end_index` and `label` survive the round trip; `label` is preserved verbatim.
+  - **Gaps are backfilled.** Write two intervals into a 4340-sample activity and four come back — the platform partitions the whole ride. You cannot write efforts in isolation.
+  - Boundaries are stream sample indices, end-exclusive (`end_index - start_index` = sample count, = seconds only at 1 Hz). Re-sending a captured set reproduces every metric exactly, which makes replace-and-restore a safe probe.
+- `PUT /api/v1/activity/{activityId}/delete-intervals` — remove intervals (also a `PUT`, also an array body).
 
 ## Athlete + wellness
 

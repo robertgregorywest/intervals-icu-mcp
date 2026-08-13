@@ -111,6 +111,18 @@ _Avoid_: confusing it with a **Verdict**, which judges delivery against prescrip
 Metres of assumed lap distance per crank revolution, recovered by the alignment rather than supplied to it. Equals the drivetrain's true development only if the rider covered exactly the assumed lap distance, so a figure below the known gear is evidence about the line ridden. Agreement across a session's runs is independent evidence the alignment is right.
 _Avoid_: expressing it in gear inches — that conversion assumes a 27" wheel and lands ~2.9% low (see `docs/personal/track-context.md` §1).
 
+**Run label**:
+The text a written run carries on the Intervals.icu activity — the run's identifier verbatim from the **Lap-split record**, plus its **Alignment verdict** whenever that verdict is not `strong` (`Run 3 (ambiguous fit)`). The label is the _only_ field the platform preserves on a write; every metric it recomputes from the boundaries, and `type` it overrides. So it is also the only place a shaky placement can be seen by someone looking at the activity rather than at a tool response. Overwritten by the next write, which is how an improved fit clears the qualifier.
+_Avoid_: hand-editing it in the Intervals.icu UI (the next Sync-equivalent write discards it); reading a written run as a device lap — see the **Execution record**, which a written run never becomes.
+
+**Boundary snap**:
+Rounding a fitted run boundary from its fractional second onto a whole stream sample, because Intervals.icu anchors an interval to a sample index and the alignment does not. Applied to the run's start and end only; the run is the written unit, so no lap boundary is ever snapped.
+_Avoid_: doing it silently — the whole point is that it is reported.
+
+**Snap drift**:
+How far a **Boundary snap** moved a boundary, in signed seconds, reported per run alongside both readings it separates: the fitted one (what `compute_track_lap_power` says) and the snapped one (what the activity will show). Bounded by half a sampling interval, so against a 100 s+ run the two readings usually agree to the digit.
+_Avoid_: quoting a snapped figure as though it were the fitted one, or the reverse — they are two measurements over two windows and the drift is the account of why they differ; confusing it with a **band**, which is alignment uncertainty rather than the cost of rounding.
+
 **Coaching philosophy**:
 The athlete's durable, timeless training principles — foundational pillars, intensity anchor (MAP), execution rules, biases, test cadence. **Tracked in git** as the `coaching-philosophy` skill and shared by every install; the base layer of the Coaching-context stack. Editing it is a commit (see ADR 0004).
 _Avoid_: putting season-scoped or current-state facts here (those are **Season** / athlete state); calling one athlete's deviations "philosophy" (that's **Steering**).
@@ -146,6 +158,9 @@ _Avoid_: confusing this with `get_coaching_context`'s output — that is live **
 - A **Lap-split record** is joined to an activity by fitting cadence inside a **Candidate window**; each run claims one window, one-to-one and in order, so two runs of the same distance can never resolve to the same stretch
 - An **Alignment verdict** governs what is returned, not just what is labelled: `weak` and `ambiguous` withhold per-lap readings while keeping run-level ones
 - Every aligned reading carries a band derived from the **Offset interval**, so alignment uncertainty is stated in the unit the reader reasons in rather than in rpm
+- The scored run, not the lap, is what gets written back to the activity — and the property that makes it worth writing is the one the alignment fought for: it **excludes the rolling entry**, which Intervals.icu's own detection cannot see and so swallows into the effort
+- A written run is never an **Execution record**: it is the **Lap-split record** placed against the stream by a fit, and its **Alignment verdict** travels with it in the **Run label** precisely so the placement is never read as fact
+- Every placed run is written whatever its **Alignment verdict**, because run-level readings stay robust across the **Offset interval** even where per-lap ones are withheld — the verdict governs _disclosure_ here, not omission
 - A **Work step vs support step** classification is never returned by a Tool; it is derived where **Verdicts** are read, so that an inference about coaching intent never travels as though it were data
 
 ## Example dialogue

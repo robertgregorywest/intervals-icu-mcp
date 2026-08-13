@@ -85,6 +85,13 @@ Only `compare_planned_vs_actual` reads laps. `compare_intervals` and `get_activi
 interval analysis, not to judge a prescription against it. `compare_intensity_distribution` is
 unaffected — it buckets the raw power stream and never reads either record.
 
+`write_track_runs` writes _into_ `icu_intervals`, replacing the whole set on a track activity. That is
+consistent with this ADR rather than an exception to it: `icu_intervals` is the derived, editable
+interpretation layer, which is exactly what makes it a legitimate thing to overwrite. The device laps
+and the original upload behind them are untouched, and a written run is never a device lap — it is
+the lap-timer record placed against the stream by a fit whose confidence travels with it. Nothing
+that reads laps as the execution record reads a written run instead.
+
 ## Cost
 
 One extra GET per comparison, and it downloads the original upload (~100–500 KB for a long ride)
