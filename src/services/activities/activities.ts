@@ -1,6 +1,11 @@
 import { HttpError, type IHttpClient } from "../../client.js";
 import { decodeFitLaps, type FitLap } from "./fit-laps.js";
-import type { Activity, ActivityStreams } from "./types.js";
+import type {
+  Activity,
+  ActivityIntervalsDoc,
+  ActivityStreams,
+  IntervalWrite,
+} from "./types.js";
 
 export interface IActivitiesApi {
   getActivities(oldest: string, newest: string): Promise<Activity[]>;
@@ -14,6 +19,23 @@ export interface IActivitiesApi {
    * have them — Strava-synced activities carry no original file.
    */
   getActivityLaps(id: string): Promise<FitLap[] | null>;
+  /** The activity's interval analysis, as its own document. */
+  getActivityIntervals(id: string): Promise<ActivityIntervalsDoc>;
+  /**
+   * Replace the activity's entire interval set with `intervals`.
+   *
+   * Replace rather than merge (`all=true`) is what makes writing twice the same
+   * as writing once — a merge would leave the previous write's intervals
+   * alongside the new ones with no handle to remove them.
+   *
+   * Intervals.icu backfills every stretch not covered by a supplied interval
+   * with one of its own, so the document that comes back partitions the whole
+   * activity and will hold more intervals than were sent.
+   */
+  replaceActivityIntervals(
+    id: string,
+    intervals: IntervalWrite[]
+  ): Promise<ActivityIntervalsDoc>;
 }
 
 export class ActivitiesApi implements IActivitiesApi {
@@ -67,6 +89,23 @@ export class ActivitiesApi implements IActivitiesApi {
       `/api/v1/activity/${id}/streams.json${query}`
     );
     return normalizeStreams(raw);
+  }
+
+  async getActivityIntervals(id: string): Promise<ActivityIntervalsDoc> {
+    return this.httpClient.request<ActivityIntervalsDoc>(
+      `/api/v1/activity/${id}/intervals`
+    );
+  }
+
+  async replaceActivityIntervals(
+    id: string,
+    intervals: IntervalWrite[]
+  ): Promise<ActivityIntervalsDoc> {
+    // The body is a bare array, not an object wrapping one.
+    return this.httpClient.request<ActivityIntervalsDoc>(
+      `/api/v1/activity/${id}/intervals?all=true`,
+      { method: "PUT", body: intervals }
+    );
   }
 }
 

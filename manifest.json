@@ -97,6 +97,9 @@
       "name": "compute_track_lap_power"
     },
     {
+      "name": "write_track_runs"
+    },
+    {
       "name": "get_training_week_summary"
     },
     {

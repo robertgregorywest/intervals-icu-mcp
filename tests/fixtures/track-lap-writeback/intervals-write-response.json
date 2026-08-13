@@ -1,0 +1,79 @@
+{
+  "id": "i173176564",
+  "analyzed": "2026-08-13T19:42:25.854+00:00",
+  "icu_intervals": [
+    {
+      "id": 5267230,
+      "type": "RECOVERY",
+      "start_index": 0,
+      "end_index": 904,
+      "start_time": 0,
+      "end_time": 904,
+      "label": null,
+      "group_id": null,
+      "average_watts": 168,
+      "average_cadence": 78.97124,
+      "average_heartrate": 111,
+      "distance": 7452.15,
+      "elapsed_time": 904,
+      "moving_time": 904
+    },
+    {
+      "id": 1015501,
+      "type": "WORK",
+      "start_index": 904,
+      "end_index": 920,
+      "start_time": 904,
+      "end_time": 920,
+      "label": "PROBE Lap 1",
+      "group_id": "15s@357w83rpm",
+      "average_watts": 359,
+      "average_cadence": 84.0625,
+      "average_heartrate": 114,
+      "distance": 160.32031,
+      "elapsed_time": 16,
+      "moving_time": 16
+    },
+    {
+      "id": 6987979,
+      "type": "WORK",
+      "start_index": 920,
+      "end_index": 934,
+      "start_time": 920,
+      "end_time": 934,
+      "label": "PROBE Lap 2",
+      "group_id": "15s@357w83rpm",
+      "average_watts": 355,
+      "average_cadence": 81.78571,
+      "average_heartrate": 123,
+      "distance": 139.65967,
+      "elapsed_time": 14,
+      "moving_time": 14
+    },
+    {
+      "id": 7438711,
+      "type": "RECOVERY",
+      "start_index": 934,
+      "end_index": 4340,
+      "start_time": 934,
+      "end_time": 4364,
+      "label": null,
+      "group_id": null,
+      "average_watts": 159,
+      "average_cadence": 66.568115,
+      "average_heartrate": 121,
+      "distance": 28267.422,
+      "elapsed_time": 3430,
+      "moving_time": 3430
+    }
+  ],
+  "icu_groups": [
+    {
+      "id": "15s@357w83rpm",
+      "count": 2,
+      "average_watts": 357,
+      "average_cadence": 83.0,
+      "elapsed_time": 15
+    }
+  ]
+}

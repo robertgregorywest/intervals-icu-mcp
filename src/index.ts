@@ -62,6 +62,12 @@ import type {
   TrackLapPowerOptions,
   TrackLapAlignmentResult,
 } from "./services/track-lap-alignment/index.js";
+import { createTrackLapWriteback } from "./services/track-lap-writeback/index.js";
+import type {
+  ITrackLapWriteback,
+  TrackRunWriteOptions,
+  TrackRunWriteResult,
+} from "./services/track-lap-writeback/index.js";
 import { buildCoachingContext } from "./services/coaching-context/index.js";
 import type {
   CoachingContext,
@@ -133,6 +139,7 @@ export interface IIntervalsClient {
   computeTrackLapPower(
     options: TrackLapPowerOptions
   ): Promise<TrackLapAlignmentResult>;
+  writeTrackRuns(options: TrackRunWriteOptions): Promise<TrackRunWriteResult>;
 
   // Coaching context
   getCoachingContext(opts?: CoachingContextOptions): Promise<CoachingContext>;
@@ -161,6 +168,7 @@ export class IntervalsClient implements IIntervalsClient {
   private sessionReview: ISessionReview;
   private intensityDistribution: IIntensityDistribution;
   private trackLapAlignment: ITrackLapAlignment;
+  private trackLapWriteback: ITrackLapWriteback;
 
   constructor(options: IntervalsClientOptions = {}) {
     const config = parseClientConfig({
@@ -197,6 +205,10 @@ export class IntervalsClient implements IIntervalsClient {
     });
     this.trackLapAlignment = createTrackLapAlignment({
       activitiesApi: this.activities,
+    });
+    this.trackLapWriteback = createTrackLapWriteback({
+      activitiesApi: this.activities,
+      alignment: this.trackLapAlignment,
     });
   }
 
@@ -338,6 +350,12 @@ export class IntervalsClient implements IIntervalsClient {
     return this.trackLapAlignment.computeTrackLapPower(options);
   }
 
+  async writeTrackRuns(
+    options: TrackRunWriteOptions
+  ): Promise<TrackRunWriteResult> {
+    return this.trackLapWriteback.writeTrackRuns(options);
+  }
+
   // Coaching context
   async getCoachingContext(
     opts?: CoachingContextOptions
@@ -460,6 +478,13 @@ export type {
   LapSplit,
   CandidateWindow,
 } from "./services/track-lap-alignment/index.js";
+export type {
+  ITrackLapWriteback,
+  TrackRunWriteOptions,
+  TrackRunWriteResult,
+  WrittenRun,
+  WriteMode,
+} from "./services/track-lap-writeback/index.js";
 export type {
   CoachingContext,
   CoachingContextOptions,

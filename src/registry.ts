@@ -57,6 +57,11 @@ import {
   computeTrackLapPowerOutputSchema,
 } from "./tools/track-lap-alignment.js";
 import {
+  writeTrackRunsSchema,
+  writeTrackRuns,
+  writeTrackRunsOutputSchema,
+} from "./tools/track-lap-writeback.js";
+import {
   compareIntensityDistributionSchema,
   compareIntensityDistribution,
   compareIntensityDistributionOutputSchema,
@@ -97,6 +102,17 @@ export const MUTATING: ToolAnnotations = {
   readOnlyHint: false,
   destructiveHint: true,
   idempotentHint: false,
+  openWorldHint: true,
+};
+
+/**
+ * Discards data, but writing twice is the same as writing once. `MUTATING`
+ * would understate the first and misstate the second.
+ */
+export const DESTRUCTIVE_IDEMPOTENT: ToolAnnotations = {
+  readOnlyHint: false,
+  destructiveHint: true,
+  idempotentHint: true,
   openWorldHint: true,
 };
 
@@ -522,6 +538,33 @@ export const TOOLS: ToolDef[] = [
         client,
         args as z.infer<typeof computeTrackLapPowerSchema>
       ),
+  },
+
+  {
+    name: "write_track_runs",
+    description:
+      "Write a track session's scored runs onto the activity as Intervals.icu " +
+      "intervals, so they can be seen on the chart and used by Intervals.icu's own " +
+      "interval tools. Takes the same inputs as compute_track_lap_power and runs the " +
+      "same alignment. ONE interval per run — first lap's start to last lap's end — " +
+      "not one per lap; the run interval excludes the rolling entry, which is the " +
+      "boundary Intervals.icu's own detection gets wrong. " +
+      "REPLACES every interval already on the activity (the derived analysis is " +
+      "discarded, and the count replaced is reported); Intervals.icu backfills the " +
+      "stretches between runs with its own, so the activity ends up with more " +
+      "intervals than runs. Boundaries are snapped to whole stream samples and the " +
+      "drift is reported per run, with the snapped reading beside the fitted one. " +
+      "Every placed run is written whatever its verdict; a non-strong fit says so in " +
+      "its label, which the next write overwrites (hand edits in the UI do not " +
+      "survive). Pass preview: true to see what would be written without writing. " +
+      "Returns: { mode, runs: [{ run, label, verdict, startIndex, endIndex, " +
+      "startDriftSeconds, endDriftSeconds, fittedReading, snappedReading }], " +
+      "intervalsReplaced, intervalsAfterWrite, notes }.",
+    schema: writeTrackRunsSchema,
+    annotations: DESTRUCTIVE_IDEMPOTENT,
+    outputSchema: writeTrackRunsOutputSchema,
+    handler: (client, args) =>
+      writeTrackRuns(client, args as z.infer<typeof writeTrackRunsSchema>),
   },
 
   // Workflow

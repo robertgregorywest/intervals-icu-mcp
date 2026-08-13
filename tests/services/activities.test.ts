@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
+import { readFileSync } from "node:fs";
 import { HttpClient } from "../../src/client.js";
 import { ActivitiesApi } from "../../src/services/activities/activities.js";
 
@@ -171,5 +172,85 @@ describe("ActivitiesApi.getActivityLaps", () => {
     );
 
     await expect(api.getActivityLaps("i42")).resolves.toBeNull();
+  });
+});
+
+describe("ActivitiesApi intervals", () => {
+  const writeResponse = JSON.parse(
+    readFileSync(
+      new URL(
+        "../fixtures/track-lap-writeback/intervals-write-response.json",
+        import.meta.url
+      ),
+      "utf8"
+    )
+  );
+
+  it("GETs the interval document", async () => {
+    const mockFetch = createMockFetch(200, writeResponse);
+    const api = new ActivitiesApi(
+      new HttpClient(config, mockFetch),
+      config.athleteId
+    );
+
+    const doc = await api.getActivityIntervals("i42");
+
+    expect(doc.icu_intervals).toHaveLength(4);
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe("https://intervals.icu/api/v1/activity/i42/intervals");
+    expect(init.method ?? "GET").toBe("GET");
+  });
+
+  it("PUTs a bare array with all=true and no metric fields", async () => {
+    const mockFetch = createMockFetch(200, writeResponse);
+    const api = new ActivitiesApi(
+      new HttpClient(config, mockFetch),
+      config.athleteId
+    );
+
+    await api.replaceActivityIntervals("i42", [
+      { type: "WORK", start_index: 904, end_index: 920, label: "Run 1" },
+    ]);
+
+    const [url, init] = mockFetch.mock.calls[0];
+    expect(url).toBe(
+      "https://intervals.icu/api/v1/activity/i42/intervals?all=true"
+    );
+    expect(init.method).toBe("PUT");
+
+    const body = JSON.parse(init.body);
+    expect(Array.isArray(body)).toBe(true);
+    expect(Object.keys(body[0]).sort()).toEqual([
+      "end_index",
+      "label",
+      "start_index",
+      "type",
+    ]);
+  });
+
+  it("returns the platform's document, backfill and all", async () => {
+    // Captured from a live probe: two intervals were sent covering samples
+    // 904-934 of a 4340-sample activity, and four came back. The two extras are
+    // Intervals.icu's own, filling the stretches nothing was written over.
+    const mockFetch = createMockFetch(200, writeResponse);
+    const api = new ActivitiesApi(
+      new HttpClient(config, mockFetch),
+      config.athleteId
+    );
+
+    const doc = await api.replaceActivityIntervals("i42", [
+      { type: "WORK", start_index: 904, end_index: 920, label: "PROBE Lap 1" },
+      { type: "WORK", start_index: 920, end_index: 934, label: "PROBE Lap 2" },
+    ]);
+
+    expect(doc.icu_intervals).toHaveLength(4);
+    expect(doc.icu_intervals.map((i) => i.label)).toEqual([
+      null,
+      "PROBE Lap 1",
+      "PROBE Lap 2",
+      null,
+    ]);
+    // Metrics come back computed by the platform, none of them sent.
+    expect(doc.icu_intervals[1].average_watts).toBe(359);
   });
 });

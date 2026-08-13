@@ -41,14 +41,14 @@ function makeClient(): IIntervalsClient {
 }
 
 describe("CLI describe command", () => {
-  it("emits 23 tools and instructions when called with no names", async () => {
+  it("emits 25 tools and instructions when called with no names", async () => {
     const io = makeIO();
     await runCli(["describe"], () => makeClient(), io);
 
     expect(io.exitCode).toBeNull();
     expect(io.outLines).toHaveLength(1);
     const doc = JSON.parse(io.outLines[0]);
-    expect(doc.tools).toHaveLength(24);
+    expect(doc.tools).toHaveLength(25);
     expect(typeof doc.instructions).toBe("string");
     expect(doc.instructions.length).toBeGreaterThan(0);
   });
