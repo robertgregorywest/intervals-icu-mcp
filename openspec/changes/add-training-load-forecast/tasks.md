@@ -1,20 +1,20 @@
 ## 1. Harvest the oracle
 
-- [ ] 1.1 Write a throwaway probe under `scripts/` that captures `(name, date, description, workout_doc, normalized_power, average_watts, icu_training_load, moving_time)` for every planned event carrying a parsed document
-- [ ] 1.2 Commit the whole capture as `tests/fixtures/workout-parser/events.json` — no filtering by threshold or by target style; the fixture must carry every input its assertions need, so that nothing about the test depends on live state
-- [ ] 1.3 Mark each entry as threshold-free or threshold-dependent for load purposes, so the assertion split below is data in the fixture rather than a rule someone has to remember
-- [ ] 1.4 Note in the fixture how it was harvested and when, so the re-harvest is repeatable and reviewable as a diff
+- [x] 1.1 Write a throwaway probe under `scripts/` that captures `(name, date, description, workout_doc, normalized_power, average_watts, icu_training_load, moving_time)` for every planned event carrying a parsed document
+- [x] 1.2 Commit the whole capture as `tests/fixtures/workout-parser/events.json` — no filtering by threshold or by target style; the fixture must carry every input its assertions need, so that nothing about the test depends on live state
+- [x] 1.3 Mark each entry as threshold-free or threshold-dependent for load purposes, so the assertion split below is data in the fixture rather than a rule someone has to remember
+- [x] 1.4 Note in the fixture how it was harvested and when, so the re-harvest is repeatable and reviewable as a diff
 
 ## 2. Workout-text parser
 
-- [ ] 2.1 Create `src/services/workout-parser/` with `types.ts`, implementation, and `index.ts` re-exporting the interface plus factory
-- [ ] 2.2 Parse durations, absolute-watt targets, watt ranges, percentage targets and ranges, zone targets, cadence, and the ramp marker
-- [ ] 2.3 Parse repeat blocks, including the blank-line boundaries that close them
-- [ ] 2.4 Discard step lines carrying no parseable duration, and report each discard
-- [ ] 2.5 Resolve zone targets against the athlete's FTP-anchored power zones and percentage targets against the supplied threshold; report an unresolvable target rather than defaulting it
-- [ ] 2.6 Emit `WorkoutDoc` and carry the anchor values used
-- [ ] 2.7 Fidelity test: parse **every** fixture description and assert step sequence, per-step duration, and per-step target against the platform's own document. This assertion never resolves a target to watts — the platform stores a percentage target as a percentage — so it needs no threshold and cannot go stale when one moves
-- [ ] 2.8 Unit-test percentage and zone resolution to watts directly, against a threshold the test chooses. This is the one piece the fixture cannot assert: the platform's stored figures for a percentage-anchored prescription were resolved at whatever threshold was on file that day, which is not recorded on the event and cannot be recovered non-circularly
+- [x] 2.1 Create `src/services/workout-parser/` with `types.ts`, implementation, and `index.ts` re-exporting the interface plus factory
+- [x] 2.2 Parse durations, absolute-watt targets, watt ranges, percentage targets and ranges, zone targets, cadence, and the ramp marker
+- [x] 2.3 Parse repeat blocks, including the blank-line boundaries that close them
+- [x] 2.4 Discard step lines carrying no parseable duration, and report each discard
+- [x] 2.5 Resolve zone targets against the athlete's FTP-anchored power zones and percentage targets against the supplied threshold; report an unresolvable target rather than defaulting it
+- [x] 2.6 Emit `WorkoutDoc` and carry the anchor values used
+- [x] 2.7 Fidelity test: parse **every** fixture description and assert step sequence, per-step duration, and per-step target against the platform's own document. This assertion never resolves a target to watts — the platform stores a percentage target as a percentage — so it needs no threshold and cannot go stale when one moves
+- [x] 2.8 Unit-test percentage and zone resolution to watts directly, against a threshold the test chooses. This is the one piece the fixture cannot assert: the platform's stored figures for a percentage-anchored prescription were resolved at whatever threshold was on file that day, which is not recorded on the event and cannot be recovered non-circularly
 
 ## 3. Load derivation
 

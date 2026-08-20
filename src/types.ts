@@ -31,6 +31,11 @@ export interface PlannedPower {
   value?: number;
   start?: number;
   end?: number;
+  /**
+   * The head-unit averaging window Intervals.icu carries through from a
+   * `power=1s` token on the step line. Opaque to every consumer here.
+   */
+  target?: string;
 }
 
 export interface PlannedCadence {
