@@ -15,6 +15,15 @@ Index of Intervals.icu endpoints currently used by this server, plus quirks wort
 - `GET /api/v1/athlete/{id}/events` — list, supports `oldest`/`newest` date filters.
 - `GET /api/v1/athlete/{id}/events/{eventId}` — single event.
 
+### Quirks that matter for load and for parsing
+
+- `workout_doc` is **Intervals.icu's own parse** of the event's `description`, and it carries the platform's derived figures alongside the steps: `normalized_power`, `average_watts`, `zoneTimes`, `variability_index`, `polarization_index`, `strain_score`. It exists only once the event has been written — there is **no endpoint that parses workout text without saving it**; the plausible routes 422 because Spring cannot coerce the path segment into a Long. That gap is what `src/services/workout-parser/` exists to close.
+- A **percentage target is stored as a percentage** (`{units: "%ftp", start: 54, end: 66}`) and a **zone target as a zone number** (`{units: "power_zone", value: 2}`). Neither is resolved to watts in the document, and the event does **not** record the FTP it was resolved at — `icu_ftp` is null throughout. Recover it from `icu_intensity` (`IF = NP / FTP`) if you need it.
+- `icu_ftp` **on the request body is ignored**: an event written with `icu_ftp: 200` comes back with it null and its targets resolved against the athlete's own FTP.
+- A planned event also carries the platform's **projection** onto it: `icu_ctl`, `icu_atl`, `icu_intensity`, `icu_training_load`. These are the figures a forecast is checked against.
+- `WeightTraining` events carry `icu_training_load: null` and are excluded from the platform's own projection. Strength contributes zero, so a model that assigns it a figure diverges from the dashboard.
+- **Zone targets do not resolve like the equivalent percentage band.** A `ZN` target resolves to the midpoint of `[floor(prevPct/100 × FTP) + 1, floor(pct/100 × FTP)]`, converting each bound to watts _before_ averaging. At FTP 286 that puts `Z6` at 387 W where `120-150%` lands on 386. Zone 1 has no zone below it and the platform substitutes a floor at four fifths of the zone's ceiling — measured, not documented. Committed as `tests/fixtures/workout-parser/zone-targets.json`; re-measure with `npx tsx scripts/capture-workout-parser-fixtures.ts --zones`.
+
 ## Folders + saved workouts (the workout library)
 
 - `GET /api/v1/athlete/{id}/folders` — returns a tree of `{ type: "FOLDER", children: [...] }`. Children mix nested folders and workouts; distinguish by `type`. **Quirk:** folders are flat in practice; `parent` on `POST` is ignored.
@@ -42,6 +51,10 @@ Index of Intervals.icu endpoints currently used by this server, plus quirks wort
 
 - `GET /api/v1/athlete/{id}` — profile, FTP, LTHR, weight, custom items, zones.
 - `GET /api/v1/athlete/{id}/wellness` — daily wellness records. Supports `oldest`/`newest`. Subjective fields (fatigue, soreness, motivation, sleep) are **nullable** when not logged that day.
+  - `ctl`/`atl` are the **delivered** fitness and fatigue; `ctlLoad`/`atlLoad` are the day's training load as the platform fed it into each recursion, always whole numbers. `rampRate` is `ctl(d) − ctl(d−7)`.
+  - The recursion is `x' = x + (load − x) · (1 − e^(−1/τ))`, with τ from `ctl_days`/`atl_days` on the sport settings and the platform defaults of 42/7 when those are null. Verified against 112 consecutive records to within 1e-5 — the residual is the float32 the API serialises, not the model.
+  - On a day carrying both a completed activity and a planned event, the **delivered** `ctl` here and the **planned** `icu_ctl` on the event differ. Seed a forecast from this one.
+- **`sportSettings`, not `sport_settings`.** The athlete payload uses the camelCase key, and carries no top-level `ftp` — FTP, `power_zones`, `ctl_days` and `atl_days` all live on the cycling sport setting.
 
 ## Documentation links
 

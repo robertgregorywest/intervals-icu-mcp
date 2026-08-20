@@ -50,7 +50,7 @@
 
 ## 7. Documentation
 
-- [ ] 7.1 Add the vocabulary to `CONTEXT.md` and the relationships it participates in
-- [ ] 7.2 Rewrite the `coaching-session` skill's _Load check_ section around the forecast, keeping the arithmetic heuristic as the documented no-tool fallback
-- [ ] 7.3 Record the endpoints and quirks relied on in the `intervals-api-research` endpoint reference
-- [ ] 7.4 Consider an ADR for the local-parse-versus-platform-parse decision, since it establishes a second source for a shape the repo previously took only from the API
+- [x] 7.1 Add the vocabulary to `CONTEXT.md` and the relationships it participates in
+- [x] 7.2 Rewrite the `coaching-session` skill's _Load check_ section around the forecast, keeping the arithmetic heuristic as the documented no-tool fallback
+- [x] 7.3 Record the endpoints and quirks relied on in the `intervals-api-research` endpoint reference
+- [x] 7.4 Consider an ADR for the local-parse-versus-platform-parse decision, since it establishes a second source for a shape the repo previously took only from the API

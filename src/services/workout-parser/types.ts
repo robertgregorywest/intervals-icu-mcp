@@ -5,7 +5,7 @@ import type { PlannedDocStep, PlannedPower, WorkoutDoc } from "../../types.js";
  *
  * Intervals.icu resolves both `%` and `Z` targets in workout text against the
  * athlete's **FTP**, not against the MAP zones the coaching layer reasons in —
- * see `docs/adr/0006-local-workout-text-parsing.md`. Resolving them any other
+ * see `docs/adr/0007-local-workout-text-parsing.md`. Resolving them any other
  * way would produce a number the athlete's dashboard never shows.
  */
 export interface ParseAnchors {

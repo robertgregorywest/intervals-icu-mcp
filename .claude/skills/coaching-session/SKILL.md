@@ -39,7 +39,7 @@ The `coaching-philosophy` skill ships with the server, so it's always present. I
 | Topic                | Tools                                                                                                                                                    |
 | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Training load        | `get_coaching_context` (CTL/ATL/TSB, ramp rate, readiness)                                                                                               |
-| Week/block planning  | Combine season position + fitness snapshot + philosophy rules                                                                                            |
+| Week/block planning  | Combine season position + fitness snapshot + philosophy rules, then cost the draft with `forecast_training_load` — see _Load check_ below                |
 | Performance analysis | `get_fitness_summary`, `get_power_curve`, `compare_intervals`                                                                                            |
 | Execution review     | `compare_intensity_distribution` (dose delivered, window or session), `compare_planned_vs_actual` (execution within reps) — see _Execution review_ above |
 | Aerobic efficiency   | `get_aerobic_decoupling`                                                                                                                                 |
@@ -49,10 +49,13 @@ The `coaching-philosophy` skill ships with the server, so it's always present. I
 
 ## Load check (when planning a week or block)
 
-Draft the sessions, then **verify the load — don't eyeball it.** Planning by session _type_ (VO2 + Z2 + long ride, constraints respected) reliably feels like a build week while quietly landing at maintenance load. Intervals.icu projects CTL/ATL onto planned events, so check the number:
+Draft the sessions, then **verify the load — don't eyeball it.** Planning by session _type_ (VO2 + Z2 + long ride, constraints respected) reliably feels like a build week while quietly landing at maintenance load. So cost the draft before it is written:
 
-- After drafting, call `get_events` over the planned range, read the projected `icu_ctl` trajectory and summed `icu_training_load`, and compare the week's CTL delta to the block's ramp target in `season.md`.
-- **Quick check without the API:** weekly TSS ≈ **7 × CTL** holds fitness; add **~42 TSS/week for every +1 CTL/week** of intended ramp. (At CTL 50, a +5/wk build week wants ~560 TSS; ~350 is a maintenance week wearing a build label.)
+- **Forecast it.** Call `forecast_training_load` over the planned range with the drafted sessions, and compare `weeks[].ramp` to the block's ramp target in `season.md`. Nothing is written to the calendar, so iterate freely — change a session, forecast again. Give each session either its workout text (costed from its own steps, and it matches what Intervals.icu will show once written) or a `load` figure where the shape is not yet decided.
+- **Only restate what you are changing.** Proposed sessions overlay the calendar by date: a date you supply a session for drops its planned work, a date you leave alone keeps it. A week with the track night already fixed and the weekend in flux needs only the weekend.
+- **Read the basis before quoting a number.** Every result names the FTP, the time constants and the seed it used, and every session says where its load came from — `platform` for an already-written session, `local-parse` for a drafted one, `caller-supplied` for an assumption. A session reported `underivable` contributes nothing and is a gap in the week, not a zero.
+- **Two things the forecast does not model.** Strength contributes no load (the platform assigns none either), so a week with two gym sessions is under-read on fatigue. And it says what the sessions would cost _if ridden as written_ — whether they will be is what the execution-review lenses answer.
+- **Quick check without the tool:** weekly TSS ≈ **7 × CTL** holds fitness; add **~42 TSS/week for every +1 CTL/week** of intended ramp. (At CTL 50, a +5/wk build week wants ~560 TSS; ~350 is a maintenance week wearing a build label.) This is a linearisation of what the forecast computes exactly — use it to sanity-check a forecast or when the tool is unavailable, not in place of one.
 - **Weekend is the ramp lever.** Under a midweek time cap, weekday rides can't carry a build week alone — the long ride and any second weekend session are what move CTL. Size those first.
 - **Flag, don't silently choose.** Always present the plan's projected CTL ramp _vs_ the `season.md` target explicitly. When it undershoots target without a deliberate reason (deload/recovery week, illness, a readiness flag), say so, name the levers that would close the gap, and let the athlete decide. A deload week _should_ undershoot — the check is block-aware. Never quietly ship an under-loaded build week; never auto-raise one either.
 
