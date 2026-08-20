@@ -299,3 +299,42 @@ export function resolvePowerTarget(
 
   return {};
 }
+
+/**
+ * Rewrite zone targets in a document into the watt bands they resolve to,
+ * leaving every other target alone.
+ *
+ * This is what lets `flattenPlannedSteps` — which knows watts and percentages
+ * but not zones — consume a document carrying `ZN` steps unchanged. A zone it
+ * cannot resolve is left in place, so the step surfaces downstream as an
+ * unresolved target rather than as a plausible wrong wattage.
+ */
+export function resolveZoneTargets(
+  doc: WorkoutDoc,
+  anchors: ParseAnchors
+): WorkoutDoc {
+  const rewrite = (steps: PlannedDocStep[] | undefined): PlannedDocStep[] =>
+    (steps ?? []).map((step) => {
+      const inner = Array.isArray(step.steps)
+        ? { steps: rewrite(step.steps) }
+        : {};
+      if (step.power?.units !== "power_zone") return { ...step, ...inner };
+      const { target } = resolvePowerTarget(step.power, anchors);
+      if (target?.low === undefined || target.high === undefined) {
+        return { ...step, ...inner };
+      }
+      return {
+        ...step,
+        ...inner,
+        power: {
+          ...step.power,
+          units: "w",
+          value: undefined,
+          start: target.low,
+          end: target.high,
+        },
+      };
+    });
+
+  return { ...doc, steps: rewrite(doc.steps) };
+}

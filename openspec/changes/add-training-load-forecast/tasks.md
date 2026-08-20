@@ -18,28 +18,28 @@
 
 ## 3. Load derivation
 
-- [ ] 3.1 Create `src/services/training-load-forecast/` alongside the parser service, reusing `flattenPlannedSteps` for the flat step list
-- [ ] 3.2 Build the synthetic power stream from flattened steps — range at its midpoint, ramp swept across its range
-- [ ] 3.3 Compute normalised power over the stream, then intensity against the stated threshold, then load
-- [ ] 3.4 Report a session whose steps cannot be resolved to watts as underivable, contributing no load
-- [ ] 3.5 Fidelity test: assert derived normalised power and load against the platform's figures for the fixture's threshold-free entries — those prescribed wholly in absolute watts, which reproduce under any threshold and so cannot go stale. State the tolerance rather than assuming it
+- [x] 3.1 Create `src/services/training-load-forecast/` alongside the parser service, reusing `flattenPlannedSteps` for the flat step list
+- [x] 3.2 Build the synthetic power stream from flattened steps — range at its midpoint, ramp swept across its range
+- [x] 3.3 Compute normalised power over the stream, then intensity against the stated threshold, then load
+- [x] 3.4 Report a session whose steps cannot be resolved to watts as underivable, contributing no load
+- [x] 3.5 Fidelity test: assert derived normalised power and load against the platform's figures for the fixture's threshold-free entries — those prescribed wholly in absolute watts, which reproduce under any threshold and so cannot go stale. State the tolerance rather than assuming it
 
 ## 4. Trajectory
 
-- [ ] 4.1 Carry fitness and fatigue forward under the athlete's time constants, reading them from sport settings and falling back to the platform defaults
-- [ ] 4.2 Seed from the delivered wellness record for the seed date, or from a caller-supplied starting state, recording which
-- [ ] 4.3 Read seven days of delivered history behind the first forecast day so ramp is defined from the start of the window
-- [ ] 4.4 Compute form as same-day fitness minus fatigue, matching the live snapshot's existing definition
-- [ ] 4.5 Regression test: seed from a wellness record and reproduce the following weeks of the committed series
+- [x] 4.1 Carry fitness and fatigue forward under the athlete's time constants, reading them from sport settings and falling back to the platform defaults
+- [x] 4.2 Seed from the delivered wellness record for the seed date, or from a caller-supplied starting state, recording which
+- [x] 4.3 Read seven days of delivered history behind the first forecast day so ramp is defined from the start of the window
+- [x] 4.4 Compute form as same-day fitness minus fatigue, matching the live snapshot's existing definition
+- [x] 4.5 Regression test: seed from a wellness record and reproduce the following weeks of the committed series
 
 ## 5. Merge and roll-up
 
-- [ ] 5.1 Read planned events across the window and overlay proposed sessions on them by date
-- [ ] 5.2 Prefer a platform-computed load on an already-written session over re-deriving it
-- [ ] 5.3 Carry each session's load source through to the result
-- [ ] 5.4 Exclude strength sessions from the model and state the exclusion on the result
-- [ ] 5.5 Roll each week up to total load, total duration, and fitness ramp
-- [ ] 5.6 Assemble the basis — threshold, time constants, seed date and origin
+- [x] 5.1 Read planned events across the window and overlay proposed sessions on them by date
+- [x] 5.2 Prefer a platform-computed load on an already-written session over re-deriving it
+- [x] 5.3 Carry each session's load source through to the result
+- [x] 5.4 Exclude strength sessions from the model and state the exclusion on the result
+- [x] 5.5 Roll each week up to total load, total duration, and fitness ramp
+- [x] 5.6 Assemble the basis — threshold, time constants, seed date and origin
 
 ## 6. Tool and adapters
 

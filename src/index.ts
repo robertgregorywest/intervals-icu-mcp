@@ -68,6 +68,12 @@ import type {
   TrackRunWriteOptions,
   TrackRunWriteResult,
 } from "./services/track-lap-writeback/index.js";
+import { createTrainingLoadForecast } from "./services/training-load-forecast/index.js";
+import type {
+  ForecastOptions,
+  ForecastResult,
+  ITrainingLoadForecast,
+} from "./services/training-load-forecast/index.js";
 import { buildCoachingContext } from "./services/coaching-context/index.js";
 import type {
   CoachingContext,
@@ -144,6 +150,9 @@ export interface IIntervalsClient {
   // Coaching context
   getCoachingContext(opts?: CoachingContextOptions): Promise<CoachingContext>;
 
+  // Training load forecast
+  forecastTrainingLoad(options: ForecastOptions): Promise<ForecastResult>;
+
   // Power profile
   computePowerProfile(
     overrides?: PowerProfileOverrides
@@ -169,6 +178,7 @@ export class IntervalsClient implements IIntervalsClient {
   private intensityDistribution: IIntensityDistribution;
   private trackLapAlignment: ITrackLapAlignment;
   private trackLapWriteback: ITrackLapWriteback;
+  private trainingLoadForecast: ITrainingLoadForecast;
 
   constructor(options: IntervalsClientOptions = {}) {
     const config = parseClientConfig({
@@ -209,6 +219,11 @@ export class IntervalsClient implements IIntervalsClient {
     this.trackLapWriteback = createTrackLapWriteback({
       activitiesApi: this.activities,
       alignment: this.trackLapAlignment,
+    });
+    this.trainingLoadForecast = createTrainingLoadForecast({
+      eventsApi: this.events,
+      wellnessApi: this.wellness,
+      athleteApi: this.athlete,
     });
   }
 
@@ -371,6 +386,13 @@ export class IntervalsClient implements IIntervalsClient {
     );
   }
 
+  // Training load forecast
+  async forecastTrainingLoad(
+    options: ForecastOptions
+  ): Promise<ForecastResult> {
+    return this.trainingLoadForecast.forecastTrainingLoad(options);
+  }
+
   // Power profile (cyclecoach.com calculator port)
   async computePowerProfile(
     overrides?: PowerProfileOverrides
@@ -485,6 +507,18 @@ export type {
   WrittenRun,
   WriteMode,
 } from "./services/track-lap-writeback/index.js";
+export type {
+  ITrainingLoadForecast,
+  ForecastOptions,
+  ForecastResult,
+  ForecastBasis,
+  ForecastSession,
+  ForecastWeek,
+  ProposedSession,
+  LoadSource,
+  TrajectoryDay,
+  StreamGap,
+} from "./services/training-load-forecast/index.js";
 export type {
   CoachingContext,
   CoachingContextOptions,

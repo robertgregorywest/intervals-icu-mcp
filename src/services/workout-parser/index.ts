@@ -2,6 +2,7 @@ export {
   WorkoutParser,
   createWorkoutParser,
   resolvePowerTarget,
+  resolveZoneTargets,
 } from "./parser.js";
 export { zoneBand } from "./zones.js";
 export type { ZoneBand } from "./zones.js";

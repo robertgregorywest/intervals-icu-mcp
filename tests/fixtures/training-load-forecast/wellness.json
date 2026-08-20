@@ -1,0 +1,6237 @@
+{
+  "harvest": {
+    "script": "scripts/capture-forecast-fixtures.ts",
+    "command": "npx tsx scripts/capture-forecast-fixtures.ts",
+    "endpoints": [
+      "GET /api/v1/athlete/{id}/wellness?oldest&newest",
+      "GET /api/v1/athlete/{id}/events?oldest&newest"
+    ],
+    "capturedAt": "2026-08-20",
+    "window": {
+      "oldest": "2026-05-01",
+      "newest": "2026-08-20"
+    },
+    "timeConstants": {
+      "ctlDays": null,
+      "atlDays": null
+    },
+    "ftp": 286,
+    "note": "Delivered fitness and fatigue, one record per day. `ctlLoad` and `atlLoad` are the day's training load as the platform fed it into each recursion; `ctl`/`atl` are the result. A forecast seeded from one record must reproduce the rest of the series from the loads alone."
+  },
+  "records": [
+    {
+      "date": "2026-05-01",
+      "ctl": 50.821545,
+      "atl": 51.094646,
+      "ctlLoad": 58,
+      "atlLoad": 58,
+      "rampRate": 1.2231636
+    },
+    {
+      "date": "2026-05-02",
+      "ctl": 53.343273,
+      "atl": 65.32611,
+      "ctlLoad": 158,
+      "atlLoad": 158,
+      "rampRate": 3.2884064
+    },
+    {
+      "date": "2026-05-03",
+      "ctl": 52.088196,
+      "atl": 56.62976,
+      "ctlLoad": 0,
+      "atlLoad": 0,
+      "rampRate": 1.2111282
+    },
+    {
+      "date": "2026-05-04",
+      "ctl": 52.862556,
+      "atl": 60.406467,
+      "ctlLoad": 85,
+      "atlLoad": 85,
+      "rampRate": 1.0414658
+    },
+    {
+      "date": "2026-05-05",
+      "ctl": 52.018772,
+      "atl": 54.62811,
+      "ctlLoad": 17,
+      "atlLoad": 17,
+      "rampRate": 1.4169426
+    },
+    {
+      "date": "2026-05-06",
+      "ctl": 52.58301,
+      "atl": 57.47318,
+      "ctlLoad": 76,
+      "atlLoad": 76,
+      "rampRate": 3.1717567
+    },
+    {
+      "date": "2026-05-07",
+      "ctl": 51.34582,
+      "atl": 49.822227,
+      "ctlLoad": 0,
+      "atlLoad": 0,
+      "rampRate": 0.69724274
+    },
+    {
+      "date": "2026-05-08",
+      "ctl": 50.514194,
+      "atl": 45.31974,
+      "ctlLoad": 16,
+      "atlLoad": 16,
+      "rampRate": -0.30735016
+    },
+    {
+      "date": "2026-05-09",
+      "ctl": 51.960854,
+      "atl": 54.196358,
+      "ctlLoad": 112,
+      "atlLoad": 112,
+      "rampRate": -1.3824196
+    },
+    {
+      "date": "2026-05-10",
+      "ctl": 52.97349,
+      "atl": 59.628223,
+      "ctlLoad": 95,
+      "atlLoad": 95,
+      "rampRate": 0.88529587
+    },
+    {
+      "date": "2026-05-11",
+      "ctl": 52.22121,
+      "atl": 54.485954,
+      "ctlLoad": 21,
+      "atlLoad": 21,
+      "rampRate": -0.641346
+    },
+    {
+      "date": "2026-05-12",
+      "ctl": 52.45129,
+      "atl": 55.48624,
+      "ctlLoad": 62,
+      "atlLoad": 62,
+      "rampRate": 0.432518
+    },
+    {
+      "date": "2026-05-13",
+      "ctl": 52.111275,
+      "atl": 53.158436,
+      "ctlLoad": 38,
+      "atlLoad": 38,
+      "rampRate": -0.4717369
+    },
+    {
+      "date": "2026-05-14",
+      "ctl": 52.932148,
+      "atl": 57.663494,
+      "ctlLoad": 87,
+      "atlLoad": 87,
+      "rampRate": 1.5863266
+    },
+    {
+      "date": "2026-05-15",
+      "ctl": 52.086723,
+      "atl": 52.250286,
+      "ctlLoad": 17,
+      "atlLoad": 17,
+      "rampRate": 1.5725288
+    },
+    {
+      "date": "2026-05-16",
+      "ctl": 53.51991,
+      "atl": 60.337414,
+      "ctlLoad": 113,
+      "atlLoad": 113,
+      "rampRate": 1.5590553
+    },
+    {
+      "date": "2026-05-17",
+      "ctl": 52.260677,
+      "atl": 52.305172,
+      "ctlLoad": 0,
+      "atlLoad": 0,
+      "rampRate": -0.71281433
+    },
+    {
+      "date": "2026-05-18",
+      "ctl": 51.525166,
+      "atl": 48.13776,
+      "ctlLoad": 21,
+      "atlLoad": 21,
+      "rampRate": -0.6960449
+    },
+    {
+      "date": "2026-05-19",
+      "ctl": 51.77162,
+      "atl": 49.98313,
+      "ctlLoad": 62,
+      "atlLoad": 62,
+      "rampRate": -0.6796684
+    },
+    {
+      "date": "2026-05-20",
+      "ctl": 52.459316,
+      "atl": 54.112164,
+      "ctlLoad": 81,
+      "atlLoad": 81,
+      "rampRate": 0.34804153
+    },
+    {
+      "date": "2026-05-21",
+      "ctl": 53.201416,
+      "atl": 58.090897,
+      "ctlLoad": 84,
+      "atlLoad": 84,
+      "rampRate": 0.26926804
+    },
+    {
+      "date": "2026-05-22",
+      "ctl": 53.83194,
+      "atl": 61.00748,
+      "ctlLoad": 80,
+      "atlLoad": 80,
+      "rampRate": 1.7452164
+    },
+    {
+      "date": "2026-05-23",
+      "ctl": 52.565365,
+      "atl": 52.886036,
+      "ctlLoad": 0,
+      "atlLoad": 0,
+      "rampRate": -0.95454407
+    },
+    {
+      "date": "2026-05-24",
+      "ctl": 51.32859,
+      "atl": 45.845737,
+      "ctlLoad": 0,
+      "atlLoad": 0,
+      "rampRate": -0.93208694
+    },
+    {
+      "date": "2026-05-25",
+      "ctl": 50.120914,
+      "atl": 39.742657,
+      "ctlLoad": 0,
+      "atlLoad": 0,
+      "rampRate": -1.4042511
+    },
+    {
+      "date": "2026-05-26",
+      "ctl": 50.40041,
+      "atl": 42.7056,
+      "ctlLoad": 62,
+      "atlLoad": 62,
+      "rampRate": -1.371212
+    },
+    {
+      "date": "2026-05-27",
+      "ctl": 50.179234,
+      "atl": 42.478546,
+      "ctlLoad": 41,
+      "atlLoad": 41,
+      "rampRate": -2.2800827
+    },
+    {
+      "date": "2026-05-28",
+      "ctl": 50.480885,
+      "atl": 45.210403,
+      "ctlLoad": 63,
+      "atlLoad": 63,
+      "rampRate": -2.7205315
+    },
+    {
+      "date": "2026-05-29",
+      "ctl": 49.293156,
+      "atl": 39.1919,
+      "ctlLoad": 0,
+      "atlLoad": 0,
+      "rampRate": -4.538784
+    },
+    {
+      "date": "2026-05-30",
+      "ctl": 50.839127,
+      "atl": 49.28363,
+      "ctlLoad": 115,
+      "atlLoad": 115,
+      "rampRate": -1.7262383
+    },
+    {
+      "date": "2026-05-31",
+      "ctl": 50.84291,
+      "atl": 49.512115,
+      "ctlLoad": 51,
+      "atlLoad": 51,
+      "rampRate": -0.48567963
+    },
+    {
+      "date": "2026-06-01",
+      "ctl": 51.411285,
+      "atl": 52.905117,
+      "ctlLoad": 75,
+      "atlLoad": 75,
+      "rampRate": 1.290371
+    },
+    {
+      "date": "2026-06-02",
+      "ctl": 50.460476,
+      "atl": 47.32662,
+      "ctlLoad": 11,
+      "atlLoad": 11,
+      "rampRate": 0.060066223
+    },
+    {
+      "date": "2026-06-03",
+      "ctl": 49.273228,
+      "atl": 41.026398,
+      "ctlLoad": 0,
+      "atlLoad": 0,
+      "rampRate": -0.90600586
+    },
+    {
+      "date": "2026-06-04",
+      "ctl": 49.38444,
+      "atl": 42.75347,
+      "ctlLoad": 54,
+      "atlLoad": 54,
+      "rampRate": -1.0964432
+    },
+    {
+      "date": "2026-06-05",
+      "ctl": 48.59896,
+      "atl": 39.191994,
+      "ctlLoad": 16,
+      "atlLoad": 16,
+      "rampRate": -0.6941948
+    },
+    {
+      "date": "2026-06-06",
+      "ctl": 49.008377,
+      "atl": 42.76073,
+      "ctlLoad": 66,
+      "atlLoad": 66,
+      "rampRate": -1.8307495
+    },
+    {
+      "date": "2026-06-07",
+      "ctl": 48.890537,
+      "atl": 42.925705,
+      "ctlLoad": 44,
+      "atlLoad": 44,
+      "rampRate": -1.9523735
+    },
+    {
+      "date": "2026-06-08",
+      "ctl": 47.97551,
+      "atl": 38.542564,
+      "ctlLoad": 10,
+      "atlLoad": 10,
+      "rampRate": -3.4357758
+    },
+    {
+      "date": "2026-06-09",
+      "ctl": 47.811386,
+      "atl": 38.869705,
+      "ctlLoad": 41,
+      "atlLoad": 41,
+      "rampRate": -2.6490898
+    },
+    {
+      "date": "2026-06-10",
+      "ctl": 47.533485,
+      "atl": 38.487682,
+      "ctlLoad": 36,
+      "atlLoad": 36,
+      "rampRate": -1.7397423
+    },
+    {
+      "date": "2026-06-11",
+      "ctl": 46.7445,
+      "atl": 35.22783,
+      "ctlLoad": 14,
+      "atlLoad": 14,
+      "rampRate": -2.6399422
+    },
+    {
+      "date": "2026-06-12",
+      "ctl": 47.221077,
+      "atl": 39.45741,
+      "ctlLoad": 67,
+      "atlLoad": 67,
+      "rampRate": -1.3778839
+    },
+    {
+      "date": "2026-06-13",
+      "ctl": 47.16882,
+      "atl": 40.19525,
+      "ctlLoad": 45,
+      "atlLoad": 45,
+      "rampRate": -1.8395576
+    },
+    {
+      "date": "2026-06-14",
+      "ctl": 46.929565,
+      "atl": 39.769894,
+      "ctlLoad": 37,
+      "atlLoad": 37,
+      "rampRate": -1.9609718
+    },
+    {
+      "date": "2026-06-15",
+      "ctl": 45.825394,
+      "atl": 34.475643,
+      "ctlLoad": 0,
+      "atlLoad": 0,
+      "rampRate": -2.150116
+    },
+    {
+      "date": "2026-06-16",
+      "ctl": 45.194237,
+      "atl": 32.415493,
+      "ctlLoad": 19,
+      "atlLoad": 19,
+      "rampRate": -2.6171494
+    },
+    {
+      "date": "2026-06-17",
+      "ctl": 45.44848,
+      "atl": 35.55511,
+      "ctlLoad": 56,
+      "atlLoad": 56,
+      "rampRate": -2.0850067
+    },
+    {
+      "date": "2026-06-18",
+      "ctl": 44.379154,
+      "atl": 30.82194,
+      "ctlLoad": 0,
+      "atlLoad": 0,
+      "rampRate": -2.365345
+    },
+    {
+      "date": "2026-06-19",
+      "ctl": 43.73497,
+      "atl": 28.981934,
+      "ctlLoad": 17,
+      "atlLoad": 17,
+      "rampRate": -3.4861069
+    },
+    {
+      "date": "2026-06-20",
+      "ctl": 44.91762,
+      "atl": 37.637276,
+      "ctlLoad": 94,
+      "atlLoad": 94,
+      "rampRate": -2.2511978
+    },
+    {
+      "date": "2026-06-21",
+      "ctl": 45.390125,
+      "atl": 41.279858,
+      "ctlLoad": 65,
+      "atlLoad": 65,
+      "rampRate": -1.5394402
+    },
+    {
+      "date": "2026-06-22",
+      "ctl": 45.33389,
+      "atl": 41.508846,
+      "ctlLoad": 43,
+      "atlLoad": 43,
+      "rampRate": -0.49150467
+    },
+    {
+      "date": "2026-06-23",
+      "ctl": 46.290695,
+      "atl": 47.431602,
+      "ctlLoad": 86,
+      "atlLoad": 86,
+      "rampRate": 1.0964584
+    },
+    {
+      "date": "2026-06-24",
+      "ctl": 45.53095,
+      "atl": 42.981117,
+      "ctlLoad": 14,
+      "atlLoad": 14,
+      "rampRate": 0.08246994
+    },
+    {
+      "date": "2026-06-25",
+      "ctl": 46.083138,
+      "atl": 46.444805,
+      "ctlLoad": 69,
+      "atlLoad": 69,
+      "rampRate": 1.7039833
+    },
+    {
+      "date": "2026-06-26",
+      "ctl": 46.292934,
+      "atl": 47.58369,
+      "ctlLoad": 55,
+      "atlLoad": 55,
+      "rampRate": 2.5579643
+    },
+    {
+      "date": "2026-06-27",
+      "ctl": 48.027138,
+      "atl": 57.223904,
+      "ctlLoad": 120,
+      "atlLoad": 120,
+      "rampRate": 3.1095161
+    },
+    {
+      "date": "2026-06-28",
+      "ctl": 48.097084,
+      "atl": 56.395363,
+      "ctlLoad": 51,
+      "atlLoad": 51,
+      "rampRate": 2.7069588
+    },
+    {
+      "date": "2026-06-29",
+      "ctl": 48.047745,
+      "atl": 55.01151,
+      "ctlLoad": 46,
+      "atlLoad": 46,
+      "rampRate": 2.7138557
+    },
+    {
+      "date": "2026-06-30",
+      "ctl": 48.917168,
+      "atl": 59.00364,
+      "ctlLoad": 85,
+      "atlLoad": 85,
+      "rampRate": 2.6264725
+    },
+    {
+      "date": "2026-07-01",
+      "ctl": 49.1544,
+      "atl": 59.003155,
+      "ctlLoad": 59,
+      "atlLoad": 59,
+      "rampRate": 3.6234512
+    },
+    {
+      "date": "2026-07-02",
+      "ctl": 49.12724,
+      "atl": 57.53839,
+      "ctlLoad": 48,
+      "atlLoad": 48,
+      "rampRate": 3.0441017
+    },
+    {
+      "date": "2026-07-03",
+      "ctl": 48.324284,
+      "atl": 51.87559,
+      "ctlLoad": 15,
+      "atlLoad": 15,
+      "rampRate": 2.0313492
+    },
+    {
+      "date": "2026-07-04",
+      "ctl": 52.034126,
+      "atl": 72.39296,
+      "ctlLoad": 206,
+      "atlLoad": 206,
+      "rampRate": 4.0069885
+    },
+    {
+      "date": "2026-07-05",
+      "ctl": 51.23336,
+      "atl": 65.152054,
+      "ctlLoad": 18,
+      "atlLoad": 18,
+      "rampRate": 3.1362762
+    },
+    {
+      "date": "2026-07-06",
+      "ctl": 50.710247,
+      "atl": 60.339417,
+      "ctlLoad": 29,
+      "atlLoad": 29,
+      "rampRate": 2.6625023
+    },
+    {
+      "date": "2026-07-07",
+      "ctl": 50.67001,
+      "atl": 58.82989,
+      "ctlLoad": 49,
+      "atlLoad": 49,
+      "rampRate": 1.752842
+    },
+    {
+      "date": "2026-07-08",
+      "ctl": 51.030697,
+      "atl": 59.78439,
+      "ctlLoad": 66,
+      "atlLoad": 66,
+      "rampRate": 1.876297
+    },
+    {
+      "date": "2026-07-09",
+      "ctl": 50.841747,
+      "atl": 57.550014,
+      "ctlLoad": 43,
+      "atlLoad": 43,
+      "rampRate": 1.714508
+    },
+    {
+      "date": "2026-07-10",
+      "ctl": 49.99845,
+      "atl": 51.885666,
+      "ctlLoad": 15,
+      "atlLoad": 15,
+      "rampRate": 1.6741676
+    },
+    {
+      "date": "2026-07-11",
+      "ctl": 51.151375,
+      "atl": 58.157623,
+      "ctlLoad": 99,
+      "atlLoad": 99,
+      "rampRate": -0.88275146
+    },
+    {
+      "date": "2026-07-12",
+      "ctl": 51.594852,
+      "atl": 59.734104,
+      "ctlLoad": 70,
+      "atlLoad": 70,
+      "rampRate": 0.36149216
+    },
+    {
+      "date": "2026-07-13",
+      "ctl": 51.08676,
+      "atl": 55.775837,
+      "ctlLoad": 30,
+      "atlLoad": 30,
+      "rampRate": 0.37651443
+    },
+    {
+      "date": "2026-07-14",
+      "ctl": 50.378872,
+      "atl": 51.146404,
+      "ctlLoad": 21,
+      "atlLoad": 21,
+      "rampRate": -0.2911377
+    },
+    {
+      "date": "2026-07-15",
+      "ctl": 49.993504,
+      "atl": 48.86384,
+      "ctlLoad": 34,
+      "atlLoad": 34,
+      "rampRate": -1.0371933
+    },
+    {
+      "date": "2026-07-16",
+      "ctl": 49.193695,
+      "atl": 44.488934,
+      "ctlLoad": 16,
+      "atlLoad": 16,
+      "rampRate": -1.6480522
+    },
+    {
+      "date": "2026-07-17",
+      "ctl": 48.03625,
+      "atl": 38.566475,
+      "ctlLoad": 0,
+      "atlLoad": 0,
+      "rampRate": -1.9622002
+    },
+    {
+      "date": "2026-07-18",
+      "ctl": 49.847076,
+      "atl": 50.07269,
+      "ctlLoad": 125,
+      "atlLoad": 125,
+      "rampRate": -1.3042984
+    },
+    {
+      "date": "2026-07-19",
+      "ctl": 49.121296,
+      "atl": 45.936226,
+      "ctlLoad": 19,
+      "atlLoad": 19,
+      "rampRate": -2.4735565
+    },
+    {
+      "date": "2026-07-20",
+      "ctl": 48.76552,
+      "atl": 44.34725,
+      "ctlLoad": 34,
+      "atlLoad": 34,
+      "rampRate": -2.3212433
+    },
+    {
+      "date": "2026-07-21",
+      "ctl": 48.771034,
+      "atl": 44.966637,
+      "ctlLoad": 49,
+      "atlLoad": 49,
+      "rampRate": -1.6078377
+    },
+    {
+      "date": "2026-07-22",
+      "ctl": 49.48227,
+      "atl": 49.49723,
+      "ctlLoad": 79,
+      "atlLoad": 79,
+      "rampRate": -0.5112343
+    },
+    {
+      "date": "2026-07-23",
+      "ctl": 49.68268,
+      "atl": 50.62914,
+      "ctlLoad": 58,
+      "atlLoad": 58,
+      "rampRate": 0.48898315
+    },
+    {
+      "date": "2026-07-24",
+      "ctl": 48.937237,
+      "atl": 46.28548,
+      "ctlLoad": 18,
+      "atlLoad": 18,
+      "rampRate": 0.9009857
+    },
+    {
+      "date": "2026-07-25",
+      "ctl": 49.315166,
+      "atl": 48.7768,
+      "ctlLoad": 65,
+      "atlLoad": 65,
+      "rampRate": -0.53190994
+    },
+    {
+      "date": "2026-07-26",
+      "ctl": 51.472355,
+      "atl": 61.053745,
+      "ctlLoad": 141,
+      "atlLoad": 141,
+      "rampRate": 2.351059
+    },
+    {
+      "date": "2026-07-27",
+      "ctl": 52.261204,
+      "atl": 64.24152,
+      "ctlLoad": 85,
+      "atlLoad": 85,
+      "rampRate": 3.4956856
+    },
+    {
+      "date": "2026-07-28",
+      "ctl": 51.760963,
+      "atl": 59.81634,
+      "ctlLoad": 31,
+      "atlLoad": 31,
+      "rampRate": 2.9899292
+    },
+    {
+      "date": "2026-07-29",
+      "ctl": 52.237152,
+      "atl": 61.438255,
+      "ctlLoad": 72,
+      "atlLoad": 72,
+      "rampRate": 2.7548828
+    },
+    {
+      "date": "2026-07-30",
+      "ctl": 52.23157,
+      "atl": 60.181816,
+      "ctlLoad": 52,
+      "atlLoad": 52,
+      "rampRate": 2.548893
+    },
+    {
+      "date": "2026-07-31",
+      "ctl": 51.379105,
+      "atl": 54.30024,
+      "ctlLoad": 16,
+      "atlLoad": 16,
+      "rampRate": 2.4418678
+    },
+    {
+      "date": "2026-08-01",
+      "ctl": 51.44077,
+      "atl": 54.26027,
+      "ctlLoad": 54,
+      "atlLoad": 54,
+      "rampRate": 2.1256027
+    },
+    {
+      "date": "2026-08-02",
+      "ctl": 53.64206,
+      "atl": 66.33973,
+      "ctlLoad": 145,
+      "atlLoad": 145,
+      "rampRate": 2.1697044
+    },
+    {
+      "date": "2026-08-03",
+      "ctl": 52.756405,
+      "atl": 59.638397,
+      "ctlLoad": 16,
+      "atlLoad": 16,
+      "rampRate": 0.4952011
+    },
+    {
+      "date": "2026-08-04",
+      "ctl": 53.632683,
+      "atl": 63.6802,
+      "ctlLoad": 90,
+      "atlLoad": 90,
+      "rampRate": 1.8717194
+    },
+    {
+      "date": "2026-08-05",
+      "ctl": 53.82955,
+      "atl": 63.456528,
+      "ctlLoad": 62,
+      "atlLoad": 62,
+      "rampRate": 1.5923996
+    },
+    {
+      "date": "2026-08-06",
+      "ctl": 54.515884,
+      "atl": 66.0582,
+      "ctlLoad": 83,
+      "atlLoad": 83,
+      "rampRate": 2.2843132
+    },
+    {
+      "date": "2026-08-07",
+      "ctl": 53.633198,
+      "atl": 59.527466,
+      "ctlLoad": 17,
+      "atlLoad": 17,
+      "rampRate": 2.2540932
+    },
+    {
+      "date": "2026-08-08",
+      "ctl": 54.98294,
+      "atl": 66.3796,
+      "ctlLoad": 111,
+      "atlLoad": 111,
+      "rampRate": 3.5421715
+    },
+    {
+      "date": "2026-08-09",
+      "ctl": 56.889137,
+      "atl": 75.64761,
+      "ctlLoad": 136,
+      "atlLoad": 136,
+      "rampRate": 3.247078
+    },
+    {
+      "date": "2026-08-10",
+      "ctl": 55.550632,
+      "atl": 65.57725,
+      "ctlLoad": 0,
+      "atlLoad": 0,
+      "rampRate": 2.7942276
+    },
+    {
+      "date": "2026-08-11",
+      "ctl": 55.067112,
+      "atl": 61.50674,
+      "ctlLoad": 35,
+      "atlLoad": 35,
+      "rampRate": 1.4344292
+    },
+    {
+      "date": "2026-08-12",
+      "ctl": 55.65374,
+      "atl": 63.9686,
+      "ctlLoad": 80,
+      "atlLoad": 80,
+      "rampRate": 1.8241882
+    },
+    {
+      "date": "2026-08-13",
+      "ctl": 56.03834,
+      "atl": 65.03776,
+      "ctlLoad": 72,
+      "atlLoad": 72,
+      "rampRate": 1.5224571
+    },
+    {
+      "date": "2026-08-14",
+      "ctl": 55.166893,
+      "atl": 58.909115,
+      "ctlLoad": 19,
+      "atlLoad": 19,
+      "rampRate": 1.5336952
+    },
+    {
+      "date": "2026-08-15",
+      "ctl": 55.492363,
+      "atl": 60.252434,
+      "ctlLoad": 69,
+      "atlLoad": 69,
+      "rampRate": 0.5094223
+    },
+    {
+      "date": "2026-08-16",
+      "ctl": 55.76312,
+      "atl": 61.150684,
+      "ctlLoad": 67,
+      "atlLoad": 67,
+      "rampRate": -1.1260185
+    },
+    {
+      "date": "2026-08-17",
+      "ctl": 54.451107,
+      "atl": 53.010178,
+      "ctlLoad": 0,
+      "atlLoad": 0,
+      "rampRate": -1.0995255
+    },
+    {
+      "date": "2026-08-18",
+      "ctl": 54.228737,
+      "atl": 51.943848,
+      "ctlLoad": 45,
+      "atlLoad": 45,
+      "rampRate": -0.8383751
+    },
+    {
+      "date": "2026-08-19",
+      "ctl": 54.670395,
+      "atl": 54.746887,
+      "ctlLoad": 73,
+      "atlLoad": 73,
+      "rampRate": -0.98334503
+    },
+    {
+      "date": "2026-08-20",
+      "ctl": 55.878094,
+      "atl": 61.56981,
+      "ctlLoad": 106,
+      "atlLoad": 106,
+      "rampRate": -0.1602478
+    }
+  ],
+  "events": [
+    {
+      "id": 107665964,
+      "name": "Pursuit VO₂ — 4×2:30 @ 88–95% MAP",
+      "date": "2026-05-02",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 72,
+      "moving_time": 3900,
+      "description": "- Warmup — build gradually 20m ramp 130w-220w\n\nMain Set 4x\n- Interval 2m30s 348w-375w\n- Recovery 5m 160w\n\n- Cooldown 15m 150w",
+      "workout_doc": {
+        "steps": [
+          {
+            "ramp": true,
+            "text": "Warmup — build gradually",
+            "power": {
+              "end": 220,
+              "start": 130,
+              "units": "w"
+            },
+            "duration": 1200
+          },
+          {
+            "reps": 4,
+            "text": "Main Set 4x",
+            "steps": [
+              {
+                "text": "Interval",
+                "power": {
+                  "end": 375,
+                  "start": 348,
+                  "units": "w"
+                },
+                "duration": 150
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 160
+                },
+                "duration": 300
+              }
+            ],
+            "distance": 0,
+            "duration": 1800
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 900
+          }
+        ],
+        "duration": 3900
+      }
+    },
+    {
+      "id": 107665966,
+      "name": "Strength — Maintenance (Session 1)",
+      "date": "2026-05-03",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": 3600,
+      "description": "- Lower body — Squat / Hip Hinge 3×5-6 20m\n\n- Upper body + core accessory 20m\n\n- Mobility / cool down 10m",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Lower body — Squat / Hip Hinge 3×5-6",
+            "duration": 1200
+          },
+          {
+            "text": "Upper body + core accessory",
+            "duration": 1200
+          },
+          {
+            "text": "Mobility / cool down",
+            "duration": 600
+          }
+        ],
+        "duration": 3000
+      }
+    },
+    {
+      "id": 107665967,
+      "name": "Z2 Aerobic Rebuild — Bank Holiday",
+      "date": "2026-05-04",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 99,
+      "moving_time": 6600,
+      "description": "- Warmup — easy build 20m ramp 130w-200w\n\n- Z2 — metabolic durability, NP cap 269w 1h15m 198w-257w\n\n- Cooldown 15m 150w",
+      "workout_doc": {
+        "steps": [
+          {
+            "ramp": true,
+            "text": "Warmup — easy build",
+            "power": {
+              "end": 200,
+              "start": 130,
+              "units": "w"
+            },
+            "duration": 1200
+          },
+          {
+            "power": {
+              "end": 257,
+              "start": 198,
+              "units": "w"
+            },
+            "duration": 4500
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 900
+          }
+        ],
+        "duration": 6600
+      }
+    },
+    {
+      "id": 107666063,
+      "name": "Easy Legs — Commute or Short Spin",
+      "date": "2026-05-05",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 32,
+      "moving_time": 2700,
+      "description": "- Easy spin — 40–55% MAP, no structure. Commute counts. 45m 160w-215w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy spin —",
+            "power": {
+              "end": 215,
+              "start": 160,
+              "units": "w"
+            },
+            "duration": 2700
+          }
+        ],
+        "duration": 2700
+      }
+    },
+    {
+      "id": 107665968,
+      "name": "Over-Unders — Pursuit Pacing [Check HRV ≥45 before starting]",
+      "date": "2026-05-06",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 89,
+      "moving_time": 4080,
+      "description": "- Warmup — build to threshold 20m ramp 130w-220w\n\nOver-Under Set 3x\n- Under — 82% MAP 2m 324w\n- Over — 98% MAP 1m 387w\n- Under — 82% MAP 2m 324w\n- Over — 98% MAP 1m 387w\n- Recovery between sets 5m 160w\n\n- Cooldown 15m 150w",
+      "workout_doc": {
+        "steps": [
+          {
+            "ramp": true,
+            "text": "Warmup — build to threshold",
+            "power": {
+              "end": 220,
+              "start": 130,
+              "units": "w"
+            },
+            "duration": 1200
+          },
+          {
+            "reps": 3,
+            "text": "Over-Under Set 3x",
+            "steps": [
+              {
+                "text": "Under —",
+                "power": {
+                  "units": "w",
+                  "value": 324
+                },
+                "duration": 120
+              },
+              {
+                "text": "Over —",
+                "power": {
+                  "units": "w",
+                  "value": 387
+                },
+                "duration": 60
+              },
+              {
+                "text": "Under —",
+                "power": {
+                  "units": "w",
+                  "value": 324
+                },
+                "duration": 120
+              },
+              {
+                "text": "Over —",
+                "power": {
+                  "units": "w",
+                  "value": 387
+                },
+                "duration": 60
+              },
+              {
+                "text": "Recovery between sets",
+                "power": {
+                  "units": "w",
+                  "value": 160
+                },
+                "duration": 300
+              }
+            ],
+            "distance": 0,
+            "duration": 1980
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 900
+          }
+        ],
+        "duration": 4080
+      }
+    },
+    {
+      "id": 108043932,
+      "name": "Strength — Maintenance (Session 2)",
+      "date": "2026-05-07",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": 3600,
+      "description": "- Lower body — Squat / Hip Hinge 3×5-6 20m\n\n- Upper body + core accessory 20m\n\n- Mobility / cool down 10m",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Lower body — Squat / Hip Hinge 3×5-6",
+            "duration": 1200
+          },
+          {
+            "text": "Upper body + core accessory",
+            "duration": 1200
+          },
+          {
+            "text": "Mobility / cool down",
+            "duration": 600
+          }
+        ],
+        "duration": 3000
+      }
+    },
+    {
+      "id": 107666066,
+      "name": "Rest Day — Protect Saturday Quality",
+      "date": "2026-05-08",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 13,
+      "moving_time": 1800,
+      "description": "- Rest or very easy commute only — <40% MAP. Do not add load. 30m 150w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Rest or very easy commute only — &lt;",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 1800
+          }
+        ],
+        "duration": 1800
+      }
+    },
+    {
+      "id": 109030075,
+      "name": "Long Z2",
+      "date": "2026-05-09",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 129,
+      "moving_time": 10800,
+      "description": "- 3h 190w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "units": "w",
+              "value": 190
+            },
+            "duration": 10800
+          }
+        ],
+        "duration": 10800
+      }
+    },
+    {
+      "id": 107665970,
+      "name": "30/30 VO2 Pursuit Block — 10×3",
+      "date": "2026-05-10",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 96,
+      "moving_time": 4050,
+      "description": "-Warm-up 5m 160w\n-Warm-up 5m 190w\n-Warm-up 5m 230w\n-Pre-load 2m 350w\n-Recover 30s 160w\n\n10x\n-Hard 30s 375w\n-Recovery 30s 190w\n\n-Recovery 5m 160w\n\n-Pre-load 2m 350w\n-Recover 30s 160w\n\n10x\n-Hard 30s 375w\n-Recovery 30s 190w\n\n-Recovery 5m 160w\n-Pre-load 2m 350w\n-Recover 30s 160w\n\n10x\n-Hard 30s 375w\n-Recovery 30s 190w\n\n-Cool-down 5m 160w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 300
+          },
+          {
+            "text": "Warm-up",
+            "power": {
+              "units": "w",
+              "value": 190
+            },
+            "duration": 300
+          },
+          {
+            "text": "Warm-up",
+            "power": {
+              "units": "w",
+              "value": 230
+            },
+            "duration": 300
+          },
+          {
+            "text": "Pre-load",
+            "power": {
+              "units": "w",
+              "value": 350
+            },
+            "duration": 120
+          },
+          {
+            "text": "Recover",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 30
+          },
+          {
+            "reps": 10,
+            "text": "10x",
+            "steps": [
+              {
+                "text": "Hard",
+                "power": {
+                  "units": "w",
+                  "value": 375
+                },
+                "duration": 30
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 190
+                },
+                "duration": 30
+              }
+            ],
+            "distance": 0,
+            "duration": 600
+          },
+          {
+            "text": "Recovery",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 300
+          },
+          {
+            "text": "Pre-load",
+            "power": {
+              "units": "w",
+              "value": 350
+            },
+            "duration": 120
+          },
+          {
+            "text": "Recover",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 30
+          },
+          {
+            "reps": 10,
+            "text": "10x",
+            "steps": [
+              {
+                "text": "Hard",
+                "power": {
+                  "units": "w",
+                  "value": 375
+                },
+                "duration": 30
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 190
+                },
+                "duration": 30
+              }
+            ],
+            "distance": 0,
+            "duration": 600
+          },
+          {
+            "text": "Recovery",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 300
+          },
+          {
+            "text": "Pre-load",
+            "power": {
+              "units": "w",
+              "value": 350
+            },
+            "duration": 120
+          },
+          {
+            "text": "Recover",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 30
+          },
+          {
+            "reps": 10,
+            "text": "10x",
+            "steps": [
+              {
+                "text": "Hard",
+                "power": {
+                  "units": "w",
+                  "value": 375
+                },
+                "duration": 30
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 190
+                },
+                "duration": 30
+              }
+            ],
+            "distance": 0,
+            "duration": 600
+          },
+          {
+            "text": "Cool-down",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 300
+          }
+        ],
+        "duration": 4050
+      }
+    },
+    {
+      "id": 109309048,
+      "name": "Recovery spin 30–40min — circulation only",
+      "date": "2026-05-11",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 16,
+      "moving_time": 2700,
+      "description": "- Recovery spin, HARD CEILING 150w (RPE 2/10). This is circulation, not training. If you drift above 160w or legs feel heavy in the first 10min, get off the bike — you needed the rest day. Cadence 85–95rpm, no efforts, no \"just a little harder\". 45m 120w-150w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Recovery spin, HARD CEILING",
+            "power": {
+              "end": 150,
+              "start": 120,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 85
+            },
+            "duration": 2700
+          }
+        ],
+        "duration": 2700
+      }
+    },
+    {
+      "id": 109309073,
+      "name": "Pursuit VO₂ — 3 × 3min @ 92–96% MAP",
+      "date": "2026-05-12",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 66,
+      "moving_time": 3300,
+      "description": "- Easy warmup 10m ramp 150w-200w\n\n- Steady tempo 5m 230w\n\nBuild primers 3x\n- 30s 300w\n- 1m 150w\n\n- Easy spin 3m 150w\n\nMain set — 3min @ 92–96% MAP (363–378w). Hold rep 3 ≥ rep 1. 3x\n- Pursuit rep — 363w-378w 3m 363w-378w\n- Recovery 4m30s 130w\n\n- Cooldown 10m 150w",
+      "workout_doc": {
+        "steps": [
+          {
+            "ramp": true,
+            "text": "Easy warmup",
+            "power": {
+              "end": 200,
+              "start": 150,
+              "units": "w"
+            },
+            "duration": 600
+          },
+          {
+            "text": "Steady tempo",
+            "power": {
+              "units": "w",
+              "value": 230
+            },
+            "duration": 300
+          },
+          {
+            "reps": 3,
+            "text": "Build primers 3x",
+            "steps": [
+              {
+                "power": {
+                  "units": "w",
+                  "value": 300
+                },
+                "duration": 30
+              },
+              {
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 60
+              }
+            ],
+            "distance": 0,
+            "duration": 270
+          },
+          {
+            "text": "Easy spin",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 180
+          },
+          {
+            "reps": 3,
+            "text": "Main set — 3min @ 92–96% MAP (363–378w). Hold rep 3 ≥ rep 1. 3x",
+            "steps": [
+              {
+                "text": "Pursuit rep —",
+                "power": {
+                  "end": 378,
+                  "start": 363,
+                  "units": "w"
+                },
+                "duration": 180
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 130
+                },
+                "duration": 270
+              }
+            ],
+            "distance": 0,
+            "duration": 1350
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 3300
+      }
+    },
+    {
+      "id": 110041837,
+      "name": "40/20 VO2 Pursuit Block — 8×3",
+      "date": "2026-05-14",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 96,
+      "moving_time": 3690,
+      "description": "-Warm-up 5m 160w\n-Warm-up 5m 190w\n-Warm-up 5m 230w\n-Pre-load 2m 350w\n-Recover 30s 160w\n\n8x\n-Hard 40s 375w\n-Recovery 20s 190w\n\n-Recovery 5m 160w\n\n-Pre-load 2m 350w\n-Recover 30s 160w\n\n8x\n-Hard 40s 375w\n-Recovery 20s 190w\n\n-Recovery 5m 160w\n-Pre-load 2m 350w\n-Recover 30s 160w\n\n8x\n-Hard 40s 375w\n-Recovery 20s 190w\n\n-Cool-down 5m 160w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 300
+          },
+          {
+            "text": "Warm-up",
+            "power": {
+              "units": "w",
+              "value": 190
+            },
+            "duration": 300
+          },
+          {
+            "text": "Warm-up",
+            "power": {
+              "units": "w",
+              "value": 230
+            },
+            "duration": 300
+          },
+          {
+            "text": "Pre-load",
+            "power": {
+              "units": "w",
+              "value": 350
+            },
+            "duration": 120
+          },
+          {
+            "text": "Recover",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 30
+          },
+          {
+            "reps": 8,
+            "text": "8x",
+            "steps": [
+              {
+                "text": "Hard",
+                "power": {
+                  "units": "w",
+                  "value": 375
+                },
+                "duration": 40
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 190
+                },
+                "duration": 20
+              }
+            ],
+            "distance": 0,
+            "duration": 480
+          },
+          {
+            "text": "Recovery",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 300
+          },
+          {
+            "text": "Pre-load",
+            "power": {
+              "units": "w",
+              "value": 350
+            },
+            "duration": 120
+          },
+          {
+            "text": "Recover",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 30
+          },
+          {
+            "reps": 8,
+            "text": "8x",
+            "steps": [
+              {
+                "text": "Hard",
+                "power": {
+                  "units": "w",
+                  "value": 375
+                },
+                "duration": 40
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 190
+                },
+                "duration": 20
+              }
+            ],
+            "distance": 0,
+            "duration": 480
+          },
+          {
+            "text": "Recovery",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 300
+          },
+          {
+            "text": "Pre-load",
+            "power": {
+              "units": "w",
+              "value": 350
+            },
+            "duration": 120
+          },
+          {
+            "text": "Recover",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 30
+          },
+          {
+            "reps": 8,
+            "text": "8x",
+            "steps": [
+              {
+                "text": "Hard",
+                "power": {
+                  "units": "w",
+                  "value": 375
+                },
+                "duration": 40
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 190
+                },
+                "duration": 20
+              }
+            ],
+            "distance": 0,
+            "duration": 480
+          },
+          {
+            "text": "Cool-down",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 300
+          }
+        ],
+        "duration": 3690
+      }
+    },
+    {
+      "id": 109309179,
+      "name": "Long Z2 2.5h — durability, NP-capped",
+      "date": "2026-05-16",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 153,
+      "moving_time": 9000,
+      "description": "- Z2 197–256w. NP cap 268w (68% MAP). If terrain pushes NP above 260w on a climb, ease 5min after. Target decoupling ≤5%. Eat: 60–80g carbs/hr after first hour. 2h30m 197w-256w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 256,
+              "start": 197,
+              "units": "w"
+            },
+            "duration": 9000
+          }
+        ],
+        "duration": 9000
+      }
+    },
+    {
+      "id": 109309382,
+      "name": "Strength — Maintenance (last 2/wk session before taper)",
+      "date": "2026-05-17",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": "Maintenance session. RPE ≤7, NO true failure on legs. Mon is rest so sequencing is fine.\n\nTrap Bar Deadlift 3×4 @ RPE 7\nBack Squat or Box Squat 3×4 @ RPE 7\nBulgarian Split Squat 2×6 each leg @ RPE 6\nPull-ups 3×6\nHip thrust 2×8 @ RPE 6\nCore circuit 2 rounds: plank 45s, side plank 30s/side, deadbug 8/side\n\nFrom next week: 1× per week through to Worlds (October). This is the last 2/wk week.",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 109309441,
+      "name": "Pursuit sharpening — 4 × 2min @ 95–100% MAP",
+      "date": "2026-05-19",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 67,
+      "moving_time": 3330,
+      "description": "- Warmup 10m ramp 150w-220w\n\n- Steady 3m 230w\n\nPrimers 3x\n- 30s 350w\n- 1m 150w\n\n- Easy spin 4m 150w\n\nMain set — 2min @ 95–100% MAP (374–394w). This is your strength — rep 4 within 5w of rep 1. 4x\n- Pursuit rep — 374w-394w 2m 374w-394w\n- Recovery 4m 140w\n\n- Cooldown 10m 150w",
+      "workout_doc": {
+        "steps": [
+          {
+            "ramp": true,
+            "text": "Warmup",
+            "power": {
+              "end": 220,
+              "start": 150,
+              "units": "w"
+            },
+            "duration": 600
+          },
+          {
+            "text": "Steady",
+            "power": {
+              "units": "w",
+              "value": 230
+            },
+            "duration": 180
+          },
+          {
+            "reps": 3,
+            "text": "Primers 3x",
+            "steps": [
+              {
+                "power": {
+                  "units": "w",
+                  "value": 350
+                },
+                "duration": 30
+              },
+              {
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 60
+              }
+            ],
+            "distance": 0,
+            "duration": 270
+          },
+          {
+            "text": "Easy spin",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 240
+          },
+          {
+            "reps": 4,
+            "text": "Main set — 2min @ 95–100% MAP (374–394w). This is your strength — rep 4 within 5w of rep 1. 4x",
+            "steps": [
+              {
+                "text": "Pursuit rep —",
+                "power": {
+                  "end": 394,
+                  "start": 374,
+                  "units": "w"
+                },
+                "duration": 120
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 140
+                },
+                "duration": 240
+              }
+            ],
+            "distance": 0,
+            "duration": 1440
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 3330
+      }
+    },
+    {
+      "id": 109309530,
+      "name": "Threshold — 2 × 15min @ 70–75% MAP",
+      "date": "2026-05-20",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 88,
+      "moving_time": 4800,
+      "description": "- Warmup 15m ramp 150w-230w\n\nPrimers 2x\n- 30s 320w\n- 1m30s 150w\n\n- Easy spin 5m 150w\n\nMain set — 15min @ 70–75% MAP (276–296w). Aerobic ceiling support, not a key session — ease off if HRV poor. 2x\n- Threshold — 276w-296w 15m 276w-296w\n- Recovery 8m 150w\n\n- Cooldown 10m 150w",
+      "workout_doc": {
+        "steps": [
+          {
+            "ramp": true,
+            "text": "Warmup",
+            "power": {
+              "end": 230,
+              "start": 150,
+              "units": "w"
+            },
+            "duration": 900
+          },
+          {
+            "reps": 2,
+            "text": "Primers 2x",
+            "steps": [
+              {
+                "power": {
+                  "units": "w",
+                  "value": 320
+                },
+                "duration": 30
+              },
+              {
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 90
+              }
+            ],
+            "distance": 0,
+            "duration": 240
+          },
+          {
+            "text": "Easy spin",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 300
+          },
+          {
+            "reps": 2,
+            "text": "Main set — 15min @ 70–75% MAP (276–296w). Aerobic ceiling support, not a key session — ease off if HRV poor. 2x",
+            "steps": [
+              {
+                "text": "Threshold —",
+                "power": {
+                  "end": 296,
+                  "start": 276,
+                  "units": "w"
+                },
+                "duration": 900
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 480
+              }
+            ],
+            "distance": 0,
+            "duration": 2760
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 4800
+      }
+    },
+    {
+      "id": 109309553,
+      "name": "Long Z2 2h durability, NP-capped (WFH)",
+      "date": "2026-05-21",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 123,
+      "moving_time": 7200,
+      "description": "- Z2 197–256w. NP cap 268w (68% MAP). If terrain pushes NP above 260w on a climb, ease 5min after. Target decoupling ≤5%. Eat 60–80g carbs/hr after first hour. Holiday absorbs this — Fri is openers only. 2h 197w-256w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 256,
+              "start": 197,
+              "units": "w"
+            },
+            "duration": 7200
+          }
+        ],
+        "duration": 7200
+      }
+    },
+    {
+      "id": 109309643,
+      "name": "Openers — race starts + 2 × 1min @ MAP",
+      "date": "2026-05-22",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 60,
+      "moving_time": 3570,
+      "description": "- Warmup easy 12m ramp 140w-200w\n\n- Steady 3m 230w\n\nBuild primers 3x\n- 30s 320w\n- 1m 150w\n\n- Easy spin 3m 150w\n\nStanding starts — 4 × 30s @ 500w+ (race-pace efforts, max effort first 8s). Stay seated thereafter. Quality > volume. 4x\n- Start — 500w+ 30s 500w\n- Recovery 3m 140w\n\n- Easy spin between sets 3m 150w\n\nMain set — 2 × 1min @ MAP (394w). Sharpens the engine before the 3-day rest. 2x\n- MAP rep — 394w 1m 394w\n- Recovery 4m 140w\n\n- Cooldown 10m 150w",
+      "workout_doc": {
+        "steps": [
+          {
+            "ramp": true,
+            "text": "Warmup easy",
+            "power": {
+              "end": 200,
+              "start": 140,
+              "units": "w"
+            },
+            "duration": 720
+          },
+          {
+            "text": "Steady",
+            "power": {
+              "units": "w",
+              "value": 230
+            },
+            "duration": 180
+          },
+          {
+            "reps": 3,
+            "text": "Build primers 3x",
+            "steps": [
+              {
+                "power": {
+                  "units": "w",
+                  "value": 320
+                },
+                "duration": 30
+              },
+              {
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 60
+              }
+            ],
+            "distance": 0,
+            "duration": 270
+          },
+          {
+            "text": "Easy spin",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 180
+          },
+          {
+            "reps": 4,
+            "text": "Standing starts — 4 × 30s @ 500w+ (race-pace efforts, max effort first 8s). Stay seated thereafter. Quality > volume. 4x",
+            "steps": [
+              {
+                "text": "Start — 500w+",
+                "power": {
+                  "units": "w",
+                  "value": 500
+                },
+                "duration": 30
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 140
+                },
+                "duration": 180
+              }
+            ],
+            "distance": 0,
+            "duration": 840
+          },
+          {
+            "text": "Easy spin between sets",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 180
+          },
+          {
+            "reps": 2,
+            "text": "Main set — 2 × 1min @ MAP (394w). Sharpens the engine before the 3-day rest. 2x",
+            "steps": [
+              {
+                "text": "MAP rep —",
+                "power": {
+                  "units": "w",
+                  "value": 394
+                },
+                "duration": 60
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 140
+                },
+                "duration": 240
+              }
+            ],
+            "distance": 0,
+            "duration": 600
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 3570
+      }
+    },
+    {
+      "id": 112786698,
+      "name": "Berlin holiday",
+      "date": "2026-05-23",
+      "type": null,
+      "category": "NOTE",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": null
+    },
+    {
+      "id": 112786730,
+      "name": "Berlin holiday",
+      "date": "2026-05-24",
+      "type": null,
+      "category": "NOTE",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": null
+    },
+    {
+      "id": 112786766,
+      "name": "Berlin holiday",
+      "date": "2026-05-25",
+      "type": null,
+      "category": "NOTE",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": null
+    },
+    {
+      "id": 111998233,
+      "name": "Z2",
+      "date": "2026-05-26",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 43,
+      "moving_time": 3600,
+      "description": "-1h 190w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "units": "w",
+              "value": 190
+            },
+            "duration": 3600
+          }
+        ],
+        "duration": 3600
+      }
+    },
+    {
+      "id": 111998336,
+      "name": "MAP ramp test",
+      "date": "2026-05-27",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 48,
+      "moving_time": 2100,
+      "description": "\n- 3m 150w\n- 3m 180w\n- 3m 210w\n- 3m 240w\n- 1m 140w\n- 1m 165w\n- 1m 190w\n- 1m 215w\n- 1m 240w\n- 1m 265w\n- 1m 290w\n- 1m 315w\n- 1m 340w\n- 1m 365w\n- 1m 380w\n- 1m 405w\n- 1m 430w\n- 10m 160w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 180
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 180
+            },
+            "duration": 180
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 210
+            },
+            "duration": 180
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 240
+            },
+            "duration": 180
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 140
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 165
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 190
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 215
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 240
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 265
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 290
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 315
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 340
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 365
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 380
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 405
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 430
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 2100
+      }
+    },
+    {
+      "id": 112729631,
+      "name": "Pursuit sharpening — 4 × 2min @ 92–96% MAP",
+      "date": "2026-05-28",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 60,
+      "moving_time": 2940,
+      "description": "- Warmup 10m ramp 130w-235w\n\n- Activation 3m 270w\n\n- 2m 150w\n\n- Primer 1m 350w\n\n- 3m 150w\n\nMain Set — 4×2min @ race power 4x\n- 2m 360w-375w 95rpm\n- 3m 150w\n\n- Cooldown 10m 130w",
+      "workout_doc": {
+        "steps": [
+          {
+            "ramp": true,
+            "text": "Warmup",
+            "power": {
+              "end": 235,
+              "start": 130,
+              "units": "w"
+            },
+            "duration": 600
+          },
+          {
+            "text": "Activation",
+            "power": {
+              "units": "w",
+              "value": 270
+            },
+            "duration": 180
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 120
+          },
+          {
+            "text": "Primer",
+            "power": {
+              "units": "w",
+              "value": 350
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 180
+          },
+          {
+            "reps": 4,
+            "text": "Main Set — 4×2min @ race power 4x",
+            "steps": [
+              {
+                "power": {
+                  "end": 375,
+                  "start": 360,
+                  "units": "w"
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 95
+                },
+                "duration": 120
+              },
+              {
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 180
+              }
+            ],
+            "distance": 0,
+            "duration": 1200
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 130
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 2940
+      }
+    },
+    {
+      "id": 112729635,
+      "name": "Strength — final session before Nationals",
+      "date": "2026-05-29",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": "Final gym session of the block. Keep it heavy and short — no metabolic stress, no high reps. The goal is to maintain neuromuscular drive, not chase adaptation.\n\nBox Squat 3×4 @ RPE 7–8\nTrap Bar Deadlift 3×4 @ RPE 7\nBulgarian Split Squat 2×6 each leg @ RPE 6 (back-off, controlled)\nPull-ups 3×6 @ RPE 7\nCore circuit: Plank 3×45s + Dead bug 3×8/side\n\nNotes:\n- Long rests between heavy sets (3+ min). Quality > volume.\n- Stop one rep shy of failure on everything.\n- No gym after this until post-Nationals.",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 112729644,
+      "name": "Long Z2 — 2h30 durability, NP-capped",
+      "date": "2026-05-30",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 178,
+      "moving_time": 9000,
+      "description": "- Z2 endurance — NP ≤ 266w (68% MAP) 2h30m 215w-275w 85-95rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 275,
+              "start": 215,
+              "units": "w"
+            },
+            "cadence": {
+              "end": 95,
+              "start": 85,
+              "units": "rpm"
+            },
+            "duration": 9000
+          }
+        ],
+        "duration": 9000
+      }
+    },
+    {
+      "id": 112729648,
+      "name": "Z2 — 60-75min easy aerobic top-up",
+      "date": "2026-05-31",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 60,
+      "moving_time": 3600,
+      "description": "- Z2 easy — hold the lower end 1h 200w-250w 85-95rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 250,
+              "start": 200,
+              "units": "w"
+            },
+            "cadence": {
+              "end": 95,
+              "start": 85,
+              "units": "rpm"
+            },
+            "duration": 3600
+          }
+        ],
+        "duration": 3600
+      }
+    },
+    {
+      "id": 113478887,
+      "name": "In the red pursuit intervals (2km)",
+      "date": "2026-06-01",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 74,
+      "moving_time": 3880,
+      "description": "- Warm Up 5m 171w\n\n- Ramp 1 1m 200w\n\n- Ramp 2 1m 219w\n\n- Ramp 3 1m 239w\n\n- Ramp 4 1m 259w\n\n- Ramp 5 1m 279w\n\n- Ramp 6 1m 299w\n\n- Recovery 2m 157w\n\nActivation 2x\n- Activation Sprint 10s 713w\n- Easy 1m 157w\n\n- Recovery 3m 157w\n\nMain Set 4x\n- Sprint 10s 713w\n- Z6 40s 371w\n- Z5 1m30s 314w\n- Recovery 8m 157w\n\n- Cool Down 5m 114w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm Up",
+            "power": {
+              "units": "w",
+              "value": 171
+            },
+            "duration": 300
+          },
+          {
+            "text": "Ramp 1",
+            "power": {
+              "units": "w",
+              "value": 200
+            },
+            "duration": 60
+          },
+          {
+            "text": "Ramp 2",
+            "power": {
+              "units": "w",
+              "value": 219
+            },
+            "duration": 60
+          },
+          {
+            "text": "Ramp 3",
+            "power": {
+              "units": "w",
+              "value": 239
+            },
+            "duration": 60
+          },
+          {
+            "text": "Ramp 4",
+            "power": {
+              "units": "w",
+              "value": 259
+            },
+            "duration": 60
+          },
+          {
+            "text": "Ramp 5",
+            "power": {
+              "units": "w",
+              "value": 279
+            },
+            "duration": 60
+          },
+          {
+            "text": "Ramp 6",
+            "power": {
+              "units": "w",
+              "value": 299
+            },
+            "duration": 60
+          },
+          {
+            "text": "Recovery",
+            "power": {
+              "units": "w",
+              "value": 157
+            },
+            "duration": 120
+          },
+          {
+            "reps": 2,
+            "text": "Activation 2x",
+            "steps": [
+              {
+                "text": "Activation Sprint",
+                "power": {
+                  "units": "w",
+                  "value": 713
+                },
+                "duration": 10
+              },
+              {
+                "text": "Easy",
+                "power": {
+                  "units": "w",
+                  "value": 157
+                },
+                "duration": 60
+              }
+            ],
+            "distance": 0,
+            "duration": 140
+          },
+          {
+            "text": "Recovery",
+            "power": {
+              "units": "w",
+              "value": 157
+            },
+            "duration": 180
+          },
+          {
+            "reps": 4,
+            "text": "Main Set 4x",
+            "steps": [
+              {
+                "text": "Sprint",
+                "power": {
+                  "units": "w",
+                  "value": 713
+                },
+                "duration": 10
+              },
+              {
+                "power": {
+                  "units": "w",
+                  "value": 371
+                },
+                "duration": 40
+              },
+              {
+                "power": {
+                  "units": "w",
+                  "value": 314
+                },
+                "duration": 90
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 157
+                },
+                "duration": 480
+              }
+            ],
+            "distance": 0,
+            "duration": 2480
+          },
+          {
+            "text": "Cool Down",
+            "power": {
+              "units": "w",
+              "value": 114
+            },
+            "duration": 300
+          }
+        ],
+        "duration": 3880
+      }
+    },
+    {
+      "id": 112729671,
+      "name": "Openers — race starts + 2 × 90s @ 100% MAP",
+      "date": "2026-06-04",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 48,
+      "moving_time": 2880,
+      "description": "- Warmup 10m ramp 130w-235w\n\n- Activation 3m 270w\n\n- 3m 150w\n\nRace starts 3x\n- Standing start — max effort 20s 500w 100rpm\n- 3m 130w\n\n- 3m 150w\n\n2 × 90s @ MAP 2x\n- 1m30s 391w 100rpm\n- 4m 150w\n\n- Cooldown 8m 130w",
+      "workout_doc": {
+        "steps": [
+          {
+            "ramp": true,
+            "text": "Warmup",
+            "power": {
+              "end": 235,
+              "start": 130,
+              "units": "w"
+            },
+            "duration": 600
+          },
+          {
+            "text": "Activation",
+            "power": {
+              "units": "w",
+              "value": 270
+            },
+            "duration": 180
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 180
+          },
+          {
+            "reps": 3,
+            "text": "Race starts 3x",
+            "steps": [
+              {
+                "text": "Standing start — max effort",
+                "power": {
+                  "units": "w",
+                  "value": 500
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 100
+                },
+                "duration": 20
+              },
+              {
+                "power": {
+                  "units": "w",
+                  "value": 130
+                },
+                "duration": 180
+              }
+            ],
+            "distance": 0,
+            "duration": 600
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 180
+          },
+          {
+            "reps": 2,
+            "text": "2 × 90s @ MAP 2x",
+            "steps": [
+              {
+                "power": {
+                  "units": "w",
+                  "value": 391
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 100
+                },
+                "duration": 90
+              },
+              {
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 240
+              }
+            ],
+            "distance": 0,
+            "duration": 660
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 130
+            },
+            "duration": 480
+          }
+        ],
+        "duration": 2880
+      }
+    },
+    {
+      "id": 113479815,
+      "name": "Recovery spin",
+      "date": "2026-06-05",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 23,
+      "moving_time": 2700,
+      "description": "- 160w 45m",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 2700
+          }
+        ],
+        "duration": 2700
+      }
+    },
+    {
+      "id": 112730272,
+      "name": "Z2 — 60-75min easy aerobic top-up",
+      "date": "2026-06-07",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 60,
+      "moving_time": 3600,
+      "description": "- Z2 easy — hold the lower end 1h 200w-250w 85-95rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 250,
+              "start": 200,
+              "units": "w"
+            },
+            "cadence": {
+              "end": 95,
+              "start": 85,
+              "units": "rpm"
+            },
+            "duration": 3600
+          }
+        ],
+        "duration": 3600
+      }
+    },
+    {
+      "id": 112729720,
+      "name": "Indoor Cycling",
+      "date": "2026-06-08",
+      "type": "VirtualRide",
+      "category": "WORKOUT",
+      "icu_training_load": 14,
+      "moving_time": 1800,
+      "description": "\nNo workout_step messages found\n",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 112729725,
+      "name": "Activation — 3 × 1min @ 105% MAP",
+      "date": "2026-06-09",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 40,
+      "moving_time": 2400,
+      "description": "- Warmup 10m ramp 130w-235w\n\n- Activation 2m 270w\n\n- 3m 150w\n\n3 × 1min @ 105% MAP 3x\n- 1m 410w 100rpm\n- 4m 150w\n\n- Cooldown 10m 130w",
+      "workout_doc": {
+        "steps": [
+          {
+            "ramp": true,
+            "text": "Warmup",
+            "power": {
+              "end": 235,
+              "start": 130,
+              "units": "w"
+            },
+            "duration": 600
+          },
+          {
+            "text": "Activation",
+            "power": {
+              "units": "w",
+              "value": 270
+            },
+            "duration": 120
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 180
+          },
+          {
+            "reps": 3,
+            "text": "3 × 1min @ 105% MAP 3x",
+            "steps": [
+              {
+                "power": {
+                  "units": "w",
+                  "value": 410
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 100
+                },
+                "duration": 60
+              },
+              {
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 240
+              }
+            ],
+            "distance": 0,
+            "duration": 900
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 130
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 2400
+      }
+    },
+    {
+      "id": 115608215,
+      "name": "Openers",
+      "date": "2026-06-12",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 67,
+      "moving_time": 4690,
+      "description": "- Warm up 20m 54-66%\n- 10m 72-88%\n- 10m 59-71%\n- 5m 90-110%\n- 10m 54-66%\n- 1m 113-138%\n- 3m 54-66%\n- Z6 1m 113-138%\n- 3m 54-66%\n- Sprint 0m10s 225-275%\n- Cool Down 15m 36-44%\n",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm up",
+            "power": {
+              "end": 66,
+              "start": 54,
+              "units": "%ftp"
+            },
+            "duration": 1200
+          },
+          {
+            "power": {
+              "end": 88,
+              "start": 72,
+              "units": "%ftp"
+            },
+            "duration": 600
+          },
+          {
+            "power": {
+              "end": 71,
+              "start": 59,
+              "units": "%ftp"
+            },
+            "duration": 600
+          },
+          {
+            "power": {
+              "end": 110,
+              "start": 90,
+              "units": "%ftp"
+            },
+            "duration": 300
+          },
+          {
+            "power": {
+              "end": 66,
+              "start": 54,
+              "units": "%ftp"
+            },
+            "duration": 600
+          },
+          {
+            "power": {
+              "end": 138,
+              "start": 113,
+              "units": "%ftp"
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "end": 66,
+              "start": 54,
+              "units": "%ftp"
+            },
+            "duration": 180
+          },
+          {
+            "power": {
+              "end": 138,
+              "start": 113,
+              "units": "%ftp"
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "end": 66,
+              "start": 54,
+              "units": "%ftp"
+            },
+            "duration": 180
+          },
+          {
+            "text": "Sprint",
+            "power": {
+              "end": 275,
+              "start": 225,
+              "units": "%ftp"
+            },
+            "duration": 10
+          },
+          {
+            "text": "Cool Down",
+            "power": {
+              "end": 44,
+              "start": 36,
+              "units": "%ftp"
+            },
+            "duration": 900
+          }
+        ],
+        "duration": 4690
+      }
+    },
+    {
+      "id": 101240422,
+      "name": "MNTC IP",
+      "date": "2026-06-13",
+      "type": "TrackRide",
+      "category": "RACE_A",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": null
+    },
+    {
+      "id": 116365662,
+      "name": "Strength training",
+      "date": "2026-06-15",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": 3300,
+      "description": "Squats, 60kg 5 x 4 sets\nStep ups, 60kg 5 x 3 sets\nBent over single arm rows, 24kg 8 x 3 sets\nAleknas 10kg 5 x 3 sets",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 116368324,
+      "name": "Recovery spin — post-weights",
+      "date": "2026-06-16",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 15,
+      "moving_time": 2400,
+      "description": "- Easy — circulation not stimulus 40m 118w-158w 95rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy — circulation not stimulus",
+            "power": {
+              "end": 158,
+              "start": 118,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 95
+            },
+            "duration": 2400
+          }
+        ],
+        "duration": 2400
+      }
+    },
+    {
+      "id": 116368326,
+      "name": "Z2 endurance 75min",
+      "date": "2026-06-17",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 77,
+      "moving_time": 4500,
+      "description": "- Z2 — NP cap 68% MAP (266w) 1h15m 197w-256w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 256,
+              "start": 197,
+              "units": "w"
+            },
+            "duration": 4500
+          }
+        ],
+        "duration": 4500
+      }
+    },
+    {
+      "id": 117371930,
+      "name": "Weights",
+      "date": "2026-06-18",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": 3000,
+      "description": "Drop jumps\nBox squats\nPull ups",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 116368331,
+      "name": "Z2 + neuromuscular starts",
+      "date": "2026-06-20",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 113,
+      "moving_time": 7500,
+      "description": "- Z2 warm-in 1h30m 190w-220w\n\nStanding starts 5x\n- MAX standing start from near-stop\n- 15s 700w\n- Easy — full recovery 3m45s 150w\n\n- Z2 spin home 15m 190w-220w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 220,
+              "start": 190,
+              "units": "w"
+            },
+            "duration": 5400
+          },
+          {
+            "reps": 5,
+            "text": "Standing starts 5x",
+            "steps": [
+              {
+                "power": {
+                  "units": "w",
+                  "value": 700
+                },
+                "duration": 15
+              },
+              {
+                "text": "Easy — full recovery",
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 225
+              }
+            ],
+            "distance": 0,
+            "duration": 1200
+          },
+          {
+            "power": {
+              "end": 220,
+              "start": 190,
+              "units": "w"
+            },
+            "duration": 900
+          }
+        ],
+        "duration": 7500
+      }
+    },
+    {
+      "id": 116368333,
+      "name": "Z2 endurance 90min",
+      "date": "2026-06-21",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 92,
+      "moving_time": 5400,
+      "description": "- Z2 — NP cap 68% MAP (266w) 1h30m 197w-256w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 256,
+              "start": 197,
+              "units": "w"
+            },
+            "duration": 5400
+          }
+        ],
+        "duration": 5400
+      }
+    },
+    {
+      "id": 116368337,
+      "name": "Z2 endurance 60min — ease into build",
+      "date": "2026-06-22",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 61,
+      "moving_time": 3600,
+      "description": "- Z2 — easy, week opener 1h 197w-256w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 256,
+              "start": 197,
+              "units": "w"
+            },
+            "duration": 3600
+          }
+        ],
+        "duration": 3600
+      }
+    },
+    {
+      "id": 116369608,
+      "name": "FTP 20-min test",
+      "date": "2026-06-23",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 65,
+      "moving_time": 3300,
+      "description": "20-minute FTP estimation test. Use FTP = 95% of best 20-min average. Pace target = bury yourself starting at minute 17. Standardise warm-up so retests are comparable.\n\n- Warm-up 15m 160w-189w\n\n- 1m 290w\n\n- 1m 174w\n\n- 1m 319w\n\n- 1m 174w\n\n- 1m 348w\n\n- 5m 174w\n\n- 20min effort 20m 276w-305w\n\n- Cooldown 10m 145w\n\n<!-- rationale {\"basis\":\"FTP\",\"anchorWatts\":290,\"seedId\":\"ftp-20min-test\",\"intensities\":[{\"stepRef\":\"Warm-up\",\"pct\":[55,65]},{\"stepRef\":\"1m\",\"pct\":100},{\"stepRef\":\"1m\",\"pct\":60},{\"stepRef\":\"1m\",\"pct\":110},{\"stepRef\":\"1m\",\"pct\":60},{\"stepRef\":\"1m\",\"pct\":120},{\"stepRef\":\"5m\",\"pct\":60},{\"stepRef\":\"20min effort\",\"pct\":[95,105]},{\"stepRef\":\"Cooldown\",\"pct\":50}]} -->",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "end": 189,
+              "start": 160,
+              "units": "w"
+            },
+            "duration": 900
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 290
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 174
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 319
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 174
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 348
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 174
+            },
+            "duration": 300
+          },
+          {
+            "power": {
+              "end": 305,
+              "start": 276,
+              "units": "w"
+            },
+            "duration": 1200
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 145
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 3300
+      }
+    },
+    {
+      "id": 116368363,
+      "name": "Recovery spin",
+      "date": "2026-06-24",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 15,
+      "moving_time": 2400,
+      "description": "- Easy — freshen for weekend 40m 118w-158w 95rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy — freshen for weekend",
+            "power": {
+              "end": 158,
+              "start": 118,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 95
+            },
+            "duration": 2400
+          }
+        ],
+        "duration": 2400
+      }
+    },
+    {
+      "id": 117868374,
+      "name": "Sweet Spot 3×12",
+      "date": "2026-06-25",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 74,
+      "moving_time": 4200,
+      "description": "Sub-threshold steady work. Lower fatigue cost than threshold, allowing higher weekly volume of sustained efforts during build phases. Hold cadence ≥ 85.\n\n- Warm-up 12m 160w-203w\n\n3x\n- SST 12m 255w-273w\n- Recovery 4m 160w\n\n- Cooldown 10m 145w\n\n<!-- rationale {\"basis\":\"FTP\",\"anchorWatts\":290,\"seedId\":\"sweet-spot-3x12\",\"intensities\":[{\"stepRef\":\"Warm-up\",\"pct\":[55,70]},{\"stepRef\":\"SST\",\"pct\":[88,94]},{\"stepRef\":\"Recovery\",\"pct\":55},{\"stepRef\":\"Cooldown\",\"pct\":50}]} -->",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "end": 203,
+              "start": 160,
+              "units": "w"
+            },
+            "duration": 720
+          },
+          {
+            "reps": 3,
+            "text": "3x",
+            "steps": [
+              {
+                "text": "SST",
+                "power": {
+                  "end": 273,
+                  "start": 255,
+                  "units": "w"
+                },
+                "duration": 720
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 160
+                },
+                "duration": 240
+              }
+            ],
+            "distance": 0,
+            "duration": 2880
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 145
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 4200
+      }
+    },
+    {
+      "id": 116368354,
+      "name": "Z2 endurance 90min",
+      "date": "2026-06-26",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 92,
+      "moving_time": 5400,
+      "description": "- Z2 — aerobic volume, NP cap 266w 1h30m 197w-256w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 256,
+              "start": 197,
+              "units": "w"
+            },
+            "duration": 5400
+          }
+        ],
+        "duration": 5400
+      }
+    },
+    {
+      "id": 116368365,
+      "name": "Long + durability finish — 2×8min SST",
+      "date": "2026-06-27",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 143,
+      "moving_time": 8340,
+      "description": "- Endurance — fuel 60–90g carbs/hr 1h45m 197w-256w\n\nDurability finish 2x\n- SST on tired legs 8m 255w-273w\n- Float 4m 197w\n\n- Cooldown 10m 158w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Endurance — fuel 60–90g carbs/hr",
+            "power": {
+              "end": 256,
+              "start": 197,
+              "units": "w"
+            },
+            "duration": 6300
+          },
+          {
+            "reps": 2,
+            "text": "Durability finish 2x",
+            "steps": [
+              {
+                "text": "SST on tired legs",
+                "power": {
+                  "end": 273,
+                  "start": 255,
+                  "units": "w"
+                },
+                "duration": 480
+              },
+              {
+                "text": "Float",
+                "power": {
+                  "units": "w",
+                  "value": 197
+                },
+                "duration": 240
+              }
+            ],
+            "distance": 0,
+            "duration": 1440
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 158
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 8340
+      }
+    },
+    {
+      "id": 116368366,
+      "name": "Easy endurance 60min — gym focus day",
+      "date": "2026-06-28",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 42,
+      "moving_time": 3600,
+      "description": "- Easy — legs for the gym session 1h 158w-217w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy — legs for the gym session",
+            "power": {
+              "end": 217,
+              "start": 158,
+              "units": "w"
+            },
+            "duration": 3600
+          }
+        ],
+        "duration": 3600
+      }
+    },
+    {
+      "id": 116368392,
+      "name": "Weights",
+      "date": "2026-06-28",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": "Box squats 70kg 3 x 5\nRomanian deadlifts (trap bar) 70kg 3 x 5\nPull ups 3 x 8\nAleknas 10kg 7.5kg 3 x 5",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 119037546,
+      "name": "Easy endurance 60min — recovery",
+      "date": "2026-06-29",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 42,
+      "moving_time": 3600,
+      "description": "- Easy — recovery from weekend, truly easy 1h 158w-217w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy — recovery from weekend, truly easy",
+            "power": {
+              "end": 217,
+              "start": 158,
+              "units": "w"
+            },
+            "duration": 3600
+          }
+        ],
+        "duration": 3600
+      }
+    },
+    {
+      "id": 119037550,
+      "name": "Sweet Spot 3×15 — extend duration",
+      "date": "2026-06-30",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 86,
+      "moving_time": 4740,
+      "description": "- Warm-up 12m 160w-203w\n\n3x\n- SST — hold cadence ≥85 15m 255w-273w\n- Recovery 4m 160w\n\n- Cooldown 10m 145w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "end": 203,
+              "start": 160,
+              "units": "w"
+            },
+            "duration": 720
+          },
+          {
+            "reps": 3,
+            "text": "3x",
+            "steps": [
+              {
+                "text": "SST — hold cadence ≥85",
+                "power": {
+                  "end": 273,
+                  "start": 255,
+                  "units": "w"
+                },
+                "duration": 900
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 160
+                },
+                "duration": 240
+              }
+            ],
+            "distance": 0,
+            "duration": 3420
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 145
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 4740
+      }
+    },
+    {
+      "id": 119037553,
+      "name": "Z2 endurance 90min",
+      "date": "2026-07-01",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 92,
+      "moving_time": 5400,
+      "description": "- Z2 — aerobic volume, NP cap 266w 1h30m 197w-256w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 256,
+              "start": 197,
+              "units": "w"
+            },
+            "duration": 5400
+          }
+        ],
+        "duration": 5400
+      }
+    },
+    {
+      "id": 119037557,
+      "name": "Z2 endurance 60min",
+      "date": "2026-07-02",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 61,
+      "moving_time": 3600,
+      "description": "- Z2 — aerobic volume, NP cap 266w 1h 197w-256w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 256,
+              "start": 197,
+              "units": "w"
+            },
+            "duration": 3600
+          }
+        ],
+        "duration": 3600
+      }
+    },
+    {
+      "id": 119037558,
+      "name": "Recovery spin 45min — pre-century",
+      "date": "2026-07-03",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 17,
+      "moving_time": 2700,
+      "description": "- Easy — freshen for the century 45m 118w-158w 95rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy — freshen for the century",
+            "power": {
+              "end": 158,
+              "start": 118,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 95
+            },
+            "duration": 2700
+          }
+        ],
+        "duration": 2700
+      }
+    },
+    {
+      "id": 119033469,
+      "name": "Century ride — social, fuel 60–90g/hr",
+      "date": "2026-07-04",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 194,
+      "moving_time": 21600,
+      "description": "- Z2 social — ride by feel/HR, fuel 60–90g carbs/hr from the start 6h 165w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "units": "w",
+              "value": 165
+            },
+            "duration": 21600
+          }
+        ],
+        "duration": 21600
+      }
+    },
+    {
+      "id": 119037563,
+      "name": "Recovery spin 40min — post-century",
+      "date": "2026-07-05",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 15,
+      "moving_time": 2400,
+      "description": "- Easy — spin out the century, legs only 40m 118w-158w 95rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy — spin out the century, legs only",
+            "power": {
+              "end": 158,
+              "start": 118,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 95
+            },
+            "duration": 2400
+          }
+        ],
+        "duration": 2400
+      }
+    },
+    {
+      "id": 120686926,
+      "name": "Strength #1 — reintroduction (conservative)",
+      "date": "2026-07-06",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": "First session back after a lapse — leave 2 reps in reserve, expect DOMS, don't chase load. Build weight back over the coming weeks.\n\nBulgarian split squats 3 x 5 50kg\nSquats 3 x 5 60kg\nTrap bar deadlift  3 x 5 80kg\nSingle arm row 3 x 5 24kg",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 120686931,
+      "name": "Easy spin 45min — optional (WFH)",
+      "date": "2026-07-06",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 32,
+      "moving_time": 2700,
+      "description": "- Easy Z2 — optional, keep it light on gym day 45m 158w-217w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 217,
+              "start": 158,
+              "units": "w"
+            },
+            "duration": 2700
+          }
+        ],
+        "duration": 2700
+      }
+    },
+    {
+      "id": 120686939,
+      "name": "Easy Z2 60min — truly easy",
+      "date": "2026-07-07",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 42,
+      "moving_time": 3600,
+      "description": "- Easy — truly easy, clear the legs 1h 158w-217w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy — truly easy, clear the legs",
+            "power": {
+              "end": 217,
+              "start": 158,
+              "units": "w"
+            },
+            "duration": 3600
+          }
+        ],
+        "duration": 3600
+      }
+    },
+    {
+      "id": 120686969,
+      "name": "VO2 maintenance 4×3",
+      "date": "2026-07-08",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 67,
+      "moving_time": 2880,
+      "description": "- Warm-up 12m 160w-236w\n\nPrimers 2x\n- Primer 40s 360w\n- Easy 80s 150w\n\nMain 4×3 — L6 lower end, hold last rep ≥ first 4x\n- On 3m 350w-370w\n- Off 3m 155w\n\n- Cooldown 8m 145w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "end": 236,
+              "start": 160,
+              "units": "w"
+            },
+            "duration": 720
+          },
+          {
+            "reps": 2,
+            "text": "Primers 2x",
+            "steps": [
+              {
+                "text": "Primer",
+                "power": {
+                  "units": "w",
+                  "value": 360
+                },
+                "duration": 40
+              },
+              {
+                "text": "Easy",
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 80
+              }
+            ],
+            "distance": 0,
+            "duration": 240
+          },
+          {
+            "reps": 4,
+            "text": "Main 4×3 — L6 lower end, hold last rep ≥ first 4x",
+            "steps": [
+              {
+                "text": "On",
+                "power": {
+                  "end": 370,
+                  "start": 350,
+                  "units": "w"
+                },
+                "duration": 180
+              },
+              {
+                "text": "Off",
+                "power": {
+                  "units": "w",
+                  "value": 155
+                },
+                "duration": 180
+              }
+            ],
+            "distance": 0,
+            "duration": 1440
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 145
+            },
+            "duration": 480
+          }
+        ],
+        "duration": 2880
+      }
+    },
+    {
+      "id": 120686970,
+      "name": "Z2 endurance 60min",
+      "date": "2026-07-09",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 61,
+      "moving_time": 3600,
+      "description": "- Z2 — aerobic volume, NP cap 266w 1h 197w-256w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 256,
+              "start": 197,
+              "units": "w"
+            },
+            "duration": 3600
+          }
+        ],
+        "duration": 3600
+      }
+    },
+    {
+      "id": 120686972,
+      "name": "Recovery spin 40min",
+      "date": "2026-07-10",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 15,
+      "moving_time": 2400,
+      "description": "- Easy — freshen for the weekend, legs only 40m 118w-158w 95rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy — freshen for the weekend, legs only",
+            "power": {
+              "end": 158,
+              "start": 118,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 95
+            },
+            "duration": 2400
+          }
+        ],
+        "duration": 2400
+      }
+    },
+    {
+      "id": 120686975,
+      "name": "Long Z2 endurance 2.5h — pre-track (easy volume, no finish)",
+      "date": "2026-07-11",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 127,
+      "moving_time": 9000,
+      "description": "- Steady Z2 at the low end — protect the legs for tomorrow's track; keep it truly aerobic, no surges. Fuel well: 60–90g carbs/hr. 2h30m 197w-217w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 217,
+              "start": 197,
+              "units": "w"
+            },
+            "duration": 9000
+          }
+        ],
+        "duration": 9000
+      }
+    },
+    {
+      "id": 120686978,
+      "name": "Strength #2 — weekend (ride AM / gym PM)",
+      "date": "2026-07-12",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": "Weekend two-a-day — long ride AM, this PM, a few hours apart. Still reintroduction week: RPE 7–8, 1–2 reps in reserve.\n\nBox squats 65kg 3×5\nRomanian deadlifts (trap bar) 65kg 3×5\nPull-ups 3×7\nAleknas 10kg 7.5kg 3×5\nCore: planks 3×45s",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 120686980,
+      "name": "Track — pursuit pacing, flying runs (no-fade focus)",
+      "date": "2026-07-12",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 71,
+      "moving_time": 4035,
+      "description": "- Warm-up — build to race cadence, then two or three short openers, then full recovery. CORRECTION (30 Jul): power IS recorded — SRM on the track bike. Judge every run on lap splits first, power second. The original note here said there was no power on the fixed gear; that was wrong. 20m 210w\n\n- Run one — flying six laps at your race-schedule lap pace. EVEN splits, rehearse the schedule. 1m40s 390w\n\n- Full recovery — easy roll or spin 10m 120w\n\n- Run two — flying six laps, NEGATIVE split: ease the first two laps, build the last two. 1m40s 390w\n\n- Full recovery — easy roll or spin 10m 120w\n\n- Run three — flying eight laps (full pursuit distance) at controlled sub-race pace, hold the split. PROTECT this rep if legs or time run short — it is the over-distance durability rep. 2m15s 370w\n\n- Full recovery — easy roll or spin 10m 120w\n\n- Run four — OPTIONAL if the legs feel good: flying six laps, honest even pace, zero fade on the last two laps (mini-test). 1m40s 390w\n\n- Cooldown — easy spin. Strength number two follows in the PM, a few hours later. OUTCOME (analysed 30 Jul): run one ridden even as prescribed (16.36, 16.23, 16.11, 16.10, 16.09, 16.24); run two negative-split as instructed (16.63 down to 15.81); run three ridden at sub-race pace but built rather than holding the split (16.96 down to 16.06). Session design gap: no standing start, which is where the tractable time actually sits. 10m 140w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up — build to race cadence, then two or three short openers, then full recovery. CORRECTION (30 Jul): power IS recorded — SRM on the track bike. Judge every run on lap splits first, power second. The original note here said there was no power on the fixed gear; that was wrong.",
+            "power": {
+              "units": "w",
+              "value": 210
+            },
+            "duration": 1200
+          },
+          {
+            "text": "Run one — flying six laps at your race-schedule lap pace. EVEN splits, rehearse the schedule.",
+            "power": {
+              "units": "w",
+              "value": 390
+            },
+            "duration": 100
+          },
+          {
+            "text": "Full recovery — easy roll or spin",
+            "power": {
+              "units": "w",
+              "value": 120
+            },
+            "duration": 600
+          },
+          {
+            "text": "Run two — flying six laps, NEGATIVE split: ease the first two laps, build the last two.",
+            "power": {
+              "units": "w",
+              "value": 390
+            },
+            "duration": 100
+          },
+          {
+            "text": "Full recovery — easy roll or spin",
+            "power": {
+              "units": "w",
+              "value": 120
+            },
+            "duration": 600
+          },
+          {
+            "text": "Run three — flying eight laps (full pursuit distance) at controlled sub-race pace, hold the split. PROTECT this rep if legs or time run short — it is the over-distance durability rep.",
+            "power": {
+              "units": "w",
+              "value": 370
+            },
+            "duration": 135
+          },
+          {
+            "text": "Full recovery — easy roll or spin",
+            "power": {
+              "units": "w",
+              "value": 120
+            },
+            "duration": 600
+          },
+          {
+            "text": "Run four — OPTIONAL if the legs feel good: flying six laps, honest even pace, zero fade on the last two laps (mini-test).",
+            "power": {
+              "units": "w",
+              "value": 390
+            },
+            "duration": 100
+          },
+          {
+            "text": "Cooldown — easy spin. Strength number two follows in the PM, a few hours later. OUTCOME (analysed 30 Jul): run one ridden even as prescribed (16.36, 16.23, 16.11, 16.10, 16.09, 16.24); run two negative-split as instructed (16.63 down to 15.81); run three ridden at sub-race pace but built rather than holding the split (16.96 down to 16.06). Session design gap: no standing start, which is where the tractable time actually sits.",
+            "power": {
+              "units": "w",
+              "value": 140
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 4035
+      }
+    },
+    {
+      "id": 120686996,
+      "name": "Easy Z2 45min — deload",
+      "date": "2026-07-13",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 32,
+      "moving_time": 2700,
+      "description": "- Easy Z2 — deload week, keep it light 45m 158w-217w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 217,
+              "start": 158,
+              "units": "w"
+            },
+            "duration": 2700
+          }
+        ],
+        "duration": 2700
+      }
+    },
+    {
+      "id": 120687000,
+      "name": "Openers — prime for MAP test",
+      "date": "2026-07-14",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 20,
+      "moving_time": 1515,
+      "description": "- Warm-up 10m 160w-215w\n\nOpeners — short, non-fatiguing 3x\n- Build 1m 290w\n- Easy 2m 150w\n\n- Spin-up 15s 400w\n\n- Cooldown 6m 140w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "end": 215,
+              "start": 160,
+              "units": "w"
+            },
+            "duration": 600
+          },
+          {
+            "reps": 3,
+            "text": "Openers — short, non-fatiguing 3x",
+            "steps": [
+              {
+                "text": "Build",
+                "power": {
+                  "units": "w",
+                  "value": 290
+                },
+                "duration": 60
+              },
+              {
+                "text": "Easy",
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 120
+              }
+            ],
+            "distance": 0,
+            "duration": 540
+          },
+          {
+            "text": "Spin-up",
+            "power": {
+              "units": "w",
+              "value": 400
+            },
+            "duration": 15
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 140
+            },
+            "duration": 360
+          }
+        ],
+        "duration": 1515
+      }
+    },
+    {
+      "id": 120687007,
+      "name": "MAP ramp test 2026-07-15",
+      "date": "2026-07-15",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 56,
+      "moving_time": 2160,
+      "description": "- Warm-up (graded, standardised) 3m 150w\n\n- 3m 180w\n\n- 3m 210w\n\n- 3m 240w\n\n- Ramp to failure 1m 140w\n\n- 1m 165w\n\n- 1m 190w\n\n- 1m 215w\n\n- 1m 240w\n\n- 1m 265w\n\n- 1m 290w\n\n- 1m 315w\n\n- 1m 340w\n\n- 1m 365w\n\n- 1m 390w\n\n- 1m 415w\n\n- 1m 440w\n\n- 1m 465w\n\n- Cooldown 10m 160w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up (graded, standardised)",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 180
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 180
+            },
+            "duration": 180
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 210
+            },
+            "duration": 180
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 240
+            },
+            "duration": 180
+          },
+          {
+            "text": "Ramp to failure",
+            "power": {
+              "units": "w",
+              "value": 140
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 165
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 190
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 215
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 240
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 265
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 290
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 315
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 340
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 365
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 390
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 415
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 440
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "units": "w",
+              "value": 465
+            },
+            "duration": 60
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 2160
+      }
+    },
+    {
+      "id": 120687011,
+      "name": "Recovery spin 40min — post-test",
+      "date": "2026-07-16",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 15,
+      "moving_time": 2400,
+      "description": "- Easy — spin out the test, legs only 40m 118w-158w 95rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy — spin out the test, legs only",
+            "power": {
+              "end": 158,
+              "start": 118,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 95
+            },
+            "duration": 2400
+          }
+        ],
+        "duration": 2400
+      }
+    },
+    {
+      "id": 120687013,
+      "name": "Strength — light (deload)",
+      "date": "2026-07-17",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": "Deload — movement quality, high intent, well short of failure. Legs must feel fresh for tomorrow's key durability ride.\n\nBox Squat 2×5 @ RPE 6 (pause, accelerate up — quality not load)\nRomanian Deadlift (trap bar) 2×5 @ RPE 6 (pure hip hinge, posterior chain)\nLow-Box Jump 2×3 fast (OPTIONAL primer — skip if legs feel flat)\nPull-ups 2×6\nPlank 3×30s\n\nAuto-regulate load by RPE, leave 4+ reps in reserve. No grinding. Method: @chr1speden / strength-training skill.",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 120687016,
+      "name": "Long + durability finish — 2×8min SST",
+      "date": "2026-07-18",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 157,
+      "moving_time": 9240,
+      "description": "- Endurance — deload-wk upgrade, fuel 60–90g carbs/hr 2h 197w-256w\n\nDurability finish 2× — back-half fade work 2x\n- SST on tired legs 8m 255w-273w\n- Float 4m 197w\n\n- Cooldown 10m 158w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Endurance — deload-wk upgrade, fuel 60–90g carbs/hr",
+            "power": {
+              "end": 256,
+              "start": 197,
+              "units": "w"
+            },
+            "duration": 7200
+          },
+          {
+            "reps": 2,
+            "text": "Durability finish 2× — back-half fade work 2x",
+            "steps": [
+              {
+                "text": "SST on tired legs",
+                "power": {
+                  "end": 273,
+                  "start": 255,
+                  "units": "w"
+                },
+                "duration": 480
+              },
+              {
+                "text": "Float",
+                "power": {
+                  "units": "w",
+                  "value": 197
+                },
+                "duration": 240
+              }
+            ],
+            "distance": 0,
+            "duration": 1440
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 158
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 9240
+      }
+    },
+    {
+      "id": 120687018,
+      "name": "Recovery spin 40min",
+      "date": "2026-07-19",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 15,
+      "moving_time": 2400,
+      "description": "- Easy — spin, legs only 40m 118w-158w 95rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy — spin, legs only",
+            "power": {
+              "end": 158,
+              "start": 118,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 95
+            },
+            "duration": 2400
+          }
+        ],
+        "duration": 2400
+      }
+    },
+    {
+      "id": 123780472,
+      "name": "Easy Z2 — post-viral return",
+      "date": "2026-07-20",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 36,
+      "moving_time": 3000,
+      "description": "- Easy — cut short if it feels like work 50m 170w-210w 90rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy — cut short if it feels like work",
+            "power": {
+              "end": 210,
+              "start": 170,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 90
+            },
+            "duration": 3000
+          }
+        ],
+        "duration": 3000
+      }
+    },
+    {
+      "id": 123780718,
+      "name": "Strength A — Force (first back post-cold)",
+      "date": "2026-07-20",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": "First session back after the cold. Volume cut a set per exercise and RPE down a point vs a normal force day — the goal is to re-touch the pattern, not to test anything. If anything feels flat, stop after the RDL.\n\n6-8 min general warm-up + ramp-up sets on the trap bar. Maximal accelerative intent on every concentric.\n\nTrap-Bar Deadlift    3×4   @ RPE 6-7   (accelerate every rep)\nBox Squat            2×4   @ RPE 6     (pause on box, drive up fast)\nRomanian Deadlift    2×6   @ RPE 6     (pure hip hinge, shins vertical)\nSeated Good Morning  2×8   @ RPE 6     (stiff trunk + hip extension)\nLoaded Jump Squat    2×4   fast        (submax load, max height — stop if velocity drops)\n\nLoad auto-regulated by RPE. Do not chase last block's numbers today.",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 123780481,
+      "name": "Z2 endurance",
+      "date": "2026-07-21",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 49,
+      "moving_time": 3600,
+      "description": "- Warm-up 10m 170w-200w\n\n- Z2 — conversational, cap NP at sixty-eight percent MAP 45m 200w-220w\n\n- Cooldown 5m 160w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "end": 200,
+              "start": 170,
+              "units": "w"
+            },
+            "duration": 600
+          },
+          {
+            "power": {
+              "end": 220,
+              "start": 200,
+              "units": "w"
+            },
+            "duration": 2700
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 300
+          }
+        ],
+        "duration": 3600
+      }
+    },
+    {
+      "id": 123780483,
+      "name": "Sweet Spot 3x12 — first intensity back",
+      "date": "2026-07-22",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 74,
+      "moving_time": 4200,
+      "description": "- Warm-up 12m 160w-203w\n\nMain Set 3x\n- SST — hold cadence above eighty-five 12m 255w-273w\n- Recovery 4m 160w\n\n- Cooldown 10m 145w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "end": 203,
+              "start": 160,
+              "units": "w"
+            },
+            "duration": 720
+          },
+          {
+            "reps": 3,
+            "text": "Main Set 3x",
+            "steps": [
+              {
+                "text": "SST — hold cadence above eighty-five",
+                "power": {
+                  "end": 273,
+                  "start": 255,
+                  "units": "w"
+                },
+                "duration": 720
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 160
+                },
+                "duration": 240
+              }
+            ],
+            "distance": 0,
+            "duration": 2880
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 145
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 4200
+      }
+    },
+    {
+      "id": 123780487,
+      "name": "Z2 endurance",
+      "date": "2026-07-23",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 69,
+      "moving_time": 4500,
+      "description": "- Warm-up 10m 170w-200w\n\n- Z2 — steady, cap NP at sixty-eight percent MAP 60m 200w-245w\n\n- Cooldown 5m 160w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "end": 200,
+              "start": 170,
+              "units": "w"
+            },
+            "duration": 600
+          },
+          {
+            "power": {
+              "end": 245,
+              "start": 200,
+              "units": "w"
+            },
+            "duration": 3600
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 300
+          }
+        ],
+        "duration": 4500
+      }
+    },
+    {
+      "id": 123780725,
+      "name": "Strength B — Power-biased (light, TT Sunday)",
+      "date": "2026-07-23",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": "Deliberately power-biased and low-fatigue — the 10-mile TT is 3 days out. Jumps and single-leg work carry high neuromuscular stimulus at a fraction of the recovery cost of heavy bilateral lifting. No heavy trap bar this week.\n\n6-8 min general warm-up. Every rep fast and crisp; stop any set the moment velocity drops.\n\nTrap-Bar Jump           3×4           fast      (dead-stop, explode — standing-start specific)\nStep-Up                 2×5 each leg  @ RPE 6   (stand close, torso lean, rise on rear toe)\nBulgarian Split Squat   2×6 each leg  @ RPE 6   (contralateral load if able)\nPallof Press            2 sets                  (anti-rotation, minimal volume)\n\nZero soreness is the target. If your legs feel it Friday, this was too much — note it.",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 123780492,
+      "name": "Recovery spin — optional, skip if legs heavy",
+      "date": "2026-07-24",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 17,
+      "moving_time": 2400,
+      "description": "- Easy — circulation only 40m 125w-165w 95rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy — circulation only",
+            "power": {
+              "end": 165,
+              "start": 125,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 95
+            },
+            "duration": 2400
+          }
+        ],
+        "duration": 2400
+      }
+    },
+    {
+      "id": 125017671,
+      "name": "Openers",
+      "date": "2026-07-25",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 65,
+      "moving_time": 4390,
+      "description": "- Warm up 20m 54-66%\n- 10m 72-88%\n- 10m 59-71%\n- 5m 90-110%\n- 10m 54-66%\n- 1m 113-138%\n- 3m 54-66%\n- Z6 1m 113-138%\n- 3m 54-66%\n- Sprint 0m10s 225-275%\n- Cooldown 10m Z1\n",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm up",
+            "power": {
+              "end": 66,
+              "start": 54,
+              "units": "%ftp"
+            },
+            "duration": 1200
+          },
+          {
+            "power": {
+              "end": 88,
+              "start": 72,
+              "units": "%ftp"
+            },
+            "duration": 600
+          },
+          {
+            "power": {
+              "end": 71,
+              "start": 59,
+              "units": "%ftp"
+            },
+            "duration": 600
+          },
+          {
+            "power": {
+              "end": 110,
+              "start": 90,
+              "units": "%ftp"
+            },
+            "duration": 300
+          },
+          {
+            "power": {
+              "end": 66,
+              "start": 54,
+              "units": "%ftp"
+            },
+            "duration": 600
+          },
+          {
+            "power": {
+              "end": 138,
+              "start": 113,
+              "units": "%ftp"
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "end": 66,
+              "start": 54,
+              "units": "%ftp"
+            },
+            "duration": 180
+          },
+          {
+            "power": {
+              "end": 138,
+              "start": 113,
+              "units": "%ftp"
+            },
+            "duration": 60
+          },
+          {
+            "power": {
+              "end": 66,
+              "start": 54,
+              "units": "%ftp"
+            },
+            "duration": 180
+          },
+          {
+            "text": "Sprint",
+            "power": {
+              "end": 275,
+              "start": 225,
+              "units": "%ftp"
+            },
+            "duration": 10
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "power_zone",
+              "value": 1
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 4390
+      }
+    },
+    {
+      "id": 123584527,
+      "name": "Oxonian CC 10",
+      "date": "2026-07-26",
+      "type": "Ride",
+      "category": "RACE_C",
+      "icu_training_load": 70,
+      "moving_time": 3600,
+      "description": ""
+    },
+    {
+      "id": 123780506,
+      "name": "Endurance extension — ride after the TT",
+      "date": "2026-07-26",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 64,
+      "moving_time": 5400,
+      "description": "- Z2 — fuel sixty grams carbs per hour 1h30m ",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "units": "power_zone",
+              "value": 2
+            },
+            "duration": 5400
+          }
+        ],
+        "duration": 5400
+      }
+    },
+    {
+      "id": 123780513,
+      "name": "Threshold 2x20",
+      "date": "2026-07-27",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 86,
+      "moving_time": 4500,
+      "description": "- Warm-up 15m 160w-203w\n\nMain Set 2x\n- Threshold — even pacing across both reps 20m 275w\n- Recovery 5m 160w\n\n- Cooldown 10m 145w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "end": 203,
+              "start": 160,
+              "units": "w"
+            },
+            "duration": 900
+          },
+          {
+            "reps": 2,
+            "text": "Main Set 2x",
+            "steps": [
+              {
+                "text": "Threshold — even pacing across both reps",
+                "power": {
+                  "units": "w",
+                  "value": 275
+                },
+                "duration": 1200
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 160
+                },
+                "duration": 300
+              }
+            ],
+            "distance": 0,
+            "duration": 3000
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 145
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 4500
+      }
+    },
+    {
+      "id": 123780756,
+      "name": "Strength A — Force (full reload)",
+      "date": "2026-07-27",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": "Full force day — the reload block's main lift session. Progress load from the 20 Jul session if RPE came in under target.\n\nNOTE: this stacks on an AM threshold session, the day after the TT. Check in before you start — if the TT took more out of you than expected, cut to 3 sets on the trap bar and drop the good mornings. The bike is the priority.\n\n6-8 min general warm-up + ramp-up sets. Maximal accelerative intent throughout.\n\nTrap-Bar Deadlift    4×4   @ RPE 7-8   (accelerate every rep, never grind)\nBox Squat            3×4   @ RPE 7     (pause on box, drive up fast)\nRomanian Deadlift    3×6   @ RPE 7     (posterior chain — the under-built half)\nSeated Good Morning  2×8   @ RPE 6-7   (stiff trunk + hip extension)\nLoaded Jump Squat    3×4   fast        (submax load, max height)\n\nLoad auto-regulated by RPE — let the bar speed set the weight, not a target number.",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 123780514,
+      "name": "Easy Z2",
+      "date": "2026-07-28",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 35,
+      "moving_time": 2700,
+      "description": "- Easy — genuinely easy between quality days 45m 180w-215w 90rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy — genuinely easy between quality days",
+            "power": {
+              "end": 215,
+              "start": 180,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 90
+            },
+            "duration": 2700
+          }
+        ],
+        "duration": 2700
+      }
+    },
+    {
+      "id": 123780516,
+      "name": "Sweet Spot 3×12",
+      "date": "2026-07-29",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 75,
+      "moving_time": 4200,
+      "description": "- Warm-up 12m 160w-205w\n\n3x\n- SST — hold cadence 85 plus 12m 255w-275w\n- Recovery 4m 160w\n\n- Cooldown 10m 145w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "end": 205,
+              "start": 160,
+              "units": "w"
+            },
+            "duration": 720
+          },
+          {
+            "reps": 3,
+            "text": "3x",
+            "steps": [
+              {
+                "text": "SST — hold cadence 85 plus",
+                "power": {
+                  "end": 275,
+                  "start": 255,
+                  "units": "w"
+                },
+                "duration": 720
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 160
+                },
+                "duration": 240
+              }
+            ],
+            "distance": 0,
+            "duration": 2880
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 145
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 4200
+      }
+    },
+    {
+      "id": 123780517,
+      "name": "Z2 endurance",
+      "date": "2026-07-30",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 69,
+      "moving_time": 4500,
+      "description": "- Warm-up 10m 170w-200w\n\n- Z2 — steady, cap NP at sixty-eight percent MAP 60m 200w-245w\n\n- Cooldown 5m 160w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "end": 200,
+              "start": 170,
+              "units": "w"
+            },
+            "duration": 600
+          },
+          {
+            "power": {
+              "end": 245,
+              "start": 200,
+              "units": "w"
+            },
+            "duration": 3600
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 300
+          }
+        ],
+        "duration": 4500
+      }
+    },
+    {
+      "id": 123780774,
+      "name": "Strength B — Single-leg + Power",
+      "date": "2026-07-30",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": "Single-leg and power day. Last gym session of the Re-build block — strength drops to 1×/week in August for Specific Prep III.\n\nTrack drop-in is Saturday, with an easy spin Friday in between. That's enough separation, but keep this clean: quality reps, no grinding, nothing that leaves you sore into Saturday.\n\n6-8 min general warm-up. Stop power sets when velocity drops.\n\nBulgarian Split Squat   3×6 each leg  @ RPE 7   (contralateral load if able)\nStep-Up                 3×5 each leg  @ RPE 6-7 (close to box, rise on rear toe)\nTrap-Bar Jump           3×4           fast      (dead-stop, explode)\nSingle-Leg Leg Press    2×8 each leg  @ RPE 7   (limb force, low balance tax)\nLoaded Carry            2 sets                  (anti-flexion trunk)\n\nLoad auto-regulated by RPE.",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 123780533,
+      "name": "Easy spin — protect track quality",
+      "date": "2026-07-31",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 17,
+      "moving_time": 2400,
+      "description": "- Easy — nothing fatiguing before track 40m 125w-165w 95rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy — nothing fatiguing before track",
+            "power": {
+              "end": 165,
+              "start": 125,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 95
+            },
+            "duration": 2400
+          }
+        ],
+        "duration": 2400
+      }
+    },
+    {
+      "id": 123780543,
+      "name": "Track — standing starts + flat pursuit distance (108 inch)",
+      "date": "2026-08-01",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 73,
+      "moving_time": 4560,
+      "description": "- Kit and gear: 64x16 (108 inch) on 165 mm cranks, TRAINING SUIT. The race suit is worth 0.33s per lap — save it for benchmarks so these splits stay comparable to 12 Jul. Warm up BEFORE you arrive; use the track allocation for rolling laps, three or four progressive half-lap accelerations, and one lap above target cadence. Nothing anaerobic. 20m 210w\n\n- Gate one — standing start, one lap, full gas. THIS IS THE PRIORITY. Nationals standing lap was 23.21s and you were 0.33s down on 2025. Beat 23.21. Note the feel of the first three strokes. 108 inch gives about 1.5 percent less pedal force than the gear that produced it, but is still about 1.5 percent heavier than the 110 inch and 170 mm that produced the 2025 gate — a partial fix, not a full one. 30s 550w\n\n- Full recovery — easy rolling laps 10m 120w\n\n- Gate two — standing start, one lap, full gas. Two reps because one tells you nothing. 30s 550w\n\n- Full recovery — easy rolling laps 13m 120w\n\n- Main rep — standing start, full pursuit distance, eight laps. Hold laps two to eight FLAT at 16.35s, plus or minus 0.15. Cadence about 109 rpm. That is the Nationals flying-lap mean of 16.03s plus the training-suit offset, so holding it flat matches the title ride in a slower suit. Lap two must ALREADY be on target — opening slow and finishing fast is a failed rep whatever the total says. If protecting Sunday matters more, hold 16.60s instead: same shape, much cheaper. Judge on lap splits, not on the watts — the wattage here is only for load projection. 2m20s 380w\n\n- Full recovery — easy rolling laps 13m 120w\n\n- Optional gear comparison — only if the main rep held flat. Flying six laps, even, at 16.20s. Straight A-B against run one on 12 Jul, which averaged 16.19s on 110 inch. Compare cadence and RPE. Read it loosely: it is not fatigue-matched to 12 Jul. 1m40s 390w\n\n- Cooldown — easy spin. Record power. The track SRM looks 8 to 12 percent low against measured CdA, so log the numbers for a KICKR cross-check. Pacing note: flattening the race profile is worth only about 0.15s aerodynamically — the main rep is a physiological experiment (does a calmer open preserve back-half power?), and the gate is where the real time is. 15m 140w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Kit and gear: 64x16 (108 inch) on 165 mm cranks, TRAINING SUIT. The race suit is worth 0.33s per lap — save it for benchmarks so these splits stay comparable to 12 Jul. Warm up BEFORE you arrive; use the track allocation for rolling laps, three or four progressive half-lap accelerations, and one lap above target cadence. Nothing anaerobic.",
+            "power": {
+              "units": "w",
+              "value": 210
+            },
+            "duration": 1200
+          },
+          {
+            "text": "Gate one — standing start, one lap, full gas. THIS IS THE PRIORITY. Nationals standing lap was 23.21s and you were 0.33s down on 2025. Beat 23.21. Note the feel of the first three strokes. 108 inch gives about 1.5 percent less pedal force than the gear that produced it, but is still about 1.5 percent heavier than the 110 inch and 170 mm that produced the 2025 gate — a partial fix, not a full one.",
+            "power": {
+              "units": "w",
+              "value": 550
+            },
+            "duration": 30
+          },
+          {
+            "text": "Full recovery — easy rolling laps",
+            "power": {
+              "units": "w",
+              "value": 120
+            },
+            "duration": 600
+          },
+          {
+            "text": "Gate two — standing start, one lap, full gas. Two reps because one tells you nothing.",
+            "power": {
+              "units": "w",
+              "value": 550
+            },
+            "duration": 30
+          },
+          {
+            "text": "Full recovery — easy rolling laps",
+            "power": {
+              "units": "w",
+              "value": 120
+            },
+            "duration": 780
+          },
+          {
+            "text": "Main rep — standing start, full pursuit distance, eight laps. Hold laps two to eight FLAT at 16.35s, plus or minus 0.15. Cadence about 109 rpm. That is the Nationals flying-lap mean of 16.03s plus the training-suit offset, so holding it flat matches the title ride in a slower suit. Lap two must ALREADY be on target — opening slow and finishing fast is a failed rep whatever the total says. If protecting Sunday matters more, hold 16.60s instead: same shape, much cheaper. Judge on lap splits, not on the watts — the wattage here is only for load projection.",
+            "power": {
+              "units": "w",
+              "value": 380
+            },
+            "duration": 140
+          },
+          {
+            "text": "Full recovery — easy rolling laps",
+            "power": {
+              "units": "w",
+              "value": 120
+            },
+            "duration": 780
+          },
+          {
+            "text": "Optional gear comparison — only if the main rep held flat. Flying six laps, even, at 16.20s. Straight A-B against run one on 12 Jul, which averaged 16.19s on 110 inch. Compare cadence and RPE. Read it loosely: it is not fatigue-matched to 12 Jul.",
+            "power": {
+              "units": "w",
+              "value": 390
+            },
+            "duration": 100
+          },
+          {
+            "text": "Cooldown — easy spin. Record power. The track SRM looks 8 to 12 percent low against measured CdA, so log the numbers for a KICKR cross-check. Pacing note: flattening the race profile is worth only about 0.15s aerodynamically — the main rep is a physiological experiment (does a calmer open preserve back-half power?), and the gate is where the real time is.",
+            "power": {
+              "units": "w",
+              "value": 140
+            },
+            "duration": 900
+          }
+        ],
+        "duration": 4560
+      }
+    },
+    {
+      "id": 123780546,
+      "name": "Long endurance + SST finish — block ramp lever",
+      "date": "2026-08-02",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 172,
+      "moving_time": 10200,
+      "description": "- Z2 — fuel sixty to ninety grams carbs per hour 2h10m 200w-250w\n\nDurability finish 2x\n- SST — on tired legs, this is the point 10m 255w-273w\n- Recovery 5m 170w\n\n- Cooldown 10m 160w",
+      "workout_doc": {
+        "steps": [
+          {
+            "power": {
+              "end": 250,
+              "start": 200,
+              "units": "w"
+            },
+            "duration": 7800
+          },
+          {
+            "reps": 2,
+            "text": "Durability finish 2x",
+            "steps": [
+              {
+                "text": "SST — on tired legs, this is the point",
+                "power": {
+                  "end": 273,
+                  "start": 255,
+                  "units": "w"
+                },
+                "duration": 600
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 170
+                },
+                "duration": 300
+              }
+            ],
+            "distance": 0,
+            "duration": 1800
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 10200
+      }
+    },
+    {
+      "id": 126790509,
+      "name": "Recovery spin — rest instead if HRV is still down",
+      "date": "2026-08-03",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 13,
+      "moving_time": 1800,
+      "description": "- Easy 30m 125w-165w 95rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy",
+            "power": {
+              "end": 165,
+              "start": 125,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 95
+            },
+            "duration": 1800
+          }
+        ],
+        "duration": 1800
+      }
+    },
+    {
+      "id": 126790560,
+      "name": "Over-unders 3x4 — first of Specific Prep III",
+      "date": "2026-08-04",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 92,
+      "moving_time": 4500,
+      "description": "- Warm-up 12m 165w-210w 90rpm\n\nActivation 3x\n- Activation 1m 290w 100rpm\n- Easy 1m 160w\n\n- Settle 3m 160w\n\nSet one 4x\n- Under — sit just below threshold, breathe 2m 270w 90rpm\n- Over — lift without surging, then settle straight back 1m 315w 95rpm\n\n- Recovery 5m 160w\n\nSet two 4x\n- Under 2m 270w 90rpm\n- Over 1m 315w 95rpm\n\n- Recovery 5m 160w\n\nSet three 4x\n- Under 2m 270w 90rpm\n- Over — last set, do not let the unders drift down 1m 315w 95rpm\n\n- Cooldown 8m 145w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "end": 210,
+              "start": 165,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 90
+            },
+            "duration": 720
+          },
+          {
+            "reps": 3,
+            "text": "Activation 3x",
+            "steps": [
+              {
+                "text": "Activation",
+                "power": {
+                  "units": "w",
+                  "value": 290
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 100
+                },
+                "duration": 60
+              },
+              {
+                "text": "Easy",
+                "power": {
+                  "units": "w",
+                  "value": 160
+                },
+                "duration": 60
+              }
+            ],
+            "distance": 0,
+            "duration": 360
+          },
+          {
+            "text": "Settle",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 180
+          },
+          {
+            "reps": 4,
+            "text": "Set one 4x",
+            "steps": [
+              {
+                "text": "Under — sit just below threshold, breathe",
+                "power": {
+                  "units": "w",
+                  "value": 270
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 90
+                },
+                "duration": 120
+              },
+              {
+                "text": "Over — lift without surging, then settle straight back",
+                "power": {
+                  "units": "w",
+                  "value": 315
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 95
+                },
+                "duration": 60
+              }
+            ],
+            "distance": 0,
+            "duration": 720
+          },
+          {
+            "text": "Recovery",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 300
+          },
+          {
+            "reps": 4,
+            "text": "Set two 4x",
+            "steps": [
+              {
+                "text": "Under",
+                "power": {
+                  "units": "w",
+                  "value": 270
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 90
+                },
+                "duration": 120
+              },
+              {
+                "text": "Over",
+                "power": {
+                  "units": "w",
+                  "value": 315
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 95
+                },
+                "duration": 60
+              }
+            ],
+            "distance": 0,
+            "duration": 720
+          },
+          {
+            "text": "Recovery",
+            "power": {
+              "units": "w",
+              "value": 160
+            },
+            "duration": 300
+          },
+          {
+            "reps": 4,
+            "text": "Set three 4x",
+            "steps": [
+              {
+                "text": "Under",
+                "power": {
+                  "units": "w",
+                  "value": 270
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 90
+                },
+                "duration": 120
+              },
+              {
+                "text": "Over — last set, do not let the unders drift down",
+                "power": {
+                  "units": "w",
+                  "value": 315
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 95
+                },
+                "duration": 60
+              }
+            ],
+            "distance": 0,
+            "duration": 720
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 145
+            },
+            "duration": 480
+          }
+        ],
+        "duration": 4500
+      }
+    },
+    {
+      "id": 126790568,
+      "name": "Tempo 2x20 — middle-band dose",
+      "date": "2026-08-05",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 63,
+      "moving_time": 4080,
+      "description": "- Warm-up 10m 165w-210w 90rpm\n\nTempo 2x\n- Tempo — steady, conversational-plus, no surges 20m 225w-250w 90rpm\n- Recovery 5m 160w\n\n- Cooldown 8m 145w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "end": 210,
+              "start": 165,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 90
+            },
+            "duration": 600
+          },
+          {
+            "reps": 2,
+            "text": "Tempo 2x",
+            "steps": [
+              {
+                "text": "Tempo — steady, conversational-plus, no surges",
+                "power": {
+                  "end": 250,
+                  "start": 225,
+                  "units": "w"
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 90
+                },
+                "duration": 1200
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 160
+                },
+                "duration": 300
+              }
+            ],
+            "distance": 0,
+            "duration": 3000
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 145
+            },
+            "duration": 480
+          }
+        ],
+        "duration": 4080
+      }
+    },
+    {
+      "id": 126790606,
+      "name": "Pursuit race-pace — hold the floor",
+      "date": "2026-08-06",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 84,
+      "moving_time": 3690,
+      "description": "- Warm-up 15m 165w-215w 90rpm\n\nActivation 3x\n- Activation 30s 380w 105rpm\n- Easy 1m 150w\n\n- Settle 4m 150w\n\nMain set 4x\n- Race pace — flat from the first pedal stroke, no ramp into it. This is the floor you held on track, indoors and repeatable. 2m30s 390w-410w 100rpm\n- Recovery 5m 150w\n\n- Cooldown 8m 140w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up",
+            "power": {
+              "end": 215,
+              "start": 165,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 90
+            },
+            "duration": 900
+          },
+          {
+            "reps": 3,
+            "text": "Activation 3x",
+            "steps": [
+              {
+                "text": "Activation",
+                "power": {
+                  "units": "w",
+                  "value": 380
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 105
+                },
+                "duration": 30
+              },
+              {
+                "text": "Easy",
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 60
+              }
+            ],
+            "distance": 0,
+            "duration": 270
+          },
+          {
+            "text": "Settle",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 240
+          },
+          {
+            "reps": 4,
+            "text": "Main set 4x",
+            "steps": [
+              {
+                "text": "Race pace — flat from the first pedal stroke, no ramp into it. This is the floor you held on track, indoors and repeatable.",
+                "power": {
+                  "end": 410,
+                  "start": 390,
+                  "units": "w"
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 100
+                },
+                "duration": 150
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 300
+              }
+            ],
+            "distance": 0,
+            "duration": 1800
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 140
+            },
+            "duration": 480
+          }
+        ],
+        "duration": 3690
+      }
+    },
+    {
+      "id": 126790632,
+      "name": "Easy spin — protect track quality",
+      "date": "2026-08-07",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 21,
+      "moving_time": 2400,
+      "description": "- Easy 40m 140w-180w 92rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy",
+            "power": {
+              "end": 180,
+              "start": 140,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 92
+            },
+            "duration": 2400
+          }
+        ],
+        "duration": 2400
+      }
+    },
+    {
+      "id": 126790671,
+      "name": "Track — flying race-distance runs, hold the floor",
+      "date": "2026-08-08",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 89,
+      "moving_time": 5064,
+      "description": "- Before you leave: pump the rear tub hard, and roll the rear wheel out over five revolutions and write the number down — that settles whether the training rollout is race spec or oversize, and every training-to-race comparison depends on it. Kit: TRAINING SUIT. Warm up before you arrive; track time is for rolling laps and three or four progressive half-lap accelerations. Nothing anaerobic, no starts. 20m 210w\n\n- Run one entry — two rolling laps building, so you cross the line already at target. Do not wind up inside the scored distance. 1m30s 260w\n\n- Run one — flying seven laps. Hold 16.35 FLAT, plus or minus 0.10. That is the Nationals flying mean converted to the training suit, so holding it flat matches the title ride pace in a slower suit. First scored lap must ALREADY be on target. Judge on splits, not watts. 1m55s 400w\n\n- Full recovery — easy rolling laps 14m 120w\n\n- Run two entry — same wind-up, same line 1m30s 260w\n\n- Run two — flying seven laps, 16.35 FLAT again. THIS IS THE SESSION. Run two must match run one within about a tenth on the mean. One run tells you the pace exists; two tells you it repeats, which is what a round-based championship actually asks for. If run one drifted, hold the same target here rather than chasing it back. 1m55s 400w\n\n- Full recovery — easy rolling laps 14m 120w\n\n- Run three entry 1m30s 260w\n\n- Run three — flying four laps at 16.00. Shorter and faster, to touch race opening speed and read the top end without paying for another long rep. Skip this if run two was a struggle — runs one and two are the session, this is the bonus. 1m4s 425w\n\n- Full recovery — easy rolling laps 8m 120w\n\n- Optional, only if you get a fourth slot — steady four minutes at one constant, comfortable lap split, held dead level, and note the SRM average. Tomorrow ride the same wattage on the KICKR and compare heart rate and RPE. Closes the track power question that currently makes every percentage-of-MAP claim about track work approximate. 4m 300w\n\n- Cooldown — easy spin, record power. 15m 140w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Before you leave: pump the rear tub hard, and roll the rear wheel out over five revolutions and write the number down — that settles whether the training rollout is race spec or oversize, and every training-to-race comparison depends on it. Kit: TRAINING SUIT. Warm up before you arrive; track time is for rolling laps and three or four progressive half-lap accelerations. Nothing anaerobic, no starts.",
+            "power": {
+              "units": "w",
+              "value": 210
+            },
+            "duration": 1200
+          },
+          {
+            "text": "Run one entry — two rolling laps building, so you cross the line already at target. Do not wind up inside the scored distance.",
+            "power": {
+              "units": "w",
+              "value": 260
+            },
+            "duration": 90
+          },
+          {
+            "text": "Run one — flying seven laps. Hold 16.35 FLAT, plus or minus 0.10. That is the Nationals flying mean converted to the training suit, so holding it flat matches the title ride pace in a slower suit. First scored lap must ALREADY be on target. Judge on splits, not watts.",
+            "power": {
+              "units": "w",
+              "value": 400
+            },
+            "duration": 115
+          },
+          {
+            "text": "Full recovery — easy rolling laps",
+            "power": {
+              "units": "w",
+              "value": 120
+            },
+            "duration": 840
+          },
+          {
+            "text": "Run two entry — same wind-up, same line",
+            "power": {
+              "units": "w",
+              "value": 260
+            },
+            "duration": 90
+          },
+          {
+            "text": "Run two — flying seven laps, 16.35 FLAT again. THIS IS THE SESSION. Run two must match run one within about a tenth on the mean. One run tells you the pace exists; two tells you it repeats, which is what a round-based championship actually asks for. If run one drifted, hold the same target here rather than chasing it back.",
+            "power": {
+              "units": "w",
+              "value": 400
+            },
+            "duration": 115
+          },
+          {
+            "text": "Full recovery — easy rolling laps",
+            "power": {
+              "units": "w",
+              "value": 120
+            },
+            "duration": 840
+          },
+          {
+            "text": "Run three entry",
+            "power": {
+              "units": "w",
+              "value": 260
+            },
+            "duration": 90
+          },
+          {
+            "text": "Run three — flying four laps at 16.00. Shorter and faster, to touch race opening speed and read the top end without paying for another long rep. Skip this if run two was a struggle — runs one and two are the session, this is the bonus.",
+            "power": {
+              "units": "w",
+              "value": 425
+            },
+            "duration": 64
+          },
+          {
+            "text": "Full recovery — easy rolling laps",
+            "power": {
+              "units": "w",
+              "value": 120
+            },
+            "duration": 480
+          },
+          {
+            "text": "Optional, only if you get a fourth slot — steady four minutes at one constant, comfortable lap split, held dead level, and note the SRM average. Tomorrow ride the same wattage on the KICKR and compare heart rate and RPE. Closes the track power question that currently makes every percentage-of-MAP claim about track work approximate.",
+            "power": {
+              "units": "w",
+              "value": 300
+            },
+            "duration": 240
+          },
+          {
+            "text": "Cooldown — easy spin, record power.",
+            "power": {
+              "units": "w",
+              "value": 140
+            },
+            "duration": 900
+          }
+        ],
+        "duration": 5064
+      }
+    },
+    {
+      "id": 126791010,
+      "name": "Strength — Maintain (Specific Prep III)",
+      "date": "2026-08-08",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": "PM session — track is the priority this morning, this comes at least four hours later. First lift of the Aug–Oct maintenance phase: 1×/week, not 2×. Rule of three applies — reduced range, low volume, load moved fast. Every concentric gets maximal accelerative intent. Warm up 6–8 min general plus ramp-up sets on the box squat.\n\nBox Squat 3×3 @ RPE 8 — dead-stop, pause on the box, explode up. The most gate-specific lift you own: the pause kills the stretch reflex so you accelerate from a standstill, same as the gate.\nRomanian Deadlift 2×5 @ RPE 6-7 — posterior chain, deliberately a notch lighter than usual. Do not grind; you have a long endurance ride tomorrow morning and RDL soreness is what would spoil it.\nStep-Up 2×5 each leg @ RPE 7 — stand close to the box, working leg planted, slight forward torso lean, rise onto the ball of the rear foot before stepping up.\nLoaded Jump Squat 4×3 fast — submax load, maximum height. Stop the set the moment height drops. This is the RFD work and it costs almost nothing in fatigue.\n\nAuto-regulate: HRV has been down this week (29 against a 34–39 baseline). If it has not recovered by Saturday, or if the gate reps this morning felt flat, drop the last set of every exercise and take a point off each RPE. A lift that spoils tomorrow’s ride is the worse error.\n\nTransfer note: the gate is the season target and 165 mm cranks mean a slightly higher cadence and less leverage off the line, so peak force per stroke is higher than last year. Force ceiling plus rate of force development is exactly the right bias.",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 126790677,
+      "name": "Long endurance + sweet spot finish",
+      "date": "2026-08-09",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 158,
+      "moving_time": 9720,
+      "description": "- Endurance — fuel from the start, sixty to ninety grams of carbohydrate per hour 2h 190w-235w 88rpm\n\nSweet spot finish 2x\n- Sweet spot — on tired legs, that is the point 12m 255w-275w 88rpm\n- Recovery 5m 165w\n\n- Cooldown 8m 150w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Endurance — fuel from the start, sixty to ninety grams of carbohydrate per hour",
+            "power": {
+              "end": 235,
+              "start": 190,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 88
+            },
+            "duration": 7200
+          },
+          {
+            "reps": 2,
+            "text": "Sweet spot finish 2x",
+            "steps": [
+              {
+                "text": "Sweet spot — on tired legs, that is the point",
+                "power": {
+                  "end": 275,
+                  "start": 255,
+                  "units": "w"
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 88
+                },
+                "duration": 720
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 165
+                },
+                "duration": 300
+              }
+            ],
+            "distance": 0,
+            "duration": 2040
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 480
+          }
+        ],
+        "duration": 9720
+      }
+    },
+    {
+      "id": 128175431,
+      "name": "Strength — Maintain, deload week (gate bias)",
+      "date": "2026-08-10",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": "Deload week, so this is the trimmed version. Warm up 6–8 min general plus ramp-up sets on the box squat. Maximal accelerative intent on every concentric.\n\nBox Squat 3×3 @ RPE 7 — dead-stop, pause on the box, explode up. RPE 7 not 8 this week. The most gate-specific lift you own: the pause kills the stretch reflex so you accelerate from a standstill, exactly as at the gate.\nLoaded Jump Squat 4×3 fast — submax load, maximum height. Kept at full dose: this is the rate-of-force-development work, it is the closest thing in the gym to the gate, and it costs almost nothing in fatigue. Stop the set the moment height drops.\nStep-Up (low box) 2×4 each leg @ RPE 6–7 — reduced height on purpose. Stand close, working leg planted, slight forward torso lean, rise onto the ball of the rear foot before stepping up.\n\nRDL deliberately omitted this week. It is the exercise here with the longest soreness tail and nothing this week is worth spending that on — it returns on the 17th. Rule of three applied throughout: reduced range, reduced volume, load moved fast.\n\nWhy it is on a Monday. The usual rule is that strength stacks on a hard ride day so easy days stay truly easy. This week has no hard ride day to stack on — the only two hard days are Saturday's track session and Sunday's 10-mile TT, and both are being protected. So it goes as far from them as possible. Deliberate deviation, not an oversight.\n\nConsequences: Tuesday must stay genuinely easy (no high-intensity day after heavy lifting), and Wednesday's race-pace session is the week's only quality bike work — if this lift leaves your legs heavy into it, this session was too big and the next one comes down.\n\nAuto-regulate: readiness is 86 and HRV has climbed from 29.9 to 36.7 across a 515 TSS week, so there is room. But if the bar is slow on the second box squat set, or jump height drops inside the first two sets, stop the exercise there. A lift that spoils Saturday is the worse error by a distance.\n\nLoad context, not a target: box squat and RDL were 60 kg on 5 July and 65 kg on 11 July, against 70 kg pre-lapse. Let RPE pick the number.",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 128174900,
+      "name": "Easy spin — deload",
+      "date": "2026-08-11",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 44,
+      "moving_time": 3600,
+      "description": "- Genuinely easy. This is the deload week and the whole point of today is that Wednesday and Saturday land well. Cap normalised power at 228 and do not chase anything. 60m 165w-215w 90rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Genuinely easy. This is the deload week and the whole point of today is that Wednesday and Saturday land well. Cap normalised power at 228 and do not chase anything.",
+            "power": {
+              "end": 215,
+              "start": 165,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 90
+            },
+            "duration": 3600
+          }
+        ],
+        "duration": 3600
+      }
+    },
+    {
+      "id": 128174902,
+      "name": "Pursuit race-pace — cadence is the target",
+      "date": "2026-08-12",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 80,
+      "moving_time": 3690,
+      "description": "- Warm-up. Read this first: last Thursday this session ran at 89, 86 and 80 revolutions against a target of one hundred, and it faded from rep one. Two days later on track you held the same relative power at 107 to 108 revolutions with no fade at all across seven laps, twice. Today the cadence is the experiment, not the wattage. 15m 165w-215w 90rpm\n\nActivation 3x\n- Activation 30s 380w 105rpm\n- Easy 1m 150w\n\n- Settle 4m 150w\n\nMain set 4x\n- Race pace, flat from the first pedal stroke. CADENCE IS A PASS OR FAIL CONDITION EQUAL TO THE WATTS. If it falls below one hundred, the rep is over. End it there and take the recovery. That is the signal, not the clock. 2m 395w-410w 100rpm\n- Recovery 5m 150w\n\n- Cooldown. Reps are two minutes rather than two and a half because two and a half was never actually delivered. Progress by adding reps, never by adding duration. 10m 140w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Warm-up. Read this first: last Thursday this session ran at 89, 86 and 80 revolutions against a target of one hundred, and it faded from rep one. Two days later on track you held the same relative power at 107 to 108 revolutions with no fade at all across seven laps, twice. Today the cadence is the experiment, not the wattage.",
+            "power": {
+              "end": 215,
+              "start": 165,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 90
+            },
+            "duration": 900
+          },
+          {
+            "reps": 3,
+            "text": "Activation 3x",
+            "steps": [
+              {
+                "text": "Activation",
+                "power": {
+                  "units": "w",
+                  "value": 380
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 105
+                },
+                "duration": 30
+              },
+              {
+                "text": "Easy",
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 60
+              }
+            ],
+            "distance": 0,
+            "duration": 270
+          },
+          {
+            "text": "Settle",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 240
+          },
+          {
+            "reps": 4,
+            "text": "Main set 4x",
+            "steps": [
+              {
+                "text": "Race pace, flat from the first pedal stroke. CADENCE IS A PASS OR FAIL CONDITION EQUAL TO THE WATTS. If it falls below one hundred, the rep is over. End it there and take the recovery. That is the signal, not the clock.",
+                "power": {
+                  "end": 410,
+                  "start": 395,
+                  "units": "w"
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 100
+                },
+                "duration": 120
+              },
+              {
+                "text": "Recovery",
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 300
+              }
+            ],
+            "distance": 0,
+            "duration": 1680
+          },
+          {
+            "text": "Cooldown. Reps are two minutes rather than two and a half because two and a half was never actually delivered. Progress by adding reps, never by adding duration.",
+            "power": {
+              "units": "w",
+              "value": 140
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 3690
+      }
+    },
+    {
+      "id": 128174903,
+      "name": "Endurance + tempo blocks",
+      "date": "2026-08-13",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 78,
+      "moving_time": 4560,
+      "description": "- Endurance. Keep normalised power for the whole ride under 282, the aerobic ceiling. Short excursions are fine. 20m 190w-235w 88rpm\n\nTempo blocks 3x\n- Tempo, sit in the band and stay there 10m 245w-260w 88rpm\n- Easy 3m 165w\n\n- Endurance 12m 190w-235w 88rpm\n\n- Cooldown 5m 150w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Endurance. Keep normalised power for the whole ride under 282, the aerobic ceiling. Short excursions are fine.",
+            "power": {
+              "end": 235,
+              "start": 190,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 88
+            },
+            "duration": 1200
+          },
+          {
+            "reps": 3,
+            "text": "Tempo blocks 3x",
+            "steps": [
+              {
+                "text": "Tempo, sit in the band and stay there",
+                "power": {
+                  "end": 260,
+                  "start": 245,
+                  "units": "w"
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 88
+                },
+                "duration": 600
+              },
+              {
+                "text": "Easy",
+                "power": {
+                  "units": "w",
+                  "value": 165
+                },
+                "duration": 180
+              }
+            ],
+            "distance": 0,
+            "duration": 2340
+          },
+          {
+            "text": "Endurance",
+            "power": {
+              "end": 235,
+              "start": 190,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 88
+            },
+            "duration": 720
+          },
+          {
+            "text": "Cooldown",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 300
+          }
+        ],
+        "duration": 4560
+      }
+    },
+    {
+      "id": 128174904,
+      "name": "Openers — protect the track",
+      "date": "2026-08-14",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 18,
+      "moving_time": 1770,
+      "description": "- Easy. Skip this ride entirely if the legs feel flat — tomorrow is the session and nothing today can improve it, only spoil it. 12m 165w-200w 90rpm\n\nSpin-ups 3x\n- Spin-up. Low force, high leg speed. This is a rehearsal of tomorrow's cadence, not a workout. 30s 200w 110rpm\n- Easy 2m 150w\n\n- Easy 10m 150w-180w 90rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Easy. Skip this ride entirely if the legs feel flat — tomorrow is the session and nothing today can improve it, only spoil it.",
+            "power": {
+              "end": 200,
+              "start": 165,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 90
+            },
+            "duration": 720
+          },
+          {
+            "reps": 3,
+            "text": "Spin-ups 3x",
+            "steps": [
+              {
+                "text": "Spin-up. Low force, high leg speed. This is a rehearsal of tomorrow's cadence, not a workout.",
+                "power": {
+                  "units": "w",
+                  "value": 200
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 110
+                },
+                "duration": 30
+              },
+              {
+                "text": "Easy",
+                "power": {
+                  "units": "w",
+                  "value": 150
+                },
+                "duration": 120
+              }
+            ],
+            "distance": 0,
+            "duration": 450
+          },
+          {
+            "text": "Easy",
+            "power": {
+              "end": 180,
+              "start": 150,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 90
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 1770
+      }
+    },
+    {
+      "id": 128174905,
+      "name": "Track — start plus flat pursuit distance",
+      "date": "2026-08-15",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 75,
+      "moving_time": 4059,
+      "description": "- Kit and gear: sixty four by sixteen, the short cranks, TRAINING SUIT. Keep the race suit for benchmarks so splits stay comparable. Warm up BEFORE you arrive; use the track allocation for rolling laps and three or four progressive half-lap accelerations. Nothing anaerobic. Bring the lap timer and export it. 20m 210w\n\n- THE SESSION, and it leads. Held start, then the full pursuit distance. Hold every scored lap after the first FLAT at 16.35, plus or minus 0.10. The first scored lap must ALREADY be on target — opening slow and building is a failed rep whatever the total says. Last Saturday you held 16.32 dead flat off a flying start and 16.20 on the second run, with zero fade either time. The open question is whether that floor survives a start, because the standing lap costs real anaerobic capacity up front. Judge on the splits, not the watts — and judge the closing three laps against the OPENING three of this same run. That within-run comparison is the measurement. Anything compared across venues or suits is commentary, because the conversion carries more error than the margin does. 2m17s 420w\n\n- Full recovery, easy rolling laps 14m 120w\n\n- Teammate work, eight laps with changes every two laps. Last Saturday a change cost 0.31, measured twice and identical both times. That is the baseline to beat. 2m11s 380w\n\n- Full recovery, easy rolling laps 12m 120w\n\n- Teammate work again, same shape. Then stop — nothing after this. The ten mile is tomorrow morning and you are riding it on whatever is left. 2m11s 380w\n\n- Cooldown, easy spin, record power 15m 140w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Kit and gear: sixty four by sixteen, the short cranks, TRAINING SUIT. Keep the race suit for benchmarks so splits stay comparable. Warm up BEFORE you arrive; use the track allocation for rolling laps and three or four progressive half-lap accelerations. Nothing anaerobic. Bring the lap timer and export it.",
+            "power": {
+              "units": "w",
+              "value": 210
+            },
+            "duration": 1200
+          },
+          {
+            "text": "THE SESSION, and it leads. Held start, then the full pursuit distance. Hold every scored lap after the first FLAT at 16.35, plus or minus 0.10. The first scored lap must ALREADY be on target — opening slow and building is a failed rep whatever the total says. Last Saturday you held 16.32 dead flat off a flying start and 16.20 on the second run, with zero fade either time. The open question is whether that floor survives a start, because the standing lap costs real anaerobic capacity up front. Judge on the splits, not the watts — and judge the closing three laps against the OPENING three of this same run. That within-run comparison is the measurement. Anything compared across venues or suits is commentary, because the conversion carries more error than the margin does.",
+            "power": {
+              "units": "w",
+              "value": 420
+            },
+            "duration": 137
+          },
+          {
+            "text": "Full recovery, easy rolling laps",
+            "power": {
+              "units": "w",
+              "value": 120
+            },
+            "duration": 840
+          },
+          {
+            "text": "Teammate work, eight laps with changes every two laps. Last Saturday a change cost 0.31, measured twice and identical both times. That is the baseline to beat.",
+            "power": {
+              "units": "w",
+              "value": 380
+            },
+            "duration": 131
+          },
+          {
+            "text": "Full recovery, easy rolling laps",
+            "power": {
+              "units": "w",
+              "value": 120
+            },
+            "duration": 720
+          },
+          {
+            "text": "Teammate work again, same shape. Then stop — nothing after this. The ten mile is tomorrow morning and you are riding it on whatever is left.",
+            "power": {
+              "units": "w",
+              "value": 380
+            },
+            "duration": 131
+          },
+          {
+            "text": "Cooldown, easy spin, record power",
+            "power": {
+              "units": "w",
+              "value": 140
+            },
+            "duration": 900
+          }
+        ],
+        "duration": 4059
+      }
+    },
+    {
+      "id": 128125554,
+      "name": "Didcot Phoenix 10",
+      "date": "2026-08-16",
+      "type": "Ride",
+      "category": "RACE_C",
+      "icu_training_load": 65,
+      "moving_time": 3600,
+      "description": null
+    },
+    {
+      "id": 128175433,
+      "name": "Strength — Maintain (Specific Prep III)",
+      "date": "2026-08-17",
+      "type": "WeightTraining",
+      "category": "WORKOUT",
+      "icu_training_load": null,
+      "moving_time": null,
+      "description": "Build week — full maintenance dose, back up from last Monday's deload version. Warm up 6–8 min general plus ramp-up sets on the box squat. Maximal accelerative intent on every concentric.\n\nBox Squat 3×3 @ RPE 8 — dead-stop, pause on the box, explode up. Back to RPE 8.\nRomanian Deadlift 2×5 @ RPE 6 — deliberately light, a notch below where you would normally take it. Do not grind. Reason below.\nPause Step-Up 2×5 each leg @ RPE 7 — same movement as usual, but pause at the bottom and accelerate from a dead stop. Small change, and it is the most gate-specific thing single-leg work can do. Stand close to the box, working leg planted, forward torso lean, rise onto the ball of the rear foot first.\nLoaded Jump Squat 4×3 fast — submax load, maximum height, stop when height drops.\n\nWhy the RDL is light: Wednesday is a 10-mile TT on the road bike, and it is a controlled test — the whole point is reading power against the 26 July Shiv ride, so hamstring soreness on Wednesday evening would contaminate the one measurement the week is built around. Light on Monday, normal next time.\n\nPlacement: bike is a rest day, so this is a single session, not a two-a-day. Tuesday stays easy after it, which is already how the week is written.\n\nGate context — this is the point of the whole exercise. The standing lap at Nationals was 23.21 s, 7.6 s slower than lap 2 and 0.33 s down on last year. A 4% improvement there is worth about 0.9 s, roughly six times anything available from pacing. And because track drop-ins have no start gate, it cannot be trained or benchmarked on track — so this session and its siblings are the primary vehicle for the biggest tractable target of the season. The 165 mm cranks raise peak pedal force off the line, which is why the bias is force ceiling plus rate of force development rather than volume.\n\nAuto-regulate: if Sunday's TT left more of a mark than expected, drop the last set of every exercise and take a point off each RPE. Load is RPE-led — the rebuild trajectory was 60 kg on 5 July and 65 kg on 11 July against 70 kg pre-lapse, but let the RPE pick the number, not the history.",
+      "workout_doc": {
+        "steps": [],
+        "duration": 0
+      }
+    },
+    {
+      "id": 128174906,
+      "name": "Easy spin — cut back for the virus",
+      "date": "2026-08-18",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 39,
+      "moving_time": 3600,
+      "description": "- Settle in. Genuinely easy — this is pulled down from the original because of the virus, not because of the calendar. 10m 140w-170w 90rpm\n\n- Easy. If it starts to feel like work, cut it short and go home. 40m 165w-210w 88rpm\n\n- Cool down 10m 130w-160w 90rpm",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Settle in. Genuinely easy — this is pulled down from the original because of the virus, not because of the calendar.",
+            "power": {
+              "end": 170,
+              "start": 140,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 90
+            },
+            "duration": 600
+          },
+          {
+            "text": "Easy. If it starts to feel like work, cut it short and go home.",
+            "power": {
+              "end": 210,
+              "start": 165,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 88
+            },
+            "duration": 2400
+          },
+          {
+            "text": "Cool down",
+            "power": {
+              "end": 160,
+              "start": 130,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 90
+            },
+            "duration": 600
+          }
+        ],
+        "duration": 3600
+      }
+    },
+    {
+      "id": 129687617,
+      "name": "Endurance plus tempo blocks",
+      "date": "2026-08-19",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 76,
+      "moving_time": 4500,
+      "description": "- Endurance. This replaces the Oxonian, dropped as a test — the road bike discriminator for the delivery deficit is deferred to a week without a track Saturday. 15m 155w-200w 90rpm\n\nTempo blocks 2x\n- Tempo. Sit in the band and stay there. 15m 250w-265w 88rpm\n- Easy 4m 165w\n\n- Endurance 15m 190w-235w 88rpm\n\n- Cool down 7m 150w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Endurance. This replaces the Oxonian, dropped as a test — the road bike discriminator for the delivery deficit is deferred to a week without a track Saturday.",
+            "power": {
+              "end": 200,
+              "start": 155,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 90
+            },
+            "duration": 900
+          },
+          {
+            "reps": 2,
+            "text": "Tempo blocks 2x",
+            "steps": [
+              {
+                "text": "Tempo. Sit in the band and stay there.",
+                "power": {
+                  "end": 265,
+                  "start": 250,
+                  "units": "w"
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 88
+                },
+                "duration": 900
+              },
+              {
+                "text": "Easy",
+                "power": {
+                  "units": "w",
+                  "value": 165
+                },
+                "duration": 240
+              }
+            ],
+            "distance": 0,
+            "duration": 2280
+          },
+          {
+            "text": "Endurance",
+            "power": {
+              "end": 235,
+              "start": 190,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 88
+            },
+            "duration": 900
+          },
+          {
+            "text": "Cool down",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 420
+          }
+        ],
+        "duration": 4500
+      }
+    },
+    {
+      "id": 128174907,
+      "name": "Endurance plus tempo blocks — the week's volume lever",
+      "date": "2026-08-20",
+      "type": "Ride",
+      "category": "WORKOUT",
+      "icu_training_load": 121,
+      "moving_time": 7200,
+      "description": "- Endurance. Fuel from the start, sixty to ninety grams of carbohydrate every hour. If resting heart rate is still at or above fifty one this morning, drop the third tempo block. 30m 165w-210w 90rpm\n\nTempo blocks 3x\n- Tempo. Sit in the band and stay there. 15m 245w-265w 88rpm\n- Easy 4m 165w\n\n- Endurance 25m 190w-235w 88rpm\n\n- Cool down 8m 150w",
+      "workout_doc": {
+        "steps": [
+          {
+            "text": "Endurance. Fuel from the start, sixty to ninety grams of carbohydrate every hour. If resting heart rate is still at or above fifty one this morning, drop the third tempo block.",
+            "power": {
+              "end": 210,
+              "start": 165,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 90
+            },
+            "duration": 1800
+          },
+          {
+            "reps": 3,
+            "text": "Tempo blocks 3x",
+            "steps": [
+              {
+                "text": "Tempo. Sit in the band and stay there.",
+                "power": {
+                  "end": 265,
+                  "start": 245,
+                  "units": "w"
+                },
+                "cadence": {
+                  "units": "rpm",
+                  "value": 88
+                },
+                "duration": 900
+              },
+              {
+                "text": "Easy",
+                "power": {
+                  "units": "w",
+                  "value": 165
+                },
+                "duration": 240
+              }
+            ],
+            "distance": 0,
+            "duration": 3420
+          },
+          {
+            "text": "Endurance",
+            "power": {
+              "end": 235,
+              "start": 190,
+              "units": "w"
+            },
+            "cadence": {
+              "units": "rpm",
+              "value": 88
+            },
+            "duration": 1500
+          },
+          {
+            "text": "Cool down",
+            "power": {
+              "units": "w",
+              "value": 150
+            },
+            "duration": 480
+          }
+        ],
+        "duration": 7200
+      }
+    }
+  ]
+}
