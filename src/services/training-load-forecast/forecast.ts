@@ -264,7 +264,7 @@ export class TrainingLoadForecast implements ITrainingLoadForecast {
     if (typeof session.load === "number") {
       return {
         ...base,
-        load: session.load,
+        load: Math.round(session.load),
         durationSeconds: session.durationSeconds,
         source: "caller-supplied",
       };
@@ -311,7 +311,10 @@ export class TrainingLoadForecast implements ITrainingLoadForecast {
     if (!derived) return undefined;
 
     return {
-      load: derived.load,
+      // Rounded to the whole point the platform stores, and fed into the model
+      // that way, so the forecast is a preview of the dashboard rather than a
+      // parallel arithmetic that drifts from it by a fraction a day.
+      load: Math.round(derived.load),
       durationSeconds: derived.durationSeconds,
       source: "local-parse",
       normalizedPower: derived.normalizedPower,

@@ -106,6 +106,9 @@
       "name": "get_coaching_context"
     },
     {
+      "name": "forecast_training_load"
+    },
+    {
       "name": "sync_workout_library"
     }
   ],

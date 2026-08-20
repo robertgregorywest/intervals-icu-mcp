@@ -43,10 +43,10 @@
 
 ## 6. Tool and adapters
 
-- [ ] 6.1 Add the `forecast_training_load` handler in `src/tools/`, with input and output schemas
-- [ ] 6.2 Register it in `src/registry.ts` with read-only annotations
-- [ ] 6.3 Exercise it through the CLI adapter against the live account and compare a forecast week against the platform's projection once written
-- [ ] 6.4 Add it to the Tool inventory in `src/mcp/syntax-doc.ts`
+- [x] 6.1 Add the `forecast_training_load` handler in `src/tools/`, with input and output schemas
+- [x] 6.2 Register it in `src/registry.ts` with read-only annotations
+- [x] 6.3 Exercise it through the CLI adapter against the live account and compare a forecast week against the platform's projection once written
+- [x] 6.4 Add it to the Tool inventory in `src/mcp/syntax-doc.ts`
 
 ## 7. Documentation
 

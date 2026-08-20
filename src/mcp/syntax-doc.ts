@@ -41,6 +41,7 @@ export const TOOL_INVENTORY = `## Tool inventory (high-level)
 - **Analysis** — \`get_power_curve\`, \`get_aerobic_decoupling\`, \`compare_intervals\`, \`get_training_week_summary\`: derived insights.
 - **Verification** — \`compare_planned_vs_actual\`: was a session executed as prescribed? Pairs a completed activity with its planned event and compares step by step, rep by rep. Reports its alignment basis and declines to pair rather than guess — check this before drawing conclusions about how a block was delivered.
 - **Athlete** — \`get_athlete\`: profile, FTP, zones.
+- **Planning** — \`forecast_training_load\`: what would this week do to CTL/ATL/TSB? Costs proposed sessions from their own workout text and projects the trajectory **without writing anything**. Use it to check a draft block against its ramp target before committing it, rather than writing events and reading \`icu_ctl\` back. Proposed sessions overlay the calendar by date, so a partly-fixed week needs no restating. Every figure names its basis and its source.
 - **Coaching** — \`get_coaching_context\`: one-call snapshot of athlete profile + today's fitness + recent wellness trend. Call at session start to ground workout decisions.
 - **Prompts** — \`setup_coaching\`: user-invokable; walks the athlete through an interview and emits their personal \`season.md\` and \`steering.md\` for \`docs/personal/\`. The durable philosophy is the tracked \`coaching-philosophy\` skill.
 `;

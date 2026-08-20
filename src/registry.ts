@@ -72,6 +72,12 @@ import {
   getTrainingWeekSummaryOutputSchema,
 } from "./tools/training-week.js";
 import {
+  forecastTrainingLoadSchema,
+  forecastTrainingLoad,
+  forecastTrainingLoadOutputSchema,
+  MAX_FORECAST_DAYS,
+} from "./tools/training-load-forecast.js";
+import {
   getCoachingContextSchema,
   getCoachingContext,
   getCoachingContextOutputSchema,
@@ -612,6 +618,39 @@ export const TOOLS: ToolDef[] = [
       getCoachingContext(
         client,
         args as z.infer<typeof getCoachingContextSchema>
+      ),
+  },
+  {
+    name: "forecast_training_load",
+    description:
+      "Forecast the CTL/ATL/TSB trajectory of a set of proposed sessions " +
+      "WITHOUT writing anything to the calendar. Use this to check a draft " +
+      "week or block against its ramp target before committing it, instead of " +
+      "writing events and reading icu_ctl back. " +
+      "Proposed sessions overlay whatever is already planned, keyed by date: a " +
+      "date you supply a session for drops its planned work, a date you do not " +
+      "keeps it — so a partly-fixed week needs no restating. " +
+      "A session carries either a workout `description` (parsed locally and " +
+      "costed from its own steps, matching what Intervals.icu will show once " +
+      "written) or a `load` figure directly, for a session whose shape is not " +
+      "yet decided. " +
+      "Strength sessions contribute no load, matching the platform. " +
+      "Every result states its basis (FTP, time constants, seed) and every " +
+      "session states where its load came from — never mistake a forecast " +
+      "figure for one the platform computed. " +
+      "Window max " +
+      MAX_FORECAST_DAYS +
+      " days. " +
+      "Returns: { oldest, newest, basis, days: [{ date, load, ctl, atl, tsb, ramp }], " +
+      "weeks: [{ weekStart, load, durationSeconds, ctlStart, ctlEnd, ramp, complete }], " +
+      "sessions: [{ date, name, origin, load, source, ... }], notes }.",
+    schema: forecastTrainingLoadSchema,
+    annotations: READ_ONLY,
+    outputSchema: forecastTrainingLoadOutputSchema,
+    handler: (client, args) =>
+      forecastTrainingLoad(
+        client,
+        args as z.infer<typeof forecastTrainingLoadSchema>
       ),
   },
 ];

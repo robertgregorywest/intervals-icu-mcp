@@ -127,8 +127,9 @@ describe("forecast — deriving a session's load", () => {
     const session = result.sessions.find((s) => s.date === "2026-08-12")!;
     expect(session.source).toBe("local-parse");
     expect(session.normalizedPower).toBeCloseTo(200, 6);
-    // IF 200/286 = 0.6993; 0.6993² × 1h × 100
-    expect(session.load).toBeCloseTo(48.9, 1);
+    // IF 200/286 = 0.6993; 0.6993² × 1h × 100 = 48.9, stored as the whole
+    // point the platform would store.
+    expect(session.load).toBe(49);
     expect(session.durationSeconds).toBe(3600);
   });
 
@@ -217,7 +218,7 @@ describe("forecast — merging with the calendar", () => {
       { events: [ride("2026-08-11", { icu_training_load: undefined })] }
     );
     expect(result.sessions[0].source).toBe("local-parse");
-    expect(result.sessions[0].load).toBeCloseTo(48.9, 1);
+    expect(result.sessions[0].load).toBe(49);
   });
 
   it("ignores calendar notes, which are not sessions", async () => {
