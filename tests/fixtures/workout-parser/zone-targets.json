@@ -1,0 +1,21 @@
+{
+  "harvest": {
+    "script": "scripts/capture-workout-parser-fixtures.ts --zones",
+    "capturedAt": "2026-08-20",
+    "method": "One throwaway single-step event per zone, written to 2027-12-01, read back, and deleted. For a single constant step the platform's `average_watts` is the resolved target in watts.",
+    "ftp": 286,
+    "powerZones": [55, 75, 90, 105, 120, 150, 999],
+    "note": "The two percentage controls show the zone path is not the percentage path: Z2 and 55-75% agree, Z6 and 120-150% do not, because the zone path converts each bound to watts before taking the midpoint."
+  },
+  "targets": {
+    "Z1": 141,
+    "Z2": 186,
+    "Z3": 236,
+    "Z4": 279,
+    "Z5": 322,
+    "Z6": 387,
+    "Z7": 1644,
+    "55-75%": 186,
+    "120-150%": 386
+  }
+}
