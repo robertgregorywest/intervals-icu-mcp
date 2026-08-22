@@ -64,6 +64,8 @@ precisely the everyday case.
 
 ## Consequences
 
+- The committed render at MAP=415/FTP=290 lives at `tests/fixtures/rendered-templates.txt`;
+  regenerate with `npm test -- -u` after an intentional template edit and review the diff.
 - `seed_workout_library` and `refresh_workout_library` are replaced by `sync_workout_library`;
   `create_workout_library_item` is removed. 23 tools → 21.
 - Sync is additive and **never deletes**. Renames and folder moves in a file are pushed

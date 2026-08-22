@@ -1,6 +1,6 @@
 # intervals-icu-mcp
 
-MCP server for the Intervals.icu API plus tools to support agentic coaching.
+MCP server and CLI tool for the Intervals.icu API plus tools and skills to support agentic coaching.
 
 ## Architecture
 
@@ -15,7 +15,7 @@ MCP server for the Intervals.icu API plus tools to support agentic coaching.
 
 New tools/services: service with interface → tool handler in `src/tools/` → entry in `src/registry.ts` → both adapters pick it up automatically.
 
-Domain vocabulary (Tool/Adapter/Projection/MAP zones/Workout template/Sync/Basis/...) is defined once in `CONTEXT.md` — read it before naming something new.
+Domain vocabulary is defined once in `CONTEXT.md` — read it before naming something new.
 
 ## Ways of working
 
@@ -30,17 +30,15 @@ Domain vocabulary (Tool/Adapter/Projection/MAP zones/Workout template/Sync/Basis
 
 ### Workout templates
 
-Curated library workouts are tracked Markdown files in `templates/workouts/*.md` (`templates/personal/` is unrelated — scaffolds for the personal season/steering files). The files are the source of truth; `sync_workout_library` renders each at the current MAP/FTP and upserts it onto Intervals.icu, matched by a `<!-- template: <seedId> -->` marker. Hand edits in the Intervals.icu UI are overwritten. `tests/fixtures/rendered-templates.txt` is the committed render at MAP=415/FTP=290 — regenerate with `npm test -- -u` after an intentional template edit and review the diff. Full frontmatter shape, anchoring rules, and edge cases: `docs/adr/0005-workout-templates-as-tracked-files.md` and the `intervals-coach` skill's `library-vs-compose.md`.
+Curated library workouts are tracked Markdown files in `templates/workouts/*.md` (`templates/personal/` is unrelated — scaffolds for the personal season/steering files). The files are the source of truth; `sync_workout_library` renders each at the current MAP/FTP and upserts it onto Intervals.icu, matched by a `<!-- template: <seedId> -->` marker; hand edits in the Intervals.icu UI are overwritten. Full frontmatter shape, anchoring rules, fixture regeneration, and edge cases: `docs/adr/0005-workout-templates-as-tracked-files.md` and the `intervals-coach` skill's `library-vs-compose.md`.
 
 ### Training load forecast
 
-`forecast_training_load` costs a set of proposed sessions and projects the CTL/ATL/TSB trajectory **without writing to the calendar**, so a draft week can be checked against its ramp target before it is committed. Two services back it: `src/services/workout-parser/` reproduces Intervals.icu's own parse of workout text locally (the platform has no parse-without-saving endpoint), and `src/services/training-load-forecast/` turns the parsed steps into a synthetic power stream, normalised power, load, and the CTL/ATL recursion.
-
-Every link is asserted offline against a committed oracle harvested from the live account — `tests/fixtures/workout-parser/events.json` (re-harvest: `npx tsx scripts/capture-workout-parser-fixtures.ts`, add `--zones` to re-measure zone-target resolution, which writes and deletes throwaway events) and `tests/fixtures/training-load-forecast/wellness.json` (`npx tsx scripts/capture-forecast-fixtures.ts`). Review a re-harvest as a diff. Rationale and the measured platform quirks: `docs/adr/0007-local-workout-text-parsing.md`; endpoint-level detail in the `intervals-api-research` endpoint reference.
+`forecast_training_load` costs a set of proposed sessions and projects the CTL/ATL/TSB trajectory **without writing to the calendar**, so a draft week can be checked against its ramp target before it is committed. Two services back it: `src/services/workout-parser/` reproduces Intervals.icu's own parse of workout text locally (the platform has no parse-without-saving endpoint), and `src/services/training-load-forecast/` turns the parsed steps into a synthetic power stream, normalised power, load, and the CTL/ATL recursion. Both are asserted offline against committed oracles — fixture files and re-harvest commands are in `docs/adr/0007-local-workout-text-parsing.md`.
 
 ### Coaching architecture
 
-Coaching context is a four-tier stack, most-durable first, later tiers win on conflict: **philosophy** (tracked, `coaching-philosophy` skill) → **steering** (personal, gitignored, `docs/personal/steering.md`) → **season** (personal, gitignored, `docs/personal/season.md`) → **coaching log** (personal, gitignored, `docs/personal/coaching-log.md`). The `coaching-session` skill (broad conversation) and `intervals-coach` skill (single workout) both read this stack at session-start; `strength-training` is the gym-session sibling. `setup_coaching` MCP prompt bootstraps `season.md`/`steering.md`. `get_coaching_context` is the live athlete-state snapshot (FTP/MAP/zones/CTL-ATL-TSB/wellness) — never filed, always fresh. Rationale: `docs/adr/0003-coaching-context-map-zones.md`, `docs/adr/0004-coaching-philosophy-as-tracked-skill.md`.
+Four-tier context stack (philosophy → steering → season → coaching log). See the `coaching-philosophy` and `coaching-session` skills for the operational detail, `docs/adr/0003-coaching-context-map-zones.md` and `docs/adr/0004-coaching-philosophy-as-tracked-skill.md` for rationale.
 
 ## Config
 

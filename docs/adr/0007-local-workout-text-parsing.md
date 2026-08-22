@@ -81,7 +81,12 @@ The parser reproduces what the platform does, including where that is surprising
 
 - The fidelity fixture is the tripwire. If Intervals.icu changes its parser or its load model, the
   committed `tests/fixtures/workout-parser/events.json` surfaces it as a failing assertion, and
-  re-harvesting surfaces it as a reviewable diff.
+  re-harvesting surfaces it as a reviewable diff. Re-harvest with
+  `npx tsx scripts/capture-workout-parser-fixtures.ts`; add `--zones` to re-measure zone-target
+  resolution, which writes and deletes throwaway events. The sibling oracle,
+  `tests/fixtures/training-load-forecast/wellness.json`, backs the CTL/ATL recursion the same way
+  and re-harvests with `npx tsx scripts/capture-forecast-fixtures.ts`. Review either re-harvest as a
+  diff before committing it.
 - The corpus is one athlete's. 118 events is a real oracle but not a broad one; sub-30 s steps
   against the 30 s smoothing window, deeply nested repeats, and HR- or pace-targeted steps are
   thinly covered. A target that cannot be resolved to watts is reported unresolved rather than
