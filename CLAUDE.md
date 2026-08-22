@@ -20,25 +20,13 @@ Domain vocabulary is defined once in `CONTEXT.md` — read it before naming some
 ## Ways of working
 
 - **Probe live before typing.** Before designing or implementing changes that touch Intervals.icu request bodies, response parsing, or query params, call a real endpoint and inspect the JSON — don't invent shapes from memory. The `intervals-api-research` skill holds the workflow and endpoint index.
-- **Commit straight to `main`.** Single-maintainer repo — no feature branches, no PRs. Don't branch before committing, even though that is the usual default. Conventional-commit subjects (`feat(scope):`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`); a husky pre-commit hook runs prettier, `tsc --noEmit`, and the full suite on every commit, so a commit that lands is already green. Split a change into commits along its natural seams — a behaviour-neutral refactor separate from the feature that needed it, the OpenSpec spec-sync and archive separate from the implementation.
+- **Commit straight to `main`.** Single-maintainer repo — no feature branches, no PRs; a husky pre-commit hook runs prettier, `tsc --noEmit`, and the full suite on every commit, so a commit that lands is already green. Split a change into commits along its natural seams — a behaviour-neutral refactor separate from the feature that needed it, the OpenSpec spec-sync and archive separate from the implementation.
 
 ## Intervals.icu API
 
 - **Base URL**: `https://intervals.icu`. **Auth**: Basic `API_KEY:{key}` (base64), username literal `API_KEY`. **Athlete ID**: `0` for the authenticated user.
 - **Endpoints, quirks, doc links** → `.claude/skills/intervals-api-research/endpoint-reference.md`.
 - **Workout-text syntax** (the `- step` / `Nx` repeat grammar the API expects in `description` fields) — runtime source of truth is `src/mcp/syntax-doc.ts`, which the server injects as MCP `instructions`; edit there, not here.
-
-### Workout templates
-
-Curated library workouts are tracked Markdown files in `templates/workouts/*.md` (`templates/personal/` is unrelated — scaffolds for the personal season/steering files). The files are the source of truth; `sync_workout_library` renders each at the current MAP/FTP and upserts it onto Intervals.icu, matched by a `<!-- template: <seedId> -->` marker; hand edits in the Intervals.icu UI are overwritten. Full frontmatter shape, anchoring rules, fixture regeneration, and edge cases: `docs/adr/0005-workout-templates-as-tracked-files.md` and the `intervals-coach` skill's `library-vs-compose.md`.
-
-### Training load forecast
-
-`forecast_training_load` costs a set of proposed sessions and projects the CTL/ATL/TSB trajectory **without writing to the calendar**, so a draft week can be checked against its ramp target before it is committed. Two services back it: `src/services/workout-parser/` reproduces Intervals.icu's own parse of workout text locally (the platform has no parse-without-saving endpoint), and `src/services/training-load-forecast/` turns the parsed steps into a synthetic power stream, normalised power, load, and the CTL/ATL recursion. Both are asserted offline against committed oracles — fixture files and re-harvest commands are in `docs/adr/0007-local-workout-text-parsing.md`.
-
-### Coaching architecture
-
-Four-tier context stack (philosophy → steering → season → coaching log). See the `coaching-philosophy` and `coaching-session` skills for the operational detail, `docs/adr/0003-coaching-context-map-zones.md` and `docs/adr/0004-coaching-philosophy-as-tracked-skill.md` for rationale.
 
 ## Config
 
