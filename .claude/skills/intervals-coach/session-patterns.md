@@ -14,7 +14,7 @@ Main:     45–120m  60–72% FTP @ 85–95rpm
 Cool:     5m  50% FTP
 ```
 
-Notes: NP cap per philosophy (commonly ≤ 68% FTP). Sustained — no pulses.
+Notes: NP cap per philosophy (≤ 68% MAP). Sustained — no pulses.
 
 ## Sweet spot
 
