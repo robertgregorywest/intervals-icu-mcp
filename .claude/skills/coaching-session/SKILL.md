@@ -30,8 +30,6 @@ The `coaching-philosophy` skill ships with the server, so it's always present. I
 3. **Read both lenses** — `compare_intensity_distribution` over the whole window for the dose, `compare_planned_vs_actual` per selected session for execution within reps.
 4. **Interpret** — read [execution-review.md](execution-review.md) at this point (not at session start): step roles, which verdicts are artefacts, how deep to read each kind of session, and what passes the reporting threshold.
 
-**Silence is the default output.** Nothing meeting the threshold produces a single line plus the window's middle-band figure — never a table, never a per-session rundown.
-
 **A narrow request doesn't skip the review.** If the athlete opens with something specific ("move Thursday's session"), run the review anyway so you hold full context, but **answer their request first** and raise findings only where they bear on it.
 
 ## Scope
