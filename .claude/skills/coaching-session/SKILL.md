@@ -44,6 +44,47 @@ The `coaching-philosophy` skill ships with the server, so it's always present. I
 | Recovery guidance    | Wellness trend from `get_coaching_context` (fatigue, soreness, HRV, sleep)                                                                               |
 | Race prep            | Align current fitness + taper logic with season.md A/B races                                                                                             |
 | Workout composition  | Delegated — bike/run to `intervals-coach`, gym to `strength-training` (see Constraints)                                                                  |
+| Ride deep-dive       | Delegated — `ride-analyst` subagent for raw-stream work across activities (see _Tool access_ below)                                                      |
+
+## Tool access — use the CLI
+
+**Reach every Intervals.icu tool through `./bin/icu`, not through `mcp__intervals-icu__*`.** Both
+adapters iterate the same registry and return the same JSON, but an MCP result lands in context
+whole, where a Bash subcommand's output can be reduced before it ever gets there. Startup is ~0.25 s,
+so there is nothing to trade off.
+
+```
+cd /Users/rob/GitHub/robertgregorywest/intervals-icu-mcp && \
+  ./bin/icu get_activity_streams --json '{"id":"i165853469","types":["watts","heartrate"]}' \
+  | python3 -c '<compute and print only the figures you will quote>'
+```
+
+- **`cd` to the project root in the same command.** The CLI reads `INTERVALS_API_KEY` from the
+  project env; run it from anywhere else and it fails with "Intervals.icu API key required". This is
+  the most common way to break a call — the working directory does not persist reliably between them.
+- **Pipe even the shaped results.** `forecast_training_load` returns every day and every week; if you
+  are quoting weekly ramp, print the week rows and drop the rest. The habit matters more than any one
+  call — deciding case by case whether a payload is "big enough to pipe" is how the discipline erodes.
+- **Never let a full stream land in context.** A downsampled long ride is 25–40 KB of JSON. Compute
+  the windows, averages or fits in the pipe and print the handful of numbers you will actually use.
+- **Save the payload to the scratchpad first** when a second pass is likely, then re-pipe from the
+  file rather than re-fetching.
+- **`./bin/icu describe` is ~44 KB — grep it, never print it whole.**
+- **Read-only commands run without prompting** (`get_*`, `list_*`, `compute_*`, `compare_*`,
+  `describe`); `create_*`/`sync_*` are idempotent and run freely; anything else needs `--yes`.
+- **One MCP-only exception:** `setup_coaching` is an MCP _prompt_, not a registry tool, so it has no
+  CLI equivalent. It only comes up when `steering.md` or `season.md` is missing.
+
+**Delegate multi-activity stream work to the `ride-analyst` subagent.** Its tool output stays out of
+this conversation entirely; only its report comes back. Worth it when a question needs raw
+time-series across more than one activity — matched-window decoupling comparisons, CP/W′ fits,
+ramp-test validation, rep-by-rep reconstruction from laps. Not worth it for a single figure off a
+single ride, where a cold start costs more than the pipe saves.
+
+**Split it the right way: delegate the computation, keep the interpretation.** The subagent has none
+of the context stack and is instructed not to coach. Ask it for numbers, the basis behind them, and
+anything that would make a figure misleading; decide what they _mean_ here, where the philosophy,
+`steering.md`, `season.md` and the log are loaded.
 
 ## Load check (when planning a week or block)
 
