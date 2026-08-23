@@ -2,12 +2,6 @@
 
 Index of Intervals.icu endpoints currently used by this server, plus quirks worth knowing. **This is a pointer, not a contract.** Always confirm shapes against a live response before coding (see `live-probing.md`) — fields drift, the docs SPA lags reality, and shapes vary between sibling endpoints.
 
-## Connection basics
-
-- **Base URL**: `https://intervals.icu`
-- **Auth**: HTTP Basic with `API_KEY:{key}` (base64 encoded). Username is the literal string `API_KEY`.
-- **Athlete ID**: pass `0` to mean "the authenticated user" — avoids hard-coding the numeric ID.
-
 ## Events (calendar)
 
 - `POST /api/v1/athlete/{id}/events/bulk?upsert=true` — body is a JSON array of events. Upsert match key is `external_id`. Use this for both new and updated planned workouts.
