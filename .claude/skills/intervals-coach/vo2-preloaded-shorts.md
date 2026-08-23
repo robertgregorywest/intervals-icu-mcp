@@ -1,20 +1,6 @@
 # Preloaded short intermittents (VO2 primer)
 
-A dense VO2 format: open each series with one long interval to prime VO2, then a cluster of short reps that start already near VO2peak. Seeded as `vo2-preloaded-shorts` (see `seed.ts`).
-
-```
-Warm-up:  10m  ramp 50–80% FTP
-          1m   90% FTP @ 100rpm
-          2m   55% FTP
-
-Main:     3x  (2m   95–100% MAP @ 95rpm     ← preload (primer)
-              30s   55% FTP                 ← short recovery
-              12x  (30s  100–105% MAP @ 100rpm
-                    15s   50% FTP)
-              3m   55% FTP)                 ← series recovery
-
-Cool:     5m  50% FTP
-```
+A dense VO2 format: open each series with one long interval to prime VO2, then a cluster of short reps that start already near VO2peak. Canonical shape: library workout `vo2-preloaded-shorts` (`get_workout_library_item` for the current rendered body).
 
 **Why** — Aerobic adaptation from HIT scales with _time spent at a high fraction of VO2max_ during work bouts (Odden et al. 2024). Short intermittents (15–40 s @ Z5, 1:1–3:2 work-rest) accumulate more time near VO2peak than long intervals because the short recoveries don't let VO2 fall. **But** short-format VO2 _kinetics_ are slow at series start — the first few reps sit well below 90% VO2peak before the system stabilises (Vaccari et al. 2020). Opening each series with one ~2 min long interval primes VO2 upward fast, and a short (~30 s) recovery preserves that elevated state, so the short reps that follow start _already_ near 90% VO2peak instead of climbing into it.
 

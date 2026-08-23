@@ -1,87 +1,28 @@
-# Session structure templates
+# Session structure
 
-Default skeletons for common cycling sessions. Adapt durations and intensities to the athlete's philosophy and current state. All targets shown as ranges in `%MAP` or `%FTP` — convert to watts before emitting (see [power-conversion.md](power-conversion.md)).
+Guidance for composing a session when no library workout fits the intent — check `list_workout_library` first (see [library-vs-compose.md](library-vs-compose.md)). Where a canonical shape already exists as a library workout, reuse it (`get_workout_library_item`) rather than recomposing it here.
 
-Each template assumes a 60–120 min session unless noted. Trim warm-up/cool-down for time-crunched sessions; do **not** trim the main set.
-
-The `ramp` shorthand below (`10m ramp 50–80% FTP`) is logical, not literal — apply **head-unit granularity** when you emit it. See [power-conversion.md](power-conversion.md).
+All targets in `%MAP` or `%FTP` — convert to watts before emitting (see [power-conversion.md](power-conversion.md)). Trim warm-up/cool-down for time-crunched sessions; never trim the main set. The `ramp` shorthand (`10m ramp 50–80% FTP`) is logical, not literal — apply **head-unit granularity** when you emit it (see [power-conversion.md](power-conversion.md)).
 
 ## Z2 / endurance
 
-```
-Warm-up:  10m  ramp 50–65% FTP @ 90rpm
-Main:     45–120m  60–72% FTP @ 85–95rpm
-Cool:     5m  50% FTP
-```
-
-Notes: NP cap per philosophy (≤ 68% MAP). Sustained — no pulses.
+Canonical shape: library workout `z2-endurance-2h` (2h), or `miet-60` (60min, higher intensity, for when Z2 volume is time-constrained). NP cap ≤ 68% MAP regardless of duration — sustained, no pulses.
 
 ## Sweet spot
 
-```
-Warm-up:  10m  ramp 50–80% FTP
-          1m   90% FTP @ 100rpm
-          2m   60% FTP
-
-Main:     3x  (12m  88–94% FTP @ 85–90rpm
-              5m   55% FTP)
-
-Cool:     5m  50% FTP
-```
-
-Notes: 3×12 → 3×15 → 4×12 progression over a block.
+Canonical shape: library workout `sweet-spot-3x12`. Progress across a block: 3×12 → 3×15 → 4×12.
 
 ## Threshold
 
-```
-Warm-up:  10m  ramp 50–80% FTP
-          2x  (1m  100% FTP
-              1m   55% FTP)
-
-Main:     2x  (20m  98–102% FTP @ 85–90rpm
-              5m    55% FTP)
-
-Cool:     5m  50% FTP
-```
-
-Notes: 2×20 is the canonical dose. Over-unders (2m @ 105% / 1m @ 95%) are a step up.
+Canonical shape: library workout `threshold-2x20` — the bread-and-butter dose. Over-unders (2m @ 105% / 1m @ 95%) are a step up once 2×20 is solid.
 
 ## VO2 / MAP
 
-```
-Warm-up:  10m  ramp 50–80% FTP
-          3x  (30s  100% FTP @ 100rpm
-              30s   55% FTP)
-
-Main:     4x  (4m   95–102% MAP @ 95–100rpm
-              4m    50% FTP)
-
-Cool:     5m  50% FTP
-```
-
-Notes: 4×4 is the staple. 5×3 / 6×3 / 30/30s are alternates. **VO2 should not stack with heavy strength the day before** (philosophy permitting).
-
-## 30/30 (microintervals)
-
-```
-Warm-up:  10m  ramp 50–80% FTP
-          1m   90% FTP @ 100rpm
-          2m   55% FTP
-
-Main:     2x  (10x  (30s  108–115% MAP
-                    30s   50% FTP)
-              5m   55% FTP)
-
-Cool:     5m  50% FTP
-```
-
-## Preloaded short intermittents (VO2 primer)
-
-A dense VO2 format — long-interval preload then a cluster of short reps, for accumulating time near VO2peak. Full protocol, rationale, knobs, and progression in [vo2-preloaded-shorts.md](vo2-preloaded-shorts.md). Seeded as `vo2-preloaded-shorts`.
+Canonical shape: library workout `vo2-4x4` — the default, highest fraction of time at VO2max per minute of work. Alternates: `vo2-30-30` (lower peripheral cost per rep, use when 4×4 has been overdone), 5×3 / 6×3, or the denser [vo2-preloaded-shorts.md](vo2-preloaded-shorts.md) primer (seeded as `vo2-preloaded-shorts`). **VO2 should not stack with heavy strength the day before** (philosophy permitting).
 
 ## Race-prep / race-pace
 
-Driven by event demands — not a fixed template. Common building blocks:
+Driven by event demands — not a fixed template, though the library's `Coach: Race` folder (`openers`, `20-min-warm-up`, `in-the-red-pursuit-intervals-2km`) covers the recurring cases. Common building blocks for something new:
 
 - Pursuit / TT specific: 3×6m at race power (~MAP 95–98%) with full recovery.
 - Crit / road race specific: race-pace tempo with hard efforts on top (5×30s @ 130% on a Z2 ride).
@@ -90,11 +31,7 @@ Pull race details from `docs/personal/season.md`; shape the session around deman
 
 ## Recovery
 
-```
-30–60m  45–55% FTP @ 90rpm
-```
-
-Notes: Discipline matters more than dose. NP cap strict.
+Canonical shape: library workout `recovery-spin`. Discipline matters more than dose — NP cap strict.
 
 ## Strength (gym)
 
@@ -102,5 +39,5 @@ Use `create_strength_workout` — free-form description of exercises, sets, reps
 
 ## Test sessions
 
-- **MAP ramp**: ~10m warm-up, then 1-min step ramp from 100W (or 60% FTP) at +20W/min until failure. Library workout `Coach Templates / map-ramp-test` if seeded.
-- **FTP**: Library workouts cover this — prefer reusing over composing.
+- **MAP ramp**: library workout `map-ramp-test` — fixed protocol, ride to failure.
+- **FTP**: library workout `ftp-20min-test` — prefer reusing over composing.
