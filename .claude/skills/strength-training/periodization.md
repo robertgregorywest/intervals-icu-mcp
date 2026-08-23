@@ -39,7 +39,7 @@ maintain (sometimes even improve) while the bike stays the priority.
 - **Power / RFD:** low reps (**~3–5**), sub-maximal load, **maximal bar/jump velocity**; stop the set
   when speed drops. Jumps ~**2–4 × 3–5**.
 - **GPP / re-entry after a break only:** higher reps (8–12) briefly to re-groove before loading.
-- Never prescribe kg — the athlete auto-regulates by RPE and by whether the bar/jump is still fast.
+- Never prescribe kg — the athlete auto-regulates by RPE and by whether the bar/jump is still fast (SKILL.md Constraints).
 
 ## Mapping a block to a template
 

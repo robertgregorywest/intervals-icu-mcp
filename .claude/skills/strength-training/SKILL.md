@@ -1,6 +1,6 @@
 ---
 name: strength-training
-description: Compose and schedule a gym / strength session on Intervals.icu, and reason about how strength supports the bike. Encodes the Combined Athletic Performance (Chris Peden, @chr1speden — S&C coach, Decathlon CMA CGM WorldTour) method for endurance athletes: minimum effective dose, stimulus-to-fatigue ratio, force–velocity/RFD, exercise selection by season phase. Use when the user asks to plan, build, schedule, or review a gym / strength / lifting / S&C session, mentions squats/deadlifts/step-ups/jumps, asks how many gym sessions to run, or how strength transfers to the standing start or the pursuit.
+description: Compose and schedule a gym / strength session on Intervals.icu, and reason about how strength supports the bike. Use when the user asks to plan, build, schedule, or review a gym / strength / lifting / S&C session, mentions squats/deadlifts/step-ups/jumps, asks how many gym sessions to run, or how strength transfers to the standing start or the pursuit.
 ---
 
 # strength-training

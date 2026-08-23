@@ -4,7 +4,7 @@ Concrete gym sessions per **phase**, built from [exercises.md](exercises.md) and
 [periodization.md](periodization.md). Match the phase to the current block in `season.md`
 ([periodization.md](periodization.md) has the mapping). Schedule with
 **`create_strength_workout`** (name, date, `description`). **Loads are RPE / velocity
-auto-regulated — never fixed kg.** Adapt the pick to the athlete's readiness, limiters, and
+auto-regulated — never fixed kg** (SKILL.md Constraints). Adapt the pick to the athlete's readiness, limiters, and
 equipment; these are starting points, not a fixed programme.
 
 Every session: **6–8 min general warm-up + ramp-up sets** on the first heavy lift; **maximal
