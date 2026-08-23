@@ -4,7 +4,7 @@ Default skeletons for common cycling sessions. Adapt durations and intensities t
 
 Each template assumes a 60–120 min session unless noted. Trim warm-up/cool-down for time-crunched sessions; do **not** trim the main set.
 
-The `ramp` shorthand below (`10m ramp 50–80% FTP`) is logical, not literal — apply **head-unit granularity** (split ramps/progressions into ≤ 2 min, ≤ ~25–30 W steps; keep steady bands whole) when you emit it. See [power-conversion.md](power-conversion.md).
+The `ramp` shorthand below (`10m ramp 50–80% FTP`) is logical, not literal — apply **head-unit granularity** when you emit it. See [power-conversion.md](power-conversion.md).
 
 ## Z2 / endurance
 
