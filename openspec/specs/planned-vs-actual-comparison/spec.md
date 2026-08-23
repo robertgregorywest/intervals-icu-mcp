@@ -163,6 +163,12 @@ Verdicts SHALL be:
 
 The system SHALL determine `not-attempted` before considering power, and the threshold that governs it SHALL be independent of the tolerance, so that loosening how strictly power is judged does not change what counts as an abandoned step.
 
+Whenever the activity's raw power stream can be resolved to a paired step's window, the system SHALL additionally report normalized power over that window and the fraction of the window's samples recorded at zero watts, alongside the average power, regardless of which metric the verdict below is judged against.
+
+For a paired step whose target is a range (and not a ramp) and whose prescribed duration exceeds 300 seconds, the verdict and its power deltas SHALL be judged against the step's normalized power rather than its average power, because average power over a long, wide-ranging outdoor step is depressed by coasting in a way normalized power is not. Every other step — a point target, a ramp, or a range target of 300 seconds or less — SHALL continue to be judged against average power. Whichever metric a step's verdict was judged against, the reported power deltas SHALL be computed from that same metric, and the system SHALL report which metric was used.
+
+When normalized power cannot be resolved for a step that would otherwise be judged against it — the activity carries no usable power stream, or the step's window cannot be located in it — the system SHALL fall back to judging that step against average power rather than leaving it unjudged, and SHALL report that the fallback occurred.
+
 #### Scenario: Delivered power inside tolerance
 
 - **WHEN** a paired step prescribes 375 W, the tolerance is 0.05, and the recorded interval averaged 368 W
@@ -207,6 +213,36 @@ The system SHALL determine `not-attempted` before considering power, and the thr
 
 - **WHEN** the caller supplies a tolerance of 0.10
 - **THEN** verdicts are computed against that tolerance and the tolerance used is echoed in the response
+
+#### Scenario: Long, wide-ranging step judged on normalized power
+
+- **WHEN** a paired step prescribes a 190–235 W range, is prescribed for 25 minutes, and the recorded interval's raw power stream shows substantial coasting such that its average power of 164 W sits well below the band while its normalized power of 185 W sits inside it
+- **THEN** the verdict is judged against the normalized power and reported as inside the band, the reported power delta is computed from normalized power, and the response states that the verdict was judged against normalized power
+
+#### Scenario: Short range step stays on average power
+
+- **WHEN** a paired step prescribes a power range and is prescribed for 4 minutes
+- **THEN** the verdict and its power delta are judged against average power, and the response states that the verdict was judged against average power, regardless of how much of the window was coasted
+
+#### Scenario: Point target stays on average power at any duration
+
+- **WHEN** a paired step prescribes a single wattage and is prescribed for longer than 300 seconds
+- **THEN** the verdict and its power delta are judged against average power, because a fixed-watt step is an instrument whose intent normalized power would obscure
+
+#### Scenario: Ramp stays on average power at any duration
+
+- **WHEN** a paired step prescribes a ramp and is prescribed for longer than 300 seconds
+- **THEN** the verdict and its power delta continue to be judged against average power at the ramp's midpoint
+
+#### Scenario: Normalized power and coasting fraction reported alongside every verdict basis
+
+- **WHEN** a paired step's window can be resolved against the activity's raw power stream, whether or not that step's verdict is judged against normalized power
+- **THEN** the response reports both the normalized power and the coasting fraction for that step's window
+
+#### Scenario: No power stream available falls back to average power
+
+- **WHEN** a step would otherwise be judged against normalized power but the activity carries no raw power stream, or the step's window cannot be located in it
+- **THEN** the verdict is judged against average power instead, and the response states that the fallback occurred rather than leaving the step unjudged
 
 ### Requirement: Report a whole-session roll-up
 

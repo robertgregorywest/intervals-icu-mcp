@@ -126,6 +126,16 @@ The coaching session SHALL interpret step verdicts against the role each step pl
 - **WHEN** the platform's own compliance figure is available for a reviewed session
 - **THEN** the review may cite it as context but SHALL NOT substitute it for its own reading of the delivered work
 
+#### Scenario: An average-watts verdict is discounted on a coasted long step
+
+- **WHEN** a reviewed step's verdict basis is average power, its prescribed duration exceeds five minutes, and its coasting fraction is non-trivial
+- **THEN** the review does not quote that step's average-watts delta as a finding on its own, and reads the step's normalized power instead, since normalized power is the honest read of a long outdoor step whose average is depressed by coasting
+
+#### Scenario: A normalized-power verdict is read as delivered
+
+- **WHEN** a reviewed step's verdict basis is normalized power
+- **THEN** the review treats that verdict as the step's delivery finding without separately re-deriving or citing the average-watts delta for the same step
+
 ### Requirement: Report the pattern across the window
 
 The coaching session SHALL present findings as patterns across the reviewed window rather than as a per-session list, because a recurring shortfall is actionable where a single session's delta is not.
