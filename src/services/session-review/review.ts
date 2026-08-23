@@ -1,4 +1,8 @@
 import { alignSteps } from "./align.js";
+import {
+  ROLLING_WINDOW_SECONDS,
+  normalizedPower,
+} from "../training-load-forecast/load.js";
 import type {
   ActivityInterval,
   AlignedStep,
@@ -9,9 +13,76 @@ import type {
   SessionRollup,
   StepVerdict,
   UnplannedInterval,
+  VerdictBasis,
 } from "./types.js";
 
 export const DEFAULT_TOLERANCE = 0.05;
+
+/**
+ * A band step prescribed longer than this is judged on normalized power
+ * instead of average power. Below it (and for point targets and ramps at any
+ * duration) average power stays the judge: short reps are ridden on a
+ * repeatable stretch of road and stay clean regardless of band width, and a
+ * fixed-watt step is an instrument whose intent normalized power would hide.
+ * See issue #16.
+ */
+export const NP_VERDICT_MIN_DURATION_SECONDS = 300;
+
+/** A raw 1 Hz-ish power recording: parallel `time` (elapsed seconds, gaps on
+ * auto-pause) and `watts` arrays, straight off the activity's stream. */
+export interface RawPowerStream {
+  time: number[];
+  watts: Array<number | null>;
+}
+
+/**
+ * The samples covering one step's window, located by elapsed time rather than
+ * by array offset — a stream gap (auto-pause) shifts every later sample's
+ * offset away from its elapsed second, so offset and elapsed time are not
+ * interchangeable. Null samples are excluded rather than treated as zero.
+ */
+export function sliceStepWindow(
+  stream: RawPowerStream,
+  startTime: number,
+  durationSeconds: number
+): number[] | undefined {
+  const { time, watts } = stream;
+  if (time.length === 0 || time.length !== watts.length) return undefined;
+
+  const endTime = startTime + durationSeconds;
+  let startIndex = -1;
+  let endIndex = time.length;
+  for (let i = 0; i < time.length; i++) {
+    if (startIndex === -1 && time[i] >= startTime) startIndex = i;
+    if (time[i] >= endTime) {
+      endIndex = i;
+      break;
+    }
+  }
+  if (startIndex === -1 || startIndex >= endIndex) return undefined;
+
+  const window = watts
+    .slice(startIndex, endIndex)
+    .filter((w): w is number => typeof w === "number");
+  return window.length > 0 ? window : undefined;
+}
+
+function coastingFraction(window: number[]): number {
+  return window.filter((w) => w === 0).length / window.length;
+}
+
+/** Whether a step's target/duration calls for a normalized-power verdict. */
+function wantsNormalizedPower(planned: FlatPlannedStep): boolean {
+  const target = planned.target;
+  return (
+    !!target &&
+    target.low !== undefined &&
+    target.high !== undefined &&
+    !target.ramp &&
+    !!planned.durationSeconds &&
+    planned.durationSeconds > NP_VERDICT_MIN_DURATION_SECONDS
+  );
+}
 
 /**
  * A step delivering less than this fraction of its prescribed time is reported
@@ -51,40 +122,70 @@ function positiveOrUndefined(v: unknown): number | undefined {
 
 /**
  * Judge one paired step. Duration is checked before power, so an abandoned step
- * is never dressed up as a power miss.
+ * is never dressed up as a power miss. `verdictBasis` reflects which power
+ * figure the target/duration call for even on a path that never reaches a
+ * power comparison, so a caller always knows what the rule would have judged.
  */
 export function judgeStep(
   planned: FlatPlannedStep,
   delivered: DeliveredInterval,
-  tolerance: number
+  tolerance: number,
+  normalizedWatts?: number
 ): {
   verdict: StepVerdict;
   watts?: number;
   wattsFraction?: number;
   note?: string;
+  verdictBasis: VerdictBasis;
 } {
+  const basisWanted: VerdictBasis = wantsNormalizedPower(planned)
+    ? "normalized-power"
+    : "average-watts";
+
   const prescribed = planned.durationSeconds;
   if (
     prescribed &&
     delivered.durationSeconds < prescribed * NOT_ATTEMPTED_DURATION_FRACTION
   ) {
-    return { verdict: "not-attempted" };
+    return { verdict: "not-attempted", verdictBasis: basisWanted };
   }
 
   if (planned.targetUnresolved) {
-    return { verdict: "unmatched", note: planned.targetUnresolved };
-  }
-  if (!planned.target) {
-    return { verdict: "unmatched", note: "planned step has no power target" };
-  }
-  if (delivered.averageWatts === undefined) {
     return {
       verdict: "unmatched",
-      note: "no power recorded for this interval",
+      note: planned.targetUnresolved,
+      verdictBasis: basisWanted,
+    };
+  }
+  if (!planned.target) {
+    return {
+      verdict: "unmatched",
+      note: "planned step has no power target",
+      verdictBasis: basisWanted,
     };
   }
 
-  const actual = delivered.averageWatts;
+  let basis: VerdictBasis = basisWanted;
+  let actual: number | undefined;
+  if (basis === "normalized-power") {
+    if (normalizedWatts !== undefined) {
+      actual = normalizedWatts;
+    } else {
+      basis = "normalized-power-fallback";
+      actual = delivered.averageWatts;
+    }
+  } else {
+    actual = delivered.averageWatts;
+  }
+
+  if (actual === undefined) {
+    return {
+      verdict: "unmatched",
+      note: "no power recorded for this interval",
+      verdictBasis: basis,
+    };
+  }
+
   const { verdict, delta, reference } = compareToTarget(
     planned.target,
     actual,
@@ -95,6 +196,7 @@ export function judgeStep(
     verdict,
     watts: delta,
     wattsFraction: reference ? round(delta / reference, 4) : undefined,
+    verdictBasis: basis,
   };
 }
 
@@ -168,6 +270,8 @@ export interface ReviewInputs {
   plannedDurationSeconds?: number;
   actualDurationSeconds?: number;
   platformCompliance?: number;
+  /** The activity's raw power recording. Absent when it could not be fetched. */
+  powerStream?: RawPowerStream;
 }
 
 /**
@@ -206,6 +310,9 @@ export function reviewSession(
         cadence: step.cadence,
       },
       verdict: "unmatched",
+      verdictBasis: wantsNormalizedPower(step)
+        ? "normalized-power"
+        : "average-watts",
     };
 
     const intervalIndex = byPlanned.get(step.index);
@@ -223,7 +330,20 @@ export function reviewSession(
       };
     }
 
-    const judged = judgeStep(step, delivered, tolerance);
+    const window =
+      inputs.powerStream && delivered.startTime !== undefined
+        ? sliceStepWindow(
+            inputs.powerStream,
+            delivered.startTime,
+            delivered.durationSeconds
+          )
+        : undefined;
+    const normalizedWatts =
+      window && window.length >= ROLLING_WINDOW_SECONDS
+        ? Math.round(normalizedPower(window)!)
+        : undefined;
+
+    const judged = judgeStep(step, delivered, tolerance, normalizedWatts);
 
     return {
       ...base,
@@ -233,6 +353,8 @@ export function reviewSession(
         averageWatts: delivered.averageWatts,
         averageCadence: delivered.averageCadence,
         averageHeartrate: delivered.averageHeartrate,
+        normalizedWatts,
+        coastingFraction: window ? coastingFraction(window) : undefined,
       },
       deltas: {
         durationSeconds:
@@ -243,6 +365,7 @@ export function reviewSession(
         wattsFraction: judged.wattsFraction,
       },
       verdict: judged.verdict,
+      verdictBasis: judged.verdictBasis,
       note: judged.note,
     };
   });

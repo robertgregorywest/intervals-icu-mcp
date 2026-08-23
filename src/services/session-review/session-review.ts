@@ -3,7 +3,11 @@ import type { IEventsApi } from "../events/index.js";
 import type { Activity } from "../activities/types.js";
 import type { IntervalsEvent } from "../../types.js";
 import { flattenPlannedSteps, plannedDuration } from "./planned.js";
-import { DEFAULT_TOLERANCE, reviewSession } from "./review.js";
+import {
+  DEFAULT_TOLERANCE,
+  reviewSession,
+  type RawPowerStream,
+} from "./review.js";
 import { executionCandidates, type ExecutionCandidate } from "./delivered.js";
 import { resolvePair } from "./pair.js";
 import type {
@@ -61,6 +65,7 @@ export class SessionReview implements ISessionReview {
 
     const laps = await this.deps.activitiesApi.getActivityLaps(activity.id);
     const candidates = executionCandidates(activity, laps);
+    const powerStream = await this.getPowerStream(activity.id);
 
     if (candidates.length === 0) {
       return this.refuse(
@@ -88,6 +93,7 @@ export class SessionReview implements ISessionReview {
         planned,
         intervals: candidate.intervals,
         tolerance,
+        powerStream,
         ...rollupInputs,
       })
     );
@@ -105,6 +111,31 @@ export class SessionReview implements ISessionReview {
         : {}),
       ...chosen.core,
     };
+  }
+
+  /**
+   * The raw power/time streams behind the normalized-power verdict. Fetched
+   * best-effort, the same as `getActivityLaps`: a failure (or an activity with
+   * no recorded power) is not a comparison failure, it just means every step
+   * falls back to its average-watts verdict.
+   */
+  private async getPowerStream(
+    activityId: string
+  ): Promise<RawPowerStream | undefined> {
+    let streams: { watts?: Array<number | null>; time?: number[] };
+    try {
+      streams = (await this.deps.activitiesApi.getActivityStreams(activityId, [
+        "watts",
+        "time",
+      ])) as { watts?: Array<number | null>; time?: number[] };
+    } catch {
+      return undefined;
+    }
+
+    const { watts, time } = streams;
+    if (!watts?.length || !time?.length) return undefined;
+
+    return { watts, time };
   }
 
   /**

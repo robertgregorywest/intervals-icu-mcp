@@ -38,6 +38,22 @@ export type ReviewReason =
 export type StepVerdict =
   "on-target" | "over" | "under" | "not-attempted" | "unmatched";
 
+/**
+ * Which power figure a step's verdict was judged against.
+ *
+ * - `average-watts`     — the step's target/duration didn't call for normalized
+ *   power, or normalized power was never in play.
+ * - `normalized-power`  — a band target prescribed longer than 5 minutes,
+ *   judged against normalized power because average power over a long,
+ *   wide-ranging outdoor step is depressed by coasting in a way normalized
+ *   power is not.
+ * - `normalized-power-fallback` — the step qualified for `normalized-power` but
+ *   it could not be resolved (no usable power stream on the activity, or the
+ *   step's window fell outside it), so the verdict fell back to average power.
+ */
+export type VerdictBasis =
+  "average-watts" | "normalized-power" | "normalized-power-fallback";
+
 /** A prescribed power target, normalised to watts. */
 export interface PowerTarget {
   /** Point target, when the step prescribes a single wattage. */
@@ -107,17 +123,27 @@ export interface AlignedStep {
     averageWatts?: number;
     averageCadence?: number;
     averageHeartrate?: number;
+    /**
+     * Normalized power over this step's window, from the activity's raw power
+     * stream. Present whenever the window resolves to at least 30 seconds of
+     * recorded samples, regardless of which figure the verdict below uses.
+     */
+    normalizedWatts?: number;
+    /** Fraction of this step's window recorded at zero watts. */
+    coastingFraction?: number;
   };
   /** Absent when the step is `unmatched`. */
   deltas?: {
     /** Delivered minus prescribed, seconds. */
     durationSeconds?: number;
-    /** Delivered minus prescribed, watts. Zero when inside a band target. */
+    /** Delivered minus prescribed, watts, from whichever figure `verdictBasis` names. Zero when inside a band target. */
     watts?: number;
     /** `watts` as a fraction of the prescribed target. */
     wattsFraction?: number;
   };
   verdict: StepVerdict;
+  /** Which power figure `verdict` and `deltas.watts` were judged against. */
+  verdictBasis: VerdictBasis;
   /** Why an `unmatched` step could not be compared. */
   note?: string;
 }

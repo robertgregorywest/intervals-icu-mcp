@@ -4,9 +4,12 @@ import { fileURLToPath } from "node:url";
 import {
   judgeStep,
   reviewSession,
+  sliceStepWindow,
   toDeliveredIntervals,
   DEFAULT_TOLERANCE,
+  type RawPowerStream,
 } from "../../../src/services/session-review/review.js";
+import { normalizedPower } from "../../../src/services/training-load-forecast/load.js";
 import { flattenPlannedSteps } from "../../../src/services/session-review/planned.js";
 import type {
   DeliveredInterval,
@@ -223,6 +226,132 @@ describe("judgeStep — duration and missing data", () => {
   });
 });
 
+describe("judgeStep — verdict basis", () => {
+  const longBand = { low: 300, high: 350 };
+
+  it("judges a long band step on normalized power when it resolves", () => {
+    // Average watts (250) is under the band; normalized power (330) is inside it.
+    const r = judgeStep(
+      step({ durationSeconds: 600, target: longBand }),
+      delivered({ durationSeconds: 600, averageWatts: 250 }),
+      DEFAULT_TOLERANCE,
+      330
+    );
+    expect(r.verdictBasis).toBe("normalized-power");
+    expect(r.verdict).toBe("on-target");
+    expect(r.watts).toBe(0);
+  });
+
+  it("falls back to average power when normalized power did not resolve", () => {
+    const r = judgeStep(
+      step({ durationSeconds: 600, target: longBand }),
+      delivered({ durationSeconds: 600, averageWatts: 250 }),
+      DEFAULT_TOLERANCE
+      // normalizedWatts omitted — never resolved.
+    );
+    expect(r.verdictBasis).toBe("normalized-power-fallback");
+    expect(r.verdict).toBe("under");
+    expect(r.watts).toBe(-50);
+  });
+
+  it("stays on average power for a band step at or under the duration threshold", () => {
+    const r = judgeStep(
+      step({ durationSeconds: 300, target: longBand }),
+      delivered({ durationSeconds: 300, averageWatts: 250 }),
+      DEFAULT_TOLERANCE,
+      330 // supplied but must be ignored — step is not long enough to qualify.
+    );
+    expect(r.verdictBasis).toBe("average-watts");
+    expect(r.verdict).toBe("under");
+    expect(r.watts).toBe(-50);
+  });
+
+  it("stays on average power for a point target at any duration", () => {
+    const r = judgeStep(
+      step({ durationSeconds: 600, target: { watts: 300 } }),
+      delivered({ durationSeconds: 600, averageWatts: 250 }),
+      DEFAULT_TOLERANCE,
+      330
+    );
+    expect(r.verdictBasis).toBe("average-watts");
+    expect(r.verdict).toBe("under");
+  });
+
+  it("stays on average power for a ramp at any duration", () => {
+    const r = judgeStep(
+      step({
+        durationSeconds: 600,
+        target: { low: 300, high: 350, ramp: true },
+      }),
+      delivered({ durationSeconds: 600, averageWatts: 250 }),
+      DEFAULT_TOLERANCE,
+      330
+    );
+    expect(r.verdictBasis).toBe("average-watts");
+    expect(r.verdict).toBe("under");
+  });
+
+  it("reports the basis the rule would have chosen on an unmatched or not-attempted step", () => {
+    const notAttempted = judgeStep(
+      step({ durationSeconds: 600, target: longBand }),
+      delivered({ durationSeconds: 100, averageWatts: 250 }),
+      DEFAULT_TOLERANCE
+    );
+    expect(notAttempted.verdict).toBe("not-attempted");
+    expect(notAttempted.verdictBasis).toBe("normalized-power");
+
+    const unresolvedTarget = judgeStep(
+      step({
+        durationSeconds: 600,
+        targetUnresolved: "percent-of-FTP target but no FTP",
+      }),
+      delivered({ durationSeconds: 600 }),
+      DEFAULT_TOLERANCE
+    );
+    expect(unresolvedTarget.verdict).toBe("unmatched");
+    expect(unresolvedTarget.verdictBasis).toBe("average-watts");
+  });
+});
+
+describe("sliceStepWindow", () => {
+  function stream(over: Partial<RawPowerStream> = {}): RawPowerStream {
+    return {
+      time: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+      watts: [100, 100, 100, 200, 200, 200, 300, 300, 300, 300],
+      ...over,
+    };
+  }
+
+  it("locates the window by elapsed time, not array offset", () => {
+    // A gap between elapsed second 3 and 6 (auto-pause) shifts every later
+    // sample's offset two places away from its elapsed second.
+    const gapped = stream({
+      time: [0, 1, 2, 3, 6, 7, 8, 9, 10, 11],
+      watts: [10, 10, 10, 10, 40, 40, 40, 40, 40, 40],
+    });
+    // Elapsed-time window [6, 9) must read the post-gap samples, not the ones
+    // that happen to sit at offsets 6-8.
+    expect(sliceStepWindow(gapped, 6, 3)).toEqual([40, 40, 40]);
+  });
+
+  it("filters out null samples rather than treating them as zero", () => {
+    const withNulls = stream({
+      watts: [100, null, 100, 200, 200, 200, 300, 300, 300, 300],
+    });
+    expect(sliceStepWindow(withNulls, 0, 3)).toEqual([100, 100]);
+  });
+
+  it("returns undefined when the window falls outside the stream's bounds", () => {
+    expect(sliceStepWindow(stream(), 100, 60)).toBeUndefined();
+  });
+
+  it("returns undefined when time and watts lengths disagree", () => {
+    expect(
+      sliceStepWindow(stream({ watts: [100, 200] }), 0, 3)
+    ).toBeUndefined();
+  });
+});
+
 describe("reviewSession", () => {
   function loadPair(name: string) {
     const { event, activity } = fixture(name);
@@ -367,6 +496,101 @@ describe("reviewSession", () => {
         averageWatts: 620,
       },
     ]);
+  });
+
+  describe("with a raw power stream", () => {
+    function coastingWindow(): number[] {
+      // 5 minutes coasting at 0 W, then 5 minutes steady at 400 W — average
+      // watts (200) reads as a shortfall against a 300-350 W band, but the
+      // sustained 400 W block is what normalized power responds to.
+      return [...Array(300).fill(0), ...Array(300).fill(400)];
+    }
+
+    function longBandPlan() {
+      return flattenPlannedSteps({
+        steps: [{ duration: 600, power: { units: "w", start: 300, end: 350 } }],
+      });
+    }
+
+    it("judges a long, coasted band step on normalized power", () => {
+      const window = coastingWindow();
+      const expectedNP = Math.round(normalizedPower(window)!);
+
+      const planned = longBandPlan();
+      const intervals: DeliveredInterval[] = [
+        { index: 0, startTime: 0, durationSeconds: 600, averageWatts: 200 },
+      ];
+      const powerStream: RawPowerStream = {
+        time: window.map((_, i) => i),
+        watts: window,
+      };
+
+      const result = reviewSession({
+        planned,
+        intervals,
+        tolerance: DEFAULT_TOLERANCE,
+        powerStream,
+      });
+
+      expect(result.steps).toHaveLength(1);
+      const s = result.steps[0];
+      expect(s.delivered?.normalizedWatts).toBe(expectedNP);
+      expect(s.delivered?.coastingFraction).toBeCloseTo(0.5, 4);
+      expect(s.verdictBasis).toBe("normalized-power");
+      expect(expectedNP).toBeGreaterThanOrEqual(300);
+      expect(expectedNP).toBeLessThanOrEqual(350);
+      expect(s.verdict).toBe("on-target");
+    });
+
+    it("still reports normalizedWatts/coastingFraction on a step whose verdict uses average watts", () => {
+      const window = coastingWindow();
+      const expectedNP = Math.round(normalizedPower(window)!);
+
+      // A point target — always judged on average watts, regardless of duration.
+      const planned = flattenPlannedSteps({
+        steps: [{ duration: 600, power: { units: "w", value: 200 } }],
+      });
+      const intervals: DeliveredInterval[] = [
+        { index: 0, startTime: 0, durationSeconds: 600, averageWatts: 200 },
+      ];
+      const powerStream: RawPowerStream = {
+        time: window.map((_, i) => i),
+        watts: window,
+      };
+
+      const result = reviewSession({
+        planned,
+        intervals,
+        tolerance: DEFAULT_TOLERANCE,
+        powerStream,
+      });
+
+      const s = result.steps[0];
+      expect(s.verdictBasis).toBe("average-watts");
+      expect(s.verdict).toBe("on-target");
+      expect(s.delivered?.normalizedWatts).toBe(expectedNP);
+      expect(s.delivered?.coastingFraction).toBeCloseTo(0.5, 4);
+    });
+
+    it("falls back to average watts when no power stream is available", () => {
+      const planned = longBandPlan();
+      const intervals: DeliveredInterval[] = [
+        { index: 0, startTime: 0, durationSeconds: 600, averageWatts: 200 },
+      ];
+
+      const result = reviewSession({
+        planned,
+        intervals,
+        tolerance: DEFAULT_TOLERANCE,
+        // powerStream omitted entirely.
+      });
+
+      const s = result.steps[0];
+      expect(s.verdictBasis).toBe("normalized-power-fallback");
+      expect(s.verdict).toBe("under");
+      expect(s.delivered?.normalizedWatts).toBeUndefined();
+      expect(s.delivered?.coastingFraction).toBeUndefined();
+    });
   });
 });
 
