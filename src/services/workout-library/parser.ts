@@ -1,12 +1,10 @@
 import type { WorkoutSummary } from "./types.js";
+import { classify, matchRepeatHeader } from "../workout-parser/index.js";
 
 /** Provenance marker written by sync. */
 const TEMPLATE_MARKER_RE = /<!--\s*template:\s*[a-z0-9][a-z0-9-]*\s*-->/i;
 /** Legacy marker from the retired seed/refresh path — stripped, never written. */
 const LEGACY_RATIONALE_RE = /<!--\s*rationale\s*[\s\S]+?\s*-->/i;
-
-const DURATION_RE = /(\d+)(km|mtr|h|m|s)(?![a-z])/gi;
-const REPEAT_RE = /(?:^|\s)(\d+)x\s*$/;
 
 /**
  * A step line. Intervals.icu accepts a dash with no following space
@@ -35,7 +33,10 @@ export function extractProse(description: string): string {
   const lines = stripMarkers(description).split(/\r?\n/);
   let end = lines.length;
   for (let i = 0; i < lines.length; i++) {
-    if (stepBody(lines[i]) !== null || REPEAT_RE.test(lines[i].trim())) {
+    if (
+      stepBody(lines[i]) !== null ||
+      matchRepeatHeader(lines[i]) !== undefined
+    ) {
       end = i;
       break;
     }
@@ -62,43 +63,19 @@ interface ParsedStep {
   durationSeconds: number | null;
 }
 
-function parseDuration(token: string): {
-  seconds: number | null;
-  hasDistance: boolean;
-} {
-  let seconds = 0;
-  let matched = false;
-  let hasDistance = false;
-  for (const m of token.matchAll(DURATION_RE)) {
-    const value = Number(m[1]);
-    const unit = m[2].toLowerCase();
-    matched = true;
-    switch (unit) {
-      case "h":
-        seconds += value * 3600;
-        break;
-      case "m":
-        seconds += value * 60;
-        break;
-      case "s":
-        seconds += value;
-        break;
-      case "km":
-      case "mtr":
-        hasDistance = true;
-        break;
-    }
-  }
-  return { seconds: matched && !hasDistance ? seconds : null, hasDistance };
-}
-
+/**
+ * Duration/distance recognition delegates to workout-parser's tokens.ts — the
+ * grammar ADR-0007 validated against the platform's own parse — rather than
+ * reimplementing it. Only the first token of either kind decides the step: a
+ * duration ends the search with a figure, a distance ends it with `null`.
+ */
 function parseStepLine(line: string): ParsedStep | null {
   const body = stepBody(line);
   if (body === null) return null;
   for (const t of body.split(/\s+/)) {
-    const { seconds, hasDistance } = parseDuration(t);
-    if (seconds !== null) return { durationSeconds: seconds };
-    if (hasDistance) return { durationSeconds: null };
+    const token = classify(t);
+    if (token.kind === "duration") return { durationSeconds: token.seconds };
+    if (token.kind === "distance") return { durationSeconds: null };
   }
   return { durationSeconds: 0 };
 }
@@ -114,9 +91,9 @@ export function parseDescriptionSummary(
 
   while (i < lines.length) {
     const line = lines[i];
-    const repeat = line.match(REPEAT_RE);
-    if (repeat && stepBody(line) === null) {
-      const iterations = Number(repeat[1]);
+    const reps = matchRepeatHeader(line);
+    if (reps !== undefined && stepBody(line) === null) {
+      const iterations = reps;
       const blockSteps: ParsedStep[] = [];
       let j = i + 1;
       while (j < lines.length) {

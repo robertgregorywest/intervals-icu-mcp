@@ -4,6 +4,8 @@ export {
   resolvePowerTarget,
   resolveZoneTargets,
 } from "./parser.js";
+export { classify, matchRepeatHeader } from "./tokens.js";
+export type { Token } from "./tokens.js";
 export { zoneBand } from "./zones.js";
 export type { ZoneBand } from "./zones.js";
 export type {

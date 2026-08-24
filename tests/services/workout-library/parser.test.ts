@@ -120,4 +120,26 @@ describe("parseDescriptionSummary", () => {
   it("returns empty summary for blank descriptions", () => {
     expect(parseDescriptionSummary("").oneLine).toBe("Empty workout");
   });
+
+  // Duration recognition now delegates to workout-parser's tokens.ts, the
+  // platform-validated grammar (ADR-0007), which requires h/m/s units in that
+  // order within one token. A token that reverses the order is not a duration
+  // at all — this step contributes zero rather than the summed 90 minutes a
+  // looser reading would give it.
+  it("does not recognise an out-of-order duration token", () => {
+    const desc = "- 30m1h 75%";
+    const s = parseDescriptionSummary(desc);
+    expect(s.stepCount).toBe(1);
+    expect(s.totalSeconds).toBe(0);
+  });
+
+  // matchRepeatHeader has no left-boundary requirement before the digit,
+  // matching the platform's own reading of a repeat header — unlike the
+  // former REPEAT_RE, which required whitespace or line-start before it.
+  it("recognises a repeat header glued to preceding text", () => {
+    const desc = "Round3x\n- 4m 110%\n- 4m 50%";
+    const s = parseDescriptionSummary(desc);
+    expect(s.stepCount).toBe(6);
+    expect(s.totalSeconds).toBe(3 * (4 * 60 + 4 * 60));
+  });
 });
