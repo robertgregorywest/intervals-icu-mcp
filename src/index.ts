@@ -68,6 +68,11 @@ import type {
   TrackRunWriteOptions,
   TrackRunWriteResult,
 } from "./services/track-lap-writeback/index.js";
+import { createTrainingWeek } from "./services/training-week/index.js";
+import type {
+  ITrainingWeek,
+  TrainingWeekSummary,
+} from "./services/training-week/index.js";
 import { createTrainingLoadForecast } from "./services/training-load-forecast/index.js";
 import type {
   ForecastOptions,
@@ -147,6 +152,9 @@ export interface IIntervalsClient {
   ): Promise<TrackLapAlignmentResult>;
   writeTrackRuns(options: TrackRunWriteOptions): Promise<TrackRunWriteResult>;
 
+  // Training week
+  getTrainingWeekSummary(weekStart?: string): Promise<TrainingWeekSummary>;
+
   // Coaching context
   getCoachingContext(opts?: CoachingContextOptions): Promise<CoachingContext>;
 
@@ -179,6 +187,7 @@ export class IntervalsClient implements IIntervalsClient {
   private trackLapAlignment: ITrackLapAlignment;
   private trackLapWriteback: ITrackLapWriteback;
   private trainingLoadForecast: ITrainingLoadForecast;
+  private trainingWeek: ITrainingWeek;
 
   constructor(options: IntervalsClientOptions = {}) {
     const config = parseClientConfig({
@@ -224,6 +233,11 @@ export class IntervalsClient implements IIntervalsClient {
       eventsApi: this.events,
       wellnessApi: this.wellness,
       athleteApi: this.athlete,
+    });
+    this.trainingWeek = createTrainingWeek({
+      activitiesApi: this.activities,
+      wellnessApi: this.wellness,
+      eventsApi: this.events,
     });
   }
 
@@ -369,6 +383,13 @@ export class IntervalsClient implements IIntervalsClient {
     options: TrackRunWriteOptions
   ): Promise<TrackRunWriteResult> {
     return this.trackLapWriteback.writeTrackRuns(options);
+  }
+
+  // Training week
+  async getTrainingWeekSummary(
+    weekStart?: string
+  ): Promise<TrainingWeekSummary> {
+    return this.trainingWeek.getTrainingWeekSummary(weekStart);
   }
 
   // Coaching context

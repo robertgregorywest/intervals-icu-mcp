@@ -582,8 +582,8 @@ export const TOOLS: ToolDef[] = [
       "Provide weekStart (Monday) in YYYY-MM-DD; defaults to current week. " +
       "Use this for weekly review or planning the next week. " +
       "Saves the multi-call dance of get_activities + get_wellness + get_events. " +
-      "Returns: { week, totals, by_sport, fitness: { ctl, atl, tsb }, " +
-      "completed_activities: [...], events: [...] }.",
+      "Returns: { week, totals, bySport, fitness: { ctl, atl, tsb }, " +
+      "completedActivities: [...], events: [...] }.",
     schema: getTrainingWeekSummarySchema,
     annotations: READ_ONLY,
     outputSchema: getTrainingWeekSummaryOutputSchema,
