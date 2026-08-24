@@ -2,7 +2,6 @@ import { describe, it, expect } from "vitest";
 import {
   buildPowerStream,
   deriveLoad,
-  normalizedPower,
 } from "../../../src/services/training-load-forecast/load.js";
 import { flattenPlannedSteps } from "../../../src/services/session-review/index.js";
 import type { FlatPlannedStep } from "../../../src/services/session-review/index.js";
@@ -127,13 +126,5 @@ describe("load derivation — the stream", () => {
       286
     );
     expect(derived).toBeUndefined();
-  });
-
-  it("expands the rolling mean over the first 30 seconds rather than skipping them", () => {
-    // A 30-second stream has no full window at all. Skipping the partial ones
-    // would leave nothing to average and lose the session entirely.
-    const np = normalizedPower(Array.from({ length: 30 }, () => 200));
-    expect(np).toBeCloseTo(200, 6);
-    expect(normalizedPower([])).toBeUndefined();
   });
 });

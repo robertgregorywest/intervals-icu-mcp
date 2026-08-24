@@ -18,12 +18,7 @@ export type {
   TimeConstants,
   TrajectoryDay,
 } from "./trajectory.js";
-export {
-  ROLLING_WINDOW_SECONDS,
-  buildPowerStream,
-  deriveLoad,
-  normalizedPower,
-} from "./load.js";
+export { buildPowerStream, deriveLoad } from "./load.js";
 export type { DerivedLoad, PowerStream, StreamGap } from "./load.js";
 export type {
   ForecastBasis,

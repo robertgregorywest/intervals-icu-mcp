@@ -1,4 +1,5 @@
 import type { FlatPlannedStep } from "../session-review/index.js";
+import { normalizedPower } from "../analysis/index.js";
 
 /**
  * The synthetic power stream a prescription implies, and the figures
@@ -6,20 +7,19 @@ import type { FlatPlannedStep } from "../session-review/index.js";
  *
  * Every rule here was fitted to the platform's own output and then checked
  * against the whole harvested corpus: on the 109 events prescribed wholly in
- * absolute watts, the normalised power below reproduces the platform's figure
- * exactly, to the watt, on all 109. The pieces that matter, in the order they
- * were found to matter:
+ * absolute watts, `normalizedPower` (see analysis/power.ts) reproduces the
+ * platform's figure exactly, to the watt, on all 109 once fed this stream.
+ * The pieces that matter, in the order they were found to matter:
  *
  * - a **band** contributes at its midpoint, not swept — measured across all 69
  *   events at design time, midpoint landed within 1 W on 65 and sweeping on 32;
  * - a **ramp** — a step the text marks `ramp` — is swept linearly instead;
- * - the rolling mean is **30 seconds trailing and expanding**: the first 29
- *   samples each average what has arrived so far rather than being skipped.
- *   Dropping them instead costs 33 of the 109 exact matches, so this is not a
- *   detail;
+ * - the rolling mean's 30-second trailing/expanding window (see
+ *   `ROLLING_WINDOW_SECONDS` in analysis/power.ts) — dropping the first 29
+ *   partial samples instead of expanding into them costs 33 of the 109 exact
+ *   matches, so this is not a detail;
  * - the final figure is rounded half up.
  */
-export const ROLLING_WINDOW_SECONDS = 30;
 
 /** Why a prescription could not be turned into a stream. */
 export interface StreamGap {
@@ -87,25 +87,6 @@ export function buildPowerStream(steps: FlatPlannedStep[]): PowerStream {
   });
 
   return { watts, gaps };
-}
-
-/** Normalised power over a 1 Hz stream. Unrounded — round at the boundary. */
-export function normalizedPower(stream: number[]): number | undefined {
-  if (stream.length === 0) return undefined;
-
-  const window: number[] = [];
-  let sum = 0;
-  let fourthPowerSum = 0;
-
-  for (const w of stream) {
-    window.push(w);
-    sum += w;
-    if (window.length > ROLLING_WINDOW_SECONDS) sum -= window.shift()!;
-    const mean = sum / window.length;
-    fourthPowerSum += mean ** 4;
-  }
-
-  return (fourthPowerSum / stream.length) ** 0.25;
 }
 
 export interface DerivedLoad {

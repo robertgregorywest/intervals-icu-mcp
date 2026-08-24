@@ -1,8 +1,5 @@
 import { alignSteps } from "./align.js";
-import {
-  ROLLING_WINDOW_SECONDS,
-  normalizedPower,
-} from "../training-load-forecast/load.js";
+import { ROLLING_WINDOW_SECONDS, normalizedPower } from "../analysis/index.js";
 import type {
   ActivityInterval,
   AlignedStep,

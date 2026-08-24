@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   computeBestPower,
   formatDuration,
+  normalizedPower,
 } from "../../../src/services/analysis/power.js";
 
 describe("computeBestPower", () => {
@@ -32,6 +33,19 @@ describe("computeBestPower", () => {
     const result = computeBestPower(stream, 30);
 
     expect(result!.bestPower).toBe(200);
+  });
+});
+
+describe("normalizedPower", () => {
+  it("expands the rolling mean over the first 30 seconds rather than skipping them", () => {
+    // A 30-second stream has no full window at all. Skipping the partial ones
+    // would leave nothing to average and lose the session entirely.
+    const np = normalizedPower(Array.from({ length: 30 }, () => 200));
+    expect(np).toBeCloseTo(200, 6);
+  });
+
+  it("returns undefined for an empty stream", () => {
+    expect(normalizedPower([])).toBeUndefined();
   });
 });
 

@@ -9,7 +9,7 @@ import {
   DEFAULT_TOLERANCE,
   type RawPowerStream,
 } from "../../../src/services/session-review/review.js";
-import { normalizedPower } from "../../../src/services/training-load-forecast/load.js";
+import { normalizedPower } from "../../../src/services/analysis/power.js";
 import { flattenPlannedSteps } from "../../../src/services/session-review/planned.js";
 import type {
   DeliveredInterval,
