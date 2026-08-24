@@ -2,8 +2,11 @@ import type { IActivitiesApi } from "../activities/index.js";
 import type { IEventsApi } from "../events/index.js";
 import type { Activity } from "../activities/types.js";
 import type { IntervalsEvent } from "../../types.js";
-import { flattenPlannedSteps } from "../session-review/index.js";
-import { resolvePair, shiftDate } from "../session-review/pair.js";
+import {
+  flattenPlannedSteps,
+  resolvePair,
+  shiftDate,
+} from "../session-review/index.js";
 import {
   bucketDelivered,
   bucketPlanned,

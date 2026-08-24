@@ -4,6 +4,8 @@ export {
   PAIR_SEARCH_WINDOW_DAYS,
 } from "./session-review.js";
 export type { SessionReviewDeps } from "./session-review.js";
+export { resolvePair, shiftDate } from "./pair.js";
+export type { PairDeps } from "./pair.js";
 export {
   reviewSession,
   judgeStep,
