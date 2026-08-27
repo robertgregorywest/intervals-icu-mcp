@@ -103,11 +103,18 @@ Draft the sessions, then **verify the load — don't eyeball it.** Planning by s
 Keep `coaching-log.md` current so future sessions inherit this one's decisions and context.
 
 - **Loggable = not re-derivable.** Log only what a future session couldn't reconstruct from the `coaching-philosophy` skill, `steering.md`, `season.md`, `get_coaching_context`, or Intervals.icu data: decisions and their rationale, deviations from plan, subjective signals (niggles, life stress, how a session felt), things to watch. Not facts already on the calendar or in the snapshot.
-- **Checkpoint + confirm.** Draft the entry and any header changes, show them, and write only on confirmation — at the first of: (1) you ask to persist a plan to Intervals.icu, (2) the session is wrapping up and there's loggable context (offer proactively, but stay silent if nothing passes the test), (3) you ask to log. If nothing is loggable, write nothing.
+- **Checkpoint + confirm.** Draft the entry and any header changes, show them, and write only on confirmation — at the first of: (1) you ask to persist a plan to Intervals.icu, (2) the session is wrapping up and there's loggable context (offer proactively, but stay silent if nothing passes the test), (3) you ask to log. If nothing is loggable, write nothing. **One confirmation covers the write and its commit** — the athlete is approving the entry, not the plumbing; go straight through to the push.
 - **Local write, not delegated.** Writing the log is a local file edit — it does **not** go through `intervals-coach`. (When a session also persists a workout, that persistence delegates to `intervals-coach`; the log checkpoint fires here afterward.)
 - **Review findings are logged as patterns and threads, not verdicts.** A pattern the review surfaced — with the sessions evidencing it and the decision taken — is loggable. Per-step verdicts are not: they're re-derivable from Intervals.icu. A pattern worth watching beyond this session opens a header thread with the condition that would close it, so the next review tests it explicitly.
 - **Advance the watermark on write.** `reviewed-through` moves to today as part of a confirmed log write, never before — see [coaching-log-format.md](coaching-log-format.md).
-- **Format + maintenance.** Entry/header schema, the watermark, the 12-week compaction window, thread retirement, and promoting durable facts up to `season.md` live in [coaching-log-format.md](coaching-log-format.md) — read it at the checkpoint before writing.
+- **Format + maintenance.** Entry/header schema, the watermark, the 12-week compaction window, thread retirement, promoting durable facts up to `season.md`, and the commit live in [coaching-log-format.md](coaching-log-format.md) — read it at the checkpoint before writing.
+- **Done = durable.** `docs/personal/` is a private git repo, so a written log that is never committed is a log that exists on one machine. The checkpoint completes when
+
+  ```
+  git -C /Users/rob/GitHub/robertgregorywest/intervals-icu-mcp/docs/personal status -sb --porcelain
+  ```
+
+  prints its branch line and nothing else — clean tree, no `ahead` marker. Run it and read it; don't assume the push landed. A session where nothing was loggable satisfies this too, having written nothing.
 
 ## Constraints
 

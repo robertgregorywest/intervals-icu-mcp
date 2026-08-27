@@ -70,6 +70,14 @@ header thread carry any state that must survive.
 2. **Review the header** — for each thread, test its open-condition against this session. Resolved or lapsed → retire it (remove from header, add a closing line to today's entry). Ambiguous → ask before retiring; never drop a live thread silently.
 3. **Advance the watermark** — set `reviewed-through` to today as part of this write. Only as part of a confirmed write, never before: if the athlete doesn't confirm, the line stays where it was and the next session re-reviews the same window rather than silently skipping it. Advance it whenever a review ran, including when the review found nothing worth reporting — a quiet window is still a reviewed one.
 4. **Promote durable facts up** — if a fact is durable _season-state_ (a race result, a confirmed benchmark, a lasting pattern finding) rather than transient execution-state, write it into `season.md` instead of (or as well as) keeping it here. If instead it's a durable _training belief_ that would hold next season (a coaching principle, not season-state), it graduates further up: into `docs/personal/steering.md`, and once it's clearly proven, into the `coaching-philosophy` skill itself (a git commit). Compaction must never let a durable fact age out with nowhere to land.
+5. **Commit** — `docs/personal/` is its own private git repo (the public repo ignores the path), so an uncommitted write lives on one machine only. Close the checkpoint with:
+
+   ```
+   cd /Users/rob/GitHub/robertgregorywest/intervals-icu-mcp/docs/personal && \
+     git add -A && git commit -m "coaching: <entry date> — <block>" && git push
+   ```
+
+   One commit carries everything the checkpoint touched — a fact promoted to `season.md` or `steering.md` in step 4 goes in it, not left behind as a loose edit.
 
 ## Review window
 
