@@ -29,6 +29,7 @@ The `coaching-philosophy` skill ships with the server, so it's always present. I
 2. **Select from the planned side** — key sessions are those _prescribed_ at sweet spot or above, read off the planned events. Selecting on the planned side means a key session that was abandoned or never started gets selected rather than silently missed.
 3. **Read both lenses** — `compare_intensity_distribution` over the whole window for the dose, `compare_planned_vs_actual` per selected session for execution within reps.
 4. **Interpret** — read [execution-review.md](execution-review.md) at this point (not at session start): step roles, which verdicts are artefacts, how deep to read each kind of session, and what passes the reporting threshold.
+5. **Done = every selected session dispositioned.** Each session picked in step 2 has been read through both lenses and landed on one of two dispositions: **reported** (it met the recurrence threshold) or **held** (seen once — not raised now, but ready if the athlete asks). A window where everything landed as prescribed completes at _one line_ plus the middle-band figure, not at silence. A review skipped under step 1 completes on saying it was skipped. The watermark is the record that this ran, and it advances at the log checkpoint — never here.
 
 **A narrow request doesn't skip the review.** If the athlete opens with something specific ("move Thursday's session"), run the review anyway so you hold full context, but **answer their request first** and raise findings only where they bear on it.
 
