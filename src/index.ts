@@ -68,6 +68,15 @@ import type {
   TrackRunWriteOptions,
   TrackRunWriteResult,
 } from "./services/track-lap-writeback/index.js";
+import { createTrackSessions } from "./services/track-sessions/index.js";
+import type {
+  ITrackSessions,
+  CompareTrackSessionsOptions,
+  GetTrackSessionOptions,
+  ListTrackSessionsResult,
+  RunComparison,
+  TrackSessionDetail,
+} from "./services/track-sessions/index.js";
 import { createTrainingWeek } from "./services/training-week/index.js";
 import type {
   ITrainingWeek,
@@ -152,6 +161,13 @@ export interface IIntervalsClient {
   ): Promise<TrackLapAlignmentResult>;
   writeTrackRuns(options: TrackRunWriteOptions): Promise<TrackRunWriteResult>;
 
+  // Track session records
+  listTrackSessions(): Promise<ListTrackSessionsResult>;
+  getTrackSession(options: GetTrackSessionOptions): Promise<TrackSessionDetail>;
+  compareTrackSessions(
+    options: CompareTrackSessionsOptions
+  ): Promise<RunComparison>;
+
   // Training week
   getTrainingWeekSummary(weekStart?: string): Promise<TrainingWeekSummary>;
 
@@ -186,6 +202,7 @@ export class IntervalsClient implements IIntervalsClient {
   private intensityDistribution: IIntensityDistribution;
   private trackLapAlignment: ITrackLapAlignment;
   private trackLapWriteback: ITrackLapWriteback;
+  private trackSessions: ITrackSessions;
   private trainingLoadForecast: ITrainingLoadForecast;
   private trainingWeek: ITrainingWeek;
 
@@ -229,6 +246,9 @@ export class IntervalsClient implements IIntervalsClient {
       activitiesApi: this.activities,
       alignment: this.trackLapAlignment,
     });
+    // Reads tracked record files, not Intervals.icu — the only service here
+    // that takes no HTTP client and needs no API key.
+    this.trackSessions = createTrackSessions();
     this.trainingLoadForecast = createTrainingLoadForecast({
       eventsApi: this.events,
       wellnessApi: this.wellness,
@@ -383,6 +403,23 @@ export class IntervalsClient implements IIntervalsClient {
     options: TrackRunWriteOptions
   ): Promise<TrackRunWriteResult> {
     return this.trackLapWriteback.writeTrackRuns(options);
+  }
+
+  // Track session records
+  async listTrackSessions(): Promise<ListTrackSessionsResult> {
+    return this.trackSessions.listTrackSessions();
+  }
+
+  async getTrackSession(
+    options: GetTrackSessionOptions
+  ): Promise<TrackSessionDetail> {
+    return this.trackSessions.getTrackSession(options);
+  }
+
+  async compareTrackSessions(
+    options: CompareTrackSessionsOptions
+  ): Promise<RunComparison> {
+    return this.trackSessions.compareTrackSessions(options);
   }
 
   // Training week

@@ -62,6 +62,17 @@ import {
   writeTrackRunsOutputSchema,
 } from "./tools/track-lap-writeback.js";
 import {
+  listTrackSessions,
+  listTrackSessionsSchema,
+  listTrackSessionsOutputSchema,
+  getTrackSession,
+  getTrackSessionSchema,
+  getTrackSessionOutputSchema,
+  compareTrackSessions,
+  compareTrackSessionsSchema,
+  compareTrackSessionsOutputSchema,
+} from "./tools/track-sessions.js";
+import {
   compareIntensityDistributionSchema,
   compareIntensityDistribution,
   compareIntensityDistributionOutputSchema,
@@ -571,6 +582,68 @@ export const TOOLS: ToolDef[] = [
     outputSchema: writeTrackRunsOutputSchema,
     handler: (client, args) =>
       writeTrackRuns(client, args as z.infer<typeof writeTrackRunsSchema>),
+  },
+
+  {
+    name: "list_track_sessions",
+    description:
+      "List the tracked track-session records — every timed session on file, " +
+      "with its date, event, gear and each scored run's lap count, distance and " +
+      "time. Records hold the lap-timer splits and the measurement basis; " +
+      "everything else is derived on read. Reads local files, not Intervals.icu, " +
+      "so it returns an empty list plus the directory it searched when the " +
+      "athlete keeps no records. Returns: { directory, sessions: [{ id, date, " +
+      "kind, event, venue, activityId, runs: [{ ref, run, start, laps, " +
+      "distanceMeters, durationSeconds }] }], notes }.",
+    schema: listTrackSessionsSchema,
+    annotations: READ_ONLY,
+    outputSchema: listTrackSessionsOutputSchema,
+    handler: (client) => listTrackSessions(client),
+  },
+
+  {
+    name: "get_track_session",
+    description:
+      "Read one track-session record and everything its timed splits imply: per " +
+      "lap the split, cumulative time, speed and the cadence the gear demands; " +
+      "per run the flying-portion aggregates (a gate or standing lap is reported " +
+      "in full and excluded from every average), the opening and closing segment " +
+      "times and speeds, the decline — (v_close/v_open)^3 - 1, a power ratio " +
+      "carrying no aero constant — and what even pacing would have been worth " +
+      "(sum of squared speeds, RMS speed, flat-equivalent time, gain). " +
+      "NO POWER: these are timed laps. For watts and heart rate on the same laps " +
+      "use compute_track_lap_power, which fits the splits to the activity's " +
+      "streams. Returns: { basis, developmentMeters, prose, runs: [{ ref, run, " +
+      "start, laps, summary }], notes }.",
+    schema: getTrackSessionSchema,
+    annotations: READ_ONLY,
+    outputSchema: getTrackSessionOutputSchema,
+    handler: (client, args) =>
+      getTrackSession(client, args as z.infer<typeof getTrackSessionSchema>),
+  },
+
+  {
+    name: "compare_track_sessions",
+    description:
+      "Compare two or more timed runs lap by lap — the head-to-head table for " +
+      "reading a race against the races before it. Each lap position carries " +
+      "every run's split and its difference against the FIRST run listed, which " +
+      "is the baseline; summary rows give total, flying portion, opening and " +
+      "closing segment times, and the decline per run. " +
+      "Refuses runs whose flying portions differ in lap count rather than " +
+      "returning a half-aligned table — a 1500 m run and a 2 km run have no " +
+      'lap-to-lap correspondence. Address a run as "<sessionId>" (a single-run ' +
+      'session) or "<sessionId>#<run>". ' +
+      "Returns: { refs, columns, laps: [{ lap, standingStart, values, deltas }], " +
+      "summary: [{ label, values, deltas, unit }], notes }.",
+    schema: compareTrackSessionsSchema,
+    annotations: READ_ONLY,
+    outputSchema: compareTrackSessionsOutputSchema,
+    handler: (client, args) =>
+      compareTrackSessions(
+        client,
+        args as z.infer<typeof compareTrackSessionsSchema>
+      ),
   },
 
   // Workflow
