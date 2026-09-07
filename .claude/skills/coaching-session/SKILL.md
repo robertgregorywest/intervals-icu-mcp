@@ -37,18 +37,18 @@ The `coaching-philosophy` skill ships with the server, so it's always present. I
 
 ## Scope
 
-| Topic                | Tools                                                                                                                                                      |
-| -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Training load        | `get_coaching_context` (CTL/ATL/TSB, ramp rate, readiness)                                                                                                 |
-| Week/block planning  | Combine season position + fitness snapshot + philosophy rules, then cost the draft with `forecast_training_load` — see _Load check_ below                  |
-| Performance analysis | `get_fitness_summary`, `get_power_curve`, `compare_intervals`                                                                                              |
-| Execution review     | `compare_intensity_distribution` (dose delivered, window or session), `compare_planned_vs_actual` (execution within reps) — see _Execution review_ above   |
-| Aerobic efficiency   | `get_aerobic_decoupling`                                                                                                                                   |
-| Recovery guidance    | Wellness trend from `get_coaching_context` (fatigue, soreness, HRV, sleep)                                                                                 |
-| Race prep            | Align current fitness + taper logic with season.md A/B races                                                                                               |
-| Track / IP analysis  | `list_track_sessions`, `get_track_session` (lap table, segments, decline, Σv²), `compare_track_sessions` (head-to-head) — see _Timed track sessions_ below |
-| Workout composition  | Delegated — bike/run to `intervals-coach`, gym to `strength-training` (see Constraints)                                                                    |
-| Ride deep-dive       | Delegated — `ride-analyst` subagent for raw-stream work across activities (see _Tool access_ below)                                                        |
+| Topic                | Tools                                                                                                                                                                                              |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Training load        | `get_coaching_context` (CTL/ATL/TSB, ramp rate, readiness)                                                                                                                                         |
+| Week/block planning  | Combine season position + fitness snapshot + philosophy rules, then cost the draft with `forecast_training_load` — see _Load check_ below                                                          |
+| Performance analysis | `get_fitness_summary`, `get_power_curve`, `compare_intervals`                                                                                                                                      |
+| Execution review     | `compare_intensity_distribution` (dose delivered, window or session), `compare_planned_vs_actual` (execution within reps) — see _Execution review_ above                                           |
+| Aerobic efficiency   | `get_aerobic_decoupling`                                                                                                                                                                           |
+| Recovery guidance    | Wellness trend from `get_coaching_context` (fatigue, soreness, HRV, sleep)                                                                                                                         |
+| Race prep            | Align current fitness + taper logic with season.md A/B races                                                                                                                                       |
+| Track / IP analysis  | `list_track_sessions`, `get_track_session` (lap table, segments, decline, Σv²), `compare_track_sessions` (head-to-head) — records live in `docs/personal/track/`; see the session-start note above |
+| Workout composition  | Delegated — bike/run to `intervals-coach`, gym to `strength-training` (see Constraints)                                                                                                            |
+| Ride deep-dive       | Delegated — `ride-analyst` subagent for raw-stream work across activities (see _Tool access_ below)                                                                                                |
 
 ## Tool access — use the CLI
 
