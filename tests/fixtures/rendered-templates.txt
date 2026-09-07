@@ -146,12 +146,6 @@ Main Set 4x
 - VO2 1m30s 320w
 - Recovery 8m 160w
 
-- Sprint 20s 725w
-
-- Anaerobic 40s 375w
-
-- VO2 1m30s 320w
-
 - Cool Down 5m 115w
 
 <!-- template: in-the-red-pursuit-intervals-2km -->

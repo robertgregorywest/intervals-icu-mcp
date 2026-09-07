@@ -29,7 +29,4 @@ Main Set 4x
   - VO2 1m30s 110%
   - Recovery 8m 55%
 
-- Sprint 20s 250%
-- Anaerobic 40s 130%
-- VO2 1m30s 110%
 - Cool Down 5m 40%
