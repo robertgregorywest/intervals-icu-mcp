@@ -222,6 +222,22 @@ export interface RunComparison {
   notes?: string[];
 }
 
+/**
+ * A record's splits in the inline form `compute_track_lap_power` and
+ * `write_track_runs` take, plus the basis fields those calls would otherwise
+ * need supplying by hand.
+ */
+export interface TrackSplitsSource {
+  sessionId: string;
+  /** The export, re-serialised from the reconciled record. */
+  splits: string;
+  /** From the record's basis; absent when no ride was recorded. */
+  activityId?: string;
+  lapDistanceMeters: number;
+  /** Run labels in export order, for a caller that wants to name one. */
+  runs: string[];
+}
+
 export interface GetTrackSessionOptions {
   id: string;
   /** Laps per segment. Defaults to the widest non-overlapping pair, max 3. */

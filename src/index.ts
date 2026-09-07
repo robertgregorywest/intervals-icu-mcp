@@ -76,6 +76,7 @@ import type {
   ListTrackSessionsResult,
   RunComparison,
   TrackSessionDetail,
+  TrackSplitsSource,
 } from "./services/track-sessions/index.js";
 import { createTrainingWeek } from "./services/training-week/index.js";
 import type {
@@ -167,6 +168,11 @@ export interface IIntervalsClient {
   compareTrackSessions(
     options: CompareTrackSessionsOptions
   ): Promise<RunComparison>;
+  /**
+   * Synchronous, alone among these: it reads local files, and its callers are
+   * the two track tools assembling their own arguments, not returning a result.
+   */
+  resolveTrackSplits(sessionId: string): TrackSplitsSource;
 
   // Training week
   getTrainingWeekSummary(weekStart?: string): Promise<TrainingWeekSummary>;
@@ -420,6 +426,10 @@ export class IntervalsClient implements IIntervalsClient {
     options: CompareTrackSessionsOptions
   ): Promise<RunComparison> {
     return this.trackSessions.compareTrackSessions(options);
+  }
+
+  resolveTrackSplits(sessionId: string): TrackSplitsSource {
+    return this.trackSessions.resolveTrackSplits(sessionId);
   }
 
   // Training week

@@ -2,6 +2,7 @@ import { compareRuns, resolveRunRef, TrackComparisonError } from "./compare.js";
 import { deriveRun, developmentFromBasis, startFor } from "./derive.js";
 import { loadTrackSessionRecords, recordsDir } from "./loader.js";
 import { RATE_DP, round } from "./round.js";
+import { resolveTrackSplits } from "./splits-source.js";
 import type {
   CompareTrackSessionsOptions,
   GetTrackSessionOptions,
@@ -9,6 +10,7 @@ import type {
   RunComparison,
   TrackSessionDetail,
   TrackSessionRecord,
+  TrackSplitsSource,
 } from "./types.js";
 
 export interface TrackSessionsDeps {
@@ -26,6 +28,11 @@ export interface ITrackSessions {
   compareTrackSessions(
     options: CompareTrackSessionsOptions
   ): Promise<RunComparison>;
+  /**
+   * Synchronous, unlike the rest: it reads local files and its callers are tool
+   * handlers assembling the arguments of another call, not returning a result.
+   */
+  resolveTrackSplits(sessionId: string): TrackSplitsSource;
 }
 
 /**
@@ -118,6 +125,10 @@ export class TrackSessions implements ITrackSessions {
     );
     return compareRuns(resolved);
   }
+
+  resolveTrackSplits(sessionId: string): TrackSplitsSource {
+    return resolveTrackSplits(sessionId, this.load().records);
+  }
 }
 
 export function createTrackSessions(
@@ -145,6 +156,7 @@ export {
   MAX_SEGMENT_LAPS,
 } from "./derive.js";
 export { compareRuns, resolveRunRef, TrackComparisonError } from "./compare.js";
+export { resolveTrackSplits, serializeSplits } from "./splits-source.js";
 export type {
   RunStart,
   SessionKind,
@@ -163,4 +175,5 @@ export type {
   RunComparison,
   GetTrackSessionOptions,
   CompareTrackSessionsOptions,
+  TrackSplitsSource,
 } from "./types.js";
