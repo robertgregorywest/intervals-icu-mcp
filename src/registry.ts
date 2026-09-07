@@ -544,8 +544,11 @@ export const TOOLS: ToolDef[] = [
       "interval the fit cannot separate, and a verdict — a weak or ambiguous " +
       "alignment withholds per-lap readings rather than returning plausible fiction. " +
       "The drivetrain rollout is fitted, not assumed, and returned. " +
-      "Pass `splits` as the export text: run, cumulative distance, cumulative time, " +
-      "lap time. Returns: { runs: [{ run, startOffsetSeconds, fittedRolloutMeters, " +
+      "Pass `sessionId` to take the splits, activity and lap length from a stored " +
+      "track session record (see list_track_sessions) — preferred, since the export " +
+      "is then never transcribed twice. Otherwise pass `splits` as the export text " +
+      "(run, cumulative distance, cumulative time, lap time) with `activityId`. " +
+      "Returns: { runs: [{ run, startOffsetSeconds, fittedRolloutMeters, " +
       "confidence, average, laps }], rolloutAgreement, thresholds }.",
     schema: computeTrackLapPowerSchema,
     annotations: READ_ONLY,
