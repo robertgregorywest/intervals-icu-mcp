@@ -33,7 +33,9 @@ your output. The rules that bite most often:
   and the Σv² pacing figures, all computed from the timing export. `compare_track_sessions` builds a
   head-to-head. **Do not re-derive lap times from GPS or speed streams when a record exists** — the
   helper's lap timer is the measurement and the streams are not accurate enough to reproduce it.
-  Power for those laps still comes from the SRM, joined by `compute_track_lap_power`.
+  Power for those laps still comes from the SRM, joined by `compute_track_lap_power` — pass it
+  `sessionId` rather than pasting the export, and it takes the splits, the activity and the lap
+  length from the record.
 
 ## How to pull data
 

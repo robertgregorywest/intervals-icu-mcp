@@ -86,3 +86,24 @@ sits ~2.9% above the true development of a real 700×23 tyre — and a true deve
 inches" correspondingly lands ~2.9% low and looks like a different gear. The frontmatter schema
 rejects gear inches outright, because mistaking the two once cost a full analysis cycle
 (`track-context.md` §1).
+
+## Closing the loop: the export is never pasted twice
+
+`compute_track_lap_power` and `write_track_runs` predate records, so both took the export pasted as
+text. Once a session is filed, that leaves the same numbers typed twice — once into the record, once
+into the call — and a second transcription is a second chance to get a digit wrong, in the one place
+where the record's reconciliation check cannot help.
+
+Both tools therefore accept `sessionId` as an alternative to `splits`, taking the export, the
+`activityId` and the `lapDistanceMeters` from the record's basis. The splits handed over are
+**re-serialised from the parsed record**, not the raw block: the alignment then gets exactly the
+numbers the reconciliation passed, and any extra trailing columns the timing app exported are
+dropped, which costs nothing because the parser ignores them anyway.
+
+`splits` and `sessionId` are mutually exclusive rather than one overriding the other — they could
+disagree, and there is no principled way to pick a winner. That check lives in the tool handler, not
+as a Zod refinement, because the MCP adapter registers `schema.shape` and `.refine()` erases it.
+
+`activityId` stays overridable, and stays required when there is no record to take it from. A record
+need not carry one: 2025 Nationals is a timing export with no ride behind it, and asking to align it
+says so rather than failing obscurely inside the stream fetch.
