@@ -97,8 +97,24 @@ Whether a **Planned step** carries the session's prescribed intent (work) or ser
 _Avoid_: reporting a **Verdict** on a support step as a finding — `under` on a recovery step means recovery was taken as easily as prescribed, which is the session working.
 
 **Lap-split record**:
-An external timing app's export of a track session: one row per timed lap, giving the run it belongs to, cumulative distance, cumulative time and lap time. Self-verifiable — lap times sum to the cumulative column and distance advances by the lap length — and so checked against itself before anything is fitted to it. It is the measurement of _what happened_; the activity's streams are the measurement of _what it cost_. Neither file references the other, which is the whole problem the alignment solves.
-_Avoid_: trusting the export's own "Average Speed" and "Average Cadence" columns — they are unweighted means of the lap values, not distance ÷ time.
+An external timing app's export of a track session: one row per timed lap, giving the run it belongs to, cumulative distance, cumulative time and lap time. Self-verifiable — lap times sum to the cumulative column and distance advances by the lap length — and so checked against itself before anything is fitted to it. It is the measurement of _what happened_; the activity's streams are the measurement of _what it cost_. Neither file references the other, which is the whole problem the alignment solves. Its durable form is a **Track session record**.
+_Avoid_: trusting the export's own "Average Speed" and "Average Cadence" columns — they are unweighted means of the lap values, not distance ÷ time; letting the export exist only as pasted text in one tool call, which is what the record fixes.
+
+**Track session record**:
+A tracked file holding one **Session**: the measurement basis in frontmatter (date, gear, rollout, crank length, lap distance, start type, provenance) and the **Lap-split record** verbatim in a fenced `splits` block, with prose between them. Stores **nothing derived** — every speed, cadence, segment, **Decline** and comparison is recomputed on read, so nothing goes stale when MAP, air density or the aero model moves. Parsed by the same reconciliation the export gets, so a transcription slip surfaces on every read rather than once. See `docs/adr/0008-timed-splits-are-tracked-records.md`.
+_Avoid_: storing a speed, a cadence or a decline in the file; writing a table of splits into a prose document instead of a record; putting modelled watts in one — the aero model over-reads (`track-context.md` §6) and stays in prose, labelled.
+
+**Session vs Run**:
+A **Session** is one visit to the track, one record file, addressed by its `id`. A **Run** is one timed effort within it — a race has exactly one; a training session has several. A run is addressed as `<sessionId>#<run>`, and the run label is verbatim from the **Lap-split record**, so it is the same identity a **Run label** carries onto the activity.
+_Avoid_: comparing sessions when you mean runs; a bare session id is refused for a multi-run session rather than resolved to its first run.
+
+**Flying portion**:
+The laps of a **Run** ridden from speed — every lap for a flying start, laps 2…n where the run began from a gate or standing. Every aggregate (mean, SD, segments, **Decline**, Σv²) is taken over it. The standing lap is reported in full and excluded from all of them, because it measures an acceleration rather than a held speed.
+_Avoid_: averaging a standing lap into a run's mean, which makes two runs incomparable whenever their start types differ.
+
+**Decline**:
+`(v_close / v_open)³ − 1` over a **Run**'s **Flying portion** — the proportional power change from its opening segment to its close. Speed cubed is a power ratio over a fixed distance, so it carries no aero constant, only the exponent, and is therefore model-free. Segments are the first and last `min(3, floor((flyingLaps − 1) / 2))` laps, which always leaves a lap between them.
+_Avoid_: writing it as `(v_open/v_close)³`, which inverts the sign; reading it as watts — it is a ratio, and the modelled-watt decline beside it in `track-context.md` §4 is a different, model-bearing quantity that happens to agree.
 
 **Candidate window**:
 A stretch of the activity where cadence stays near the session's own peak, long enough to hold a scored run. Every alignment search is confined to one, and each run claims exactly one, in order. Not an optimisation: an unconstrained search over the whole ride returns a low residual and an absurd development from easy riding, because near-constant cadence fits any near-constant speed profile once the scale is free.

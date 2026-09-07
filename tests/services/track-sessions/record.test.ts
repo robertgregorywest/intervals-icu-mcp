@@ -83,7 +83,7 @@ describe("parseTrackSessionRecord", () => {
     ).toThrow(/bad-reconcile\.md.*Run run-1 does not reconcile/s);
   });
 
-  it("rejects gear inches, which read ~2.9% low against a real rollout", () => {
+  it("rejects gear inches, which sit ~2.9% above a real rollout", () => {
     expect(() =>
       parseTrackSessionRecord(bad("bad-gear.md"), "bad-gear.md")
     ).toThrow(/gear must be `chainring x cog`/);

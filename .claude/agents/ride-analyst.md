@@ -27,6 +27,13 @@ your output. The rules that bite most often:
 - **Decoupling is only comparable between rides matched on opening intensity** — compare the same
   elapsed window from each ride's start, and check the opening averages agree before quoting a delta.
 - **Track work: the SRM is the reference.** Modelled power is not a measurement.
+- **Timed laps come from the record, not from the streams.** A timed track session is stored in
+  `docs/personal/track/`; `list_track_sessions` says what is on file and `get_track_session` returns
+  the lap table with speed, cadence, the flying portion, the opening/closing segments, the decline
+  and the Σv² pacing figures, all computed from the timing export. `compare_track_sessions` builds a
+  head-to-head. **Do not re-derive lap times from GPS or speed streams when a record exists** — the
+  helper's lap timer is the measurement and the streams are not accurate enough to reproduce it.
+  Power for those laps still comes from the SRM, joined by `compute_track_lap_power`.
 
 ## How to pull data
 
