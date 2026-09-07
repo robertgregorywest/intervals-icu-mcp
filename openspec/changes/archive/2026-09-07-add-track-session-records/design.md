@@ -5,7 +5,7 @@
 A record file holds two things: the measurement basis needed to read the splits, and the splits.
 Everything else is prose for a human.
 
-````markdown
+```markdown
 ---
 id: 2026-09-06-bmrc-ip
 date: 2026-09-06
@@ -32,7 +32,7 @@ run,cumDist,cumTime,lap
 qualifying,250,22.86,22.86
 qualifying,500,38.73,15.87
 ​`
-````
+```
 
 `id` is the filename stem and the identity; a run is addressed `<id>#<run>`, reusing the `run`
 label that `RunSplits` already carries verbatim from the export
