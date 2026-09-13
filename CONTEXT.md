@@ -45,7 +45,7 @@ The single reconcile operation (`sync_workout_library`): render every Workout te
 _Avoid_: "seed" / "refresh" — both named halves of this one operation and are retired
 
 **Workout brief**:
-The distilled decision a coaching skill hands to the forked `compose-workout` skill: what to build (discipline, intent, library item or compose fresh, template tier), the context that shapes it (block, constraints, anchors, recent load) and when. Defined once, in `compose-workout`'s "Your input"; callers point there rather than restating it. The decision is made on the coaching thread; the brief carries it to the build.
+The distilled decision a coaching skill hands to its forked build skill: what to build, the context that shapes it (block, constraints, recent load) and when. One per discipline, each with a single caller — `intervals-coach` → `compose-workout` (adds the library item or compose fresh, and the anchors) and `strength-training` → `compose-strength-session` (the **strength brief**; adds the template tier). Each is defined once, in its build skill's "Your input"; the caller points there rather than restating it. The decision is made on the coaching thread; the brief carries it to the build.
 _Avoid_: "prompt" or "spec" — the brief is a fixed contract, not free-form instructions
 
 **Basis**:
