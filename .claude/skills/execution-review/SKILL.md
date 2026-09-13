@@ -17,12 +17,10 @@ everything you need is below or in `$ARGUMENTS`.
 
 `$ARGUMENTS` gives you:
 
-- **The window** — start date (the log's `reviewed-through` watermark) and end date (today).
+- **The window** — start date (settled by the caller from the log's `reviewed-through` watermark)
+  and end date (today).
 - **`mapZones`** — the athlete's MAP-anchored coaching zones, if the caller already had them handy.
   If not supplied, fetch them yourself: `./bin/icu get_coaching_context` (from the project root).
-
-If `$ARGUMENTS` says the window should be skipped (no key session in range, or the watermark is too
-recent), don't run anything — just report that back.
 
 ## How to run the review
 
@@ -31,7 +29,8 @@ directory, piping, `describe`. You run at its **Read-only** tier.
 
 1. **Select from the planned side.** Key sessions are those _prescribed_ at sweet spot or above.
    Selecting on the planned side means an abandoned or never-started key session gets selected rather
-   than silently missed. Look up planned events with `./bin/icu get_events` over the window.
+   than silently missed. Look up planned events with `./bin/icu get_events` over the window. **No
+   key session in the window → the review is skipped:** stop here and report it as skipped.
 2. **Read both lenses.** `compare_intensity_distribution` over the whole window for the dose,
    `compare_planned_vs_actual` per selected session for execution within reps. Reach both through
    `./bin/icu`, piped, extracting only the figures you need.
@@ -39,8 +38,7 @@ directory, piping, `describe`. You run at its **Read-only** tier.
 3. **Interpret.** Read `execution-review-lenses.md` (in this skill's own folder) at this point: step
    roles, which verdicts are artefacts, how deep to read each kind of session, what passes the
    reporting threshold, and the exact reporting rules ("What reaches the athlete"). The tools report
-   deltas; deltas are not findings; that file is the difference — follow its reporting rules for what
-   you return, verbatim.
+   deltas; deltas are not findings; that file is the difference.
 4. **Done = every selected session dispositioned.** Each session lands on **reported** (met the
    recurrence threshold) or **held** (seen once — not raised now, ready if asked).
 
@@ -48,7 +46,8 @@ directory, piping, `describe`. You run at its **Read-only** tier.
 
 Follow `execution-review-lenses.md`'s "What reaches the athlete" rules exactly. Two things it doesn't
 cover, specific to running forked: **never return raw comparison JSON or full session tables** — only
-the handful of numbers that support a finding — and **state plainly whether the window was skipped**
-(and why) if step 1 concluded that. **Do not propose training changes or draft the next block** —
-that's the caller's job with the full context stack; hand back findings, not a plan. The caller
-advances the log's `reviewed-through` watermark on write — that's their job, not yours.
+the handful of numbers that support a finding — and **end on the watermark line**: either
+`reviewed through: <end date>` when the review ran (a quiet window included), or `skipped: no key
+session in <window>` when step 1 stopped it. The caller advances the log's `reviewed-through` to that
+date on write. **Do not propose training changes or draft the next block** — that's the caller's
+job with the full context stack; hand back findings, not a plan.
