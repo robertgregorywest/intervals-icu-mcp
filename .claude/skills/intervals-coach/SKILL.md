@@ -1,6 +1,6 @@
 ---
 name: intervals-coach
-description: Compose and schedule a single cycling/running workout on Intervals.icu via the intervals-icu-mcp server. Use when the user asks to plan, build, or design a workout or intervals session. For a broader training conversation (load review, week/block planning, race readiness) use coaching-session instead.
+description: Compose and schedule a single cycling/running workout on Intervals.icu via the intervals-icu-mcp server. Use when the user asks to plan, build, or design a workout or intervals session. For a broader training conversation (load review, week/block planning, race readiness), suggest the athlete run /coaching-session.
 ---
 
 # intervals-coach

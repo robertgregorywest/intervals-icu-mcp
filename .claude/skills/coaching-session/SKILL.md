@@ -1,6 +1,6 @@
 ---
 name: coaching-session
-description: Start a broad coaching session for cycling training. Loads athlete philosophy, season plan, and live fitness state, then supports training load analysis, block/week planning, recovery guidance, race prep, and performance analysis. Use when the user wants a training conversation beyond composing a single workout — e.g. "how's my training looking", "plan my week", "review a recent ride", "am I ready for my race".
+description: Broad cycling coaching session — loads philosophy, season, fitness and the log, reviews delivered work, then covers load, planning, recovery and race prep.
 disable-model-invocation: true
 ---
 
