@@ -17,11 +17,11 @@ the operational "how"; the durable "why" lives in the `coaching-philosophy` skil
 
 ## Invoked from within a coaching-session
 
-**Decide what to build here; hand the build to the `compose-workout` skill.** Block, frequency,
-intent, readiness and placement — the decision tree down to "pick a template" — stay on this thread,
-where the season and philosophy context already live. Pick the template tier from
-[sessions.md](sessions.md) for the phase, then invoke `compose-workout` (it runs forked, out of this
-conversation) with the **workout brief** its "Your input" section defines. It reads the exercise,
+**Decide what to build here; hand the build to the `compose-strength-session` skill.** Block,
+frequency, intent, readiness and placement — the decision tree down to "pick a template" — stay on
+this thread, where the season and philosophy context already live. Pick the template tier from
+[sessions.md](sessions.md) for the phase, then invoke `compose-strength-session` (it runs forked, out
+of this conversation) with the **strength brief** its "Your input" section defines. It reads the exercise,
 session and periodization subfiles itself to fill the template in.
 
 Invoked standalone (the athlete asked you directly, no coaching-session in progress), run the whole
@@ -69,7 +69,7 @@ Place it right (stack on a hard ride day; never before track;
 create_strength_workout   (name, date, description = exercises · sets×reps · RPE)
 ```
 
-Inside a `coaching-session`, the handoff to `compose-workout` sits just after "pick a template".
+Inside a `coaching-session`, the handoff to `compose-strength-session` sits just after "pick a template".
 
 ## The five principles (the lens for every decision)
 

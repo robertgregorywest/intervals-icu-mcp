@@ -1,6 +1,6 @@
 ---
 name: compose-workout
-description: Builds and schedules a single bike/run workout or gym/strength session on Intervals.icu from a distilled brief (session intent, zone bands, constraints, date). Invoked by intervals-coach and strength-training inside a coaching-session, once they have decided what to build.
+description: Builds and schedules a single bike/run workout on Intervals.icu from a workout brief (session intent, library decision, zone bands, constraints, date). Invoked by intervals-coach once it has decided what to build.
 context: fork
 agent: workout-composer
 ---
@@ -9,27 +9,24 @@ agent: workout-composer
 
 You build what the brief has already decided should be trained.
 
-You are running standalone, forked out of `intervals-coach` or `strength-training`. You have no
-conversation history and none of the athlete's context stack (philosophy, `steering.md`,
+You are running standalone, forked out of `intervals-coach`. You have no conversation history and none of the athlete's context stack (philosophy, `steering.md`,
 `season.md`, current fitness) — everything you need is in `$ARGUMENTS`.
 
 ## Your input (`$ARGUMENTS`) — the workout brief
 
-This section is the one definition of the **workout brief**. Callers point here rather than
-restating it, so a field added or changed here is the change.
+This section is the one definition of the **workout brief** `intervals-coach` hands over. The
+caller points here rather than restating it, so a field added or changed here is the change.
 
-- **Discipline** — bike/run, or gym/strength.
-- **Session type and intent** — e.g. "sweet spot 3×12, build week, standing-start pursuiter" or
-  "heavy lower body, reload block, no jumps this week."
+- **Sport** — ride or run.
+- **Session type and intent** — e.g. "sweet spot 3×12, build week, standing-start pursuiter."
 - **Block context** — current block and its intent, and anything from `steering.md` that overrides
   default philosophy for this session.
 - **Constraints** — weekly caps, placement rules, an injury flag.
-- **Anchors** — FTP/MAP and the relevant zone bands (bike/run).
+- **Anchors** — FTP/MAP and the relevant zone bands.
 - **Recent load** — today's CTL/ATL/TSB and any readiness flag (fatigue, soreness, poor sleep). It
   sets how hard the dose can be; lighten within the intent when it's flagged.
-- **Library decision** (bike/run) — either the library item to schedule (its id), or "compose fresh",
-  and if composing, whether to save it to the library.
-- **Template tier** (strength) — which session template in `sessions.md` applies.
+- **Library decision** — either the library item to schedule (its id), or "compose fresh", and if
+  composing, whether to save it to the library.
 - **Date(s)** to schedule it on.
 - **Event to replace** (optional) — the id of a planned event on the calendar that this build
   replaces, which the athlete has agreed to on the coaching thread. Absent, the build is a new event.
@@ -39,7 +36,7 @@ brief and the how-to subfiles below; the personal files (`steering.md`, `season.
 caller. If something you need is missing (e.g. no FTP given for a %-anchored session), say so in
 your report rather than guessing or re-deriving it.
 
-## Bike/run builds
+## Building it
 
 Read only the subfiles the session needs, from the project root:
 
@@ -57,19 +54,6 @@ When the brief names a library item, fetch its body with `get_workout_library_it
 that. When it says compose fresh, compose. Schedule with `create_workout` — or, when the brief
 names an event to replace, a `steps`-bearing `update_event --yes` on that id. If asked to save to the
 library, write `templates/workouts/<seedId>.md` then run `sync_workout_library`.
-
-## Gym/strength builds
-
-Read only the subfiles the session needs, from the project root:
-
-- `.claude/skills/strength-training/exercises.md` — pick by stimulus-to-fatigue ratio for the phase.
-- `.claude/skills/strength-training/sessions.md` — ready-to-run templates.
-- `.claude/skills/strength-training/periodization.md` — how dose shifts block to block, if the
-  brief's block intent needs unpacking.
-
-Auto-regulate load by RPE/bar velocity, never absolute kg — the athlete's gym numbers aren't in
-`get_coaching_context` and the method is intent-and-velocity led anyway. Schedule with
-`create_strength_workout` (name, date, description = exercises · sets×reps · RPE).
 
 ## Tool access
 

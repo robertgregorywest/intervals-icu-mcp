@@ -46,7 +46,7 @@ The `coaching-philosophy` skill ships with the server, so it's always present. I
 | Recovery guidance    | Wellness trend from `get_coaching_context` (fatigue, soreness, HRV, sleep)                                                                                                                         |
 | Race prep            | Align current fitness + taper logic with season.md A/B races                                                                                                                                       |
 | Track / IP analysis  | `list_track_sessions`, `get_track_session` (lap table, segments, decline, Σv²), `compare_track_sessions` (head-to-head) — records live in `docs/personal/track/`; see the session-start note above |
-| Workout composition  | Delegated — bike/run to `intervals-coach`, gym to `strength-training`, both of which hand the mechanical build to the `compose-workout` skill (forked) when invoked from here (see Constraints)    |
+| Workout composition  | Delegated — bike/run to `intervals-coach`, gym to `strength-training`, which hand the build to the forked `compose-workout` / `compose-strength-session` skills (see Constraints)                  |
 | Ride deep-dive       | Delegated — `ride-analysis` skill (forked) for raw-stream work across activities (see _Tool access_ below)                                                                                         |
 
 ## Tool access — use the CLI
