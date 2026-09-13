@@ -1,6 +1,6 @@
 # execution-review
 
-How to read `compare_planned_vs_actual` and `compare_intensity_distribution` **as a coach**. Read this when a review is actually running, not at session start. The window comes from the watermark — see [coaching-log-format.md](coaching-log-format.md).
+How to read `compare_planned_vs_actual` and `compare_intensity_distribution` **as a coach**. Read this when a review is actually running, not at session start. The window comes from the watermark — see [coaching-log-format.md](../coaching-session/coaching-log-format.md).
 
 The tools report deltas. Deltas are not findings. This file is the difference.
 
