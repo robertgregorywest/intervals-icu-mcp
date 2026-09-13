@@ -1,6 +1,6 @@
 ---
 name: coaching-philosophy
-description: The athlete's durable cycling coaching philosophy — foundational pillars, intensity anchor (MAP), hard execution rules, biases, and test cadence. The base layer that the coaching-session and intervals-coach skills read at session-start. Timeless principles; personal, season-specific deviations live in docs/personal/steering.md (which overrides this) and docs/personal/season.md.
+description: The athlete's durable cycling coaching philosophy — foundational pillars, intensity anchor (MAP), hard execution rules, biases, and test cadence. The base layer that the coaching-session and plan-workout skills read at session-start. Timeless principles; personal, season-specific deviations live in docs/personal/steering.md (which overrides this) and docs/personal/season.md.
 ---
 
 # coaching-philosophy
@@ -87,7 +87,7 @@ When and how to retest. → [testing.md](testing.md)
 
 ## How this skill is used
 
-- The `coaching-session` and `intervals-coach` skills read this `SKILL.md` at session-start as the
+- The `coaching-session` and `plan-workout` skills read this `SKILL.md` at session-start as the
   base philosophy, then read `docs/personal/steering.md` (overrides win) and `docs/personal/season.md`
   (current block).
 - Live athlete state (FTP, MAP, zones, CTL/ATL/TSB, wellness) is **never** stored here — it comes

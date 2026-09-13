@@ -31,7 +31,7 @@ describe("registerSetupCoachingPrompt", () => {
     expect(SETUP_COACHING_PROMPT).toContain("coaching-philosophy");
     expect(SETUP_COACHING_PROMPT).toContain("docs/personal/");
     expect(SETUP_COACHING_PROMPT).toContain("get_coaching_context");
-    expect(SETUP_COACHING_PROMPT).toContain("intervals-coach");
+    expect(SETUP_COACHING_PROMPT).toContain("plan-workout");
     // The Claude-Project-knowledge upload path is retired.
     expect(SETUP_COACHING_PROMPT).not.toMatch(/Project knowledge/i);
     expect(SETUP_COACHING_PROMPT).not.toContain("INTERVALS_COACHING_DIR");

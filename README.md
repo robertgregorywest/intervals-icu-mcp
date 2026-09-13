@@ -7,7 +7,7 @@ An MCP (Model Context Protocol) server for accessing your [Intervals.icu](https:
 - **29 tools** covering activities, calendar events, fitness metrics, power curves, workout creation, a managed workout library, wellness, analysis, weekly summaries, planned-vs-actual session verification, intensity-distribution comparison, track lap-split alignment and timed session records, and a one-call coaching snapshot
 - **Structured workout creation**: build interval sessions on your Intervals.icu calendar using the native workout text syntax
 - **Workout library as tracked files**: curated workouts live as Markdown templates in `templates/workouts/`, written in %MAP / %FTP. One command renders them at your current test values and reconciles your Intervals.icu library, so absolute watts follow your fitness.
-- **Coach mode**: bundled skills carry the coaching logic — `coaching-philosophy` (durable principles, tracked in git), `coaching-session`, and `intervals-coach` (workout generation). Personalise with your gitignored `docs/personal/steering.md` (overrides that win on conflict) and `season.md`. Athlete state (FTP, zones, fitness) comes from the `get_coaching_context` tool — always fresh, no files to maintain.
+- **Coach mode**: bundled skills carry the coaching logic — `coaching-philosophy` (durable principles, tracked in git), `coaching-session`, and `plan-workout` (workout generation). Personalise with your gitignored `docs/personal/steering.md` (overrides that win on conflict) and `season.md`. Athlete state (FTP, zones, fitness) comes from the `get_coaching_context` tool — always fresh, no files to maintain.
 - **Analysis tools**: aerobic decoupling, interval comparison, power curves, and fitness trends
 
 ## Quick Start
@@ -99,7 +99,7 @@ Coach mode is a four-tier context stack — most-durable first, later tiers over
 | --------------------------------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
 | Coaching philosophy (durable)     | `coaching-philosophy` skill at [`.claude/skills/coaching-philosophy/`](.claude/skills/coaching-philosophy/) | Edit the skill files; commit                               |
 | Personal overrides + season       | `docs/personal/steering.md` (overrides, win on conflict) + `docs/personal/season.md` (gitignored)           | Edit the files                                             |
-| Workout-generation rules          | `intervals-coach` skill at [`.claude/skills/intervals-coach/`](.claude/skills/intervals-coach/)             | Edit the skill files; re-load Claude                       |
+| Workout-generation rules          | `plan-workout` skill at [`.claude/skills/plan-workout/`](.claude/skills/plan-workout/)                      | Edit the skill files; re-load Claude                       |
 | Athlete state (FTP, MAP, fitness) | `get_coaching_context` tool                                                                                 | Always fresh — re-tested values flow through automatically |
 
 The durable coaching **philosophy is tracked in git** as the `coaching-philosophy` skill — the base every install shares. A single athlete personalises it with the gitignored `docs/personal/steering.md` (overrides) and `season.md`; when a steering tweak proves durable, promote it up into the skill.
@@ -109,7 +109,7 @@ The durable coaching **philosophy is tracked in git** as the `coaching-philosoph
 **Skill installation**: the coaching skills ship in this repo at `.claude/skills/` and are already available locally. To use them in another project, install via the [`skills`](https://github.com/vercel-labs/skills) CLI:
 
 ```bash
-npx skills add robertgregorywest/intervals-icu-mcp --skill coaching-philosophy --skill coaching-session --skill intervals-coach
+npx skills add robertgregorywest/intervals-icu-mcp --skill coaching-philosophy --skill coaching-session --skill plan-workout
 ```
 
 Add `-g` to install globally instead of per-project. Drop the `--skill` flags to pick interactively from everything in `.claude/skills/`.

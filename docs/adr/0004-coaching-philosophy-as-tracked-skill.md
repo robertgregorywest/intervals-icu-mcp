@@ -46,3 +46,5 @@ versioned).
   session-start and must apply steering over philosophy on conflict, saying so.
 - Live athlete state stays out of all tracked files — `get_coaching_context` remains the only
   source of FTP/MAP/zones/fitness (ADR 0003 preserved).
+
+> **Note (2026-09-13):** `intervals-coach` has since been renamed `plan-workout`; it decides a bike/run session and hands the build to the forked `compose-workout` skill.

@@ -1,6 +1,6 @@
 ---
 name: compose-workout
-description: Builds and schedules a single bike/run workout on Intervals.icu from a workout brief (session intent, library decision, zone bands, constraints, date). Invoked by intervals-coach once it has decided what to build.
+description: Builds and schedules a single bike/run workout on Intervals.icu from a workout brief (session intent, library decision, zone bands, constraints, date). Invoked by plan-workout once it has decided what to build.
 context: fork
 agent: workout-composer
 ---
@@ -9,12 +9,12 @@ agent: workout-composer
 
 You build what the brief has already decided should be trained.
 
-You are running standalone, forked out of `intervals-coach`. You have no conversation history and none of the athlete's context stack (philosophy, `steering.md`,
+You are running standalone, forked out of `plan-workout`. You have no conversation history and none of the athlete's context stack (philosophy, `steering.md`,
 `season.md`, current fitness) — everything you need is in `$ARGUMENTS`.
 
 ## Your input (`$ARGUMENTS`) — the workout brief
 
-This section is the one definition of the **workout brief** `intervals-coach` hands over. The
+This section is the one definition of the **workout brief** `plan-workout` hands over. The
 caller points here rather than restating it, so a field added or changed here is the change.
 
 - **Sport** — ride or run.
@@ -42,10 +42,10 @@ Read only the subfiles the session needs, from the project root:
 
 - `power-conversion.md` (this skill's folder) — emit absolute watts at the API boundary;
   reason in %MAP/%FTP, convert before calling tools.
-- `.claude/skills/intervals-coach/session-patterns.md` — structure norms by session type (Z2,
+- `.claude/skills/plan-workout/session-patterns.md` — structure norms by session type (Z2,
   threshold, VO2, sweet spot, recovery, race-prep).
 - `syntax-cheatsheet.md` (this skill's folder) — workout-text syntax Intervals.icu expects.
-- `.claude/skills/intervals-coach/vo2-preloaded-shorts.md` as the session calls for.
+- `.claude/skills/plan-workout/vo2-preloaded-shorts.md` as the session calls for.
 
 Where those files say to check `list_workout_library` first, the caller already has: the brief's
 library decision is that check's answer.

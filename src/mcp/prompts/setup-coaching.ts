@@ -5,7 +5,7 @@ const SETUP_COACHING_PROMPT = `You are bootstrapping the *personal* coaching con
 - **\`coaching-philosophy\` skill** (\`.claude/skills/coaching-philosophy/\`) — the athlete's *durable* coaching principles: intensity anchor, execution rules, recovery rules, biases, test cadence. **Tracked in git, ships with the server — do not author it here.** It's the base the athlete works from.
 - **\`season.md\`** (\`docs/personal/season.md\`, gitignored) — current season block: races, dates, mesocycle structure, key constraints.
 - **\`steering.md\`** (\`docs/personal/steering.md\`, gitignored) — thin *personal overrides* on the philosophy: a rule to relax/tighten, added emphasis, experiments. Overrides win on conflict. Empty is fine — it means "follow the philosophy as written."
-- **\`intervals-coach\` skill** — workout-generation rules; ships with the server, activates automatically. The user doesn't author it.
+- **\`plan-workout\` skill** — workout-generation rules; ships with the server, activates automatically. The user doesn't author it.
 - **Athlete state** (\`get_coaching_context\` tool) — FTP, MAP, zones, today's CTL/ATL/TSB, recent wellness. Always fresh from the API. Don't ask for FTP/zones — call the tool.
 
 Your job: produce the two **personal** files, \`season.md\` and \`steering.md\`, for \`docs/personal/\`. You do **not** author philosophy — that's the tracked skill.

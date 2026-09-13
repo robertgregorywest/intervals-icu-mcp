@@ -1,11 +1,11 @@
 ---
-name: intervals-coach
-description: Compose and schedule a single cycling/running workout on Intervals.icu via the intervals-icu-mcp server. Use when the user asks to plan, build, or design a workout or intervals session. For a broader training conversation (load review, week/block planning, race readiness), suggest the athlete run /coaching-session.
+name: plan-workout
+description: Plan a single cycling/running workout on Intervals.icu — decide the session and whether a library workout fits, then hand the build to compose-workout. Use when the user asks to plan, build, or design a workout or intervals session. For a broader training conversation (load review, week/block planning, race readiness), suggest the athlete run /coaching-session.
 ---
 
-# intervals-coach
+# plan-workout
 
-Workout-generation skill for the `intervals-icu-mcp` server. Activates when the user asks for a workout — planning, building, scheduling, designing intervals — for Intervals.icu.
+Workout-planning skill for the `intervals-icu-mcp` server. Activates when the user asks for a workout — planning, building, scheduling, designing intervals — for Intervals.icu.
 
 ## Decide here, build in the fork
 

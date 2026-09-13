@@ -7,7 +7,7 @@ description: Compose and schedule a gym / strength session on Intervals.icu, and
 
 Strength-and-conditioning skill for the `intervals-icu-mcp` server. Decides the gym session and
 hands the build to the forked **`compose-strength-session`** skill, which schedules it as a
-`WeightTraining` event. It is the strength sibling of `intervals-coach` (which handles bike/run
+`WeightTraining` event. It is the strength sibling of `plan-workout` (which handles bike/run
 workouts).
 
 The method here is distilled from **Chris Peden (@chr1speden)** — S&C coach for the Decathlon CMA
