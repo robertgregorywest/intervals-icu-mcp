@@ -1,13 +1,13 @@
 ---
 name: compose-workout
-description: Builds and schedules a single bike/run workout or gym/strength session on Intervals.icu from a distilled brief (session intent, zone bands, constraints, date). Invoked by intervals-coach and strength-training mid-session — never fired directly from an athlete's request.
+description: Builds and schedules a single bike/run workout or gym/strength session on Intervals.icu from a distilled brief (session intent, zone bands, constraints, date). Invoked by intervals-coach and strength-training inside a coaching-session, once they have decided what to build.
 context: fork
 agent: workout-composer
 ---
 
 # compose-workout
 
-You build. You do not decide what should be trained.
+You build what the brief has already decided should be trained.
 
 You are running standalone, forked out of `intervals-coach` or `strength-training`. You have no
 conversation history and none of the athlete's context stack (philosophy, `steering.md`,

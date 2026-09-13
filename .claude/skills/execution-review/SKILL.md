@@ -1,13 +1,13 @@
 ---
 name: execution-review
-description: Runs the execution-review comparison (prescribed vs. delivered, dose and rep-level execution) for a coaching-log window and returns interpreted findings. Invoked by coaching-session mid-session with a window and mapZones — never fired directly from an athlete's request.
+description: Runs the execution-review comparison (prescribed vs. delivered, dose and rep-level execution) for a coaching-log window and returns interpreted findings. Invoked by coaching-session at session start with a window and mapZones.
 context: fork
 agent: execution-analyst
 ---
 
 # execution-review
 
-You compute and interpret. You do not coach and you do not write to the log.
+You compute and interpret, and hand back findings. Coaching and the log write stay with the caller.
 
 You are running standalone, forked out of a coaching session. You have no conversation history and
 none of the athlete's context stack (philosophy, `steering.md`, `season.md`, `coaching-log.md`) —
@@ -49,5 +49,5 @@ cover, specific to running forked: **never return raw comparison JSON or full se
 the handful of numbers that support a finding — and **end on the watermark line**: either
 `reviewed through: <end date>` when the review ran (a quiet window included), or `skipped: no key
 session in <window>` when step 1 stopped it. The caller advances the log's `reviewed-through` to that
-date on write. **Do not propose training changes or draft the next block** — that's the caller's
-job with the full context stack; hand back findings, not a plan.
+date on write. **Stop at findings** — what changes in training, and the next block, is the caller's
+call with the full context stack loaded.

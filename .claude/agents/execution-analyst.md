@@ -1,6 +1,6 @@
 ---
 name: execution-analyst
-description: Backing agent type for the execution-review skill (tools + model only). Not invoked directly — the execution-review skill forks into this type and supplies its own self-contained prompt.
+description: Backing agent type for the execution-review skill (tools + model only). Invoked only through the execution-review skill, which forks into this type and supplies its own self-contained prompt.
 tools: Bash, Read
 model: sonnet
 ---

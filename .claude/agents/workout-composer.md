@@ -1,6 +1,6 @@
 ---
 name: workout-composer
-description: Backing agent type for the compose-workout skill (tools + model only). Not invoked directly — the compose-workout skill forks into this type and supplies its own self-contained prompt.
+description: Backing agent type for the compose-workout skill (tools + model only). Invoked only through the compose-workout skill, which forks into this type and supplies its own self-contained prompt.
 tools: Bash, Read
 model: sonnet
 ---
