@@ -44,6 +44,10 @@ _Avoid_: calling it the workout "in the library" as though it were authoritative
 The single reconcile operation (`sync_workout_library`): render every Workout template at the current anchors and upsert it, matched by its Template marker. Creates what is missing, updates what differs, never deletes.
 _Avoid_: "seed" / "refresh" — both named halves of this one operation and are retired
 
+**Workout brief**:
+The distilled decision a coaching skill hands to the forked `compose-workout` skill: what to build (discipline, intent, library item or compose fresh, template tier), the context that shapes it (block, constraints, anchors, recent load) and when. Defined once, in `compose-workout`'s "Your input"; callers point there rather than restating it. The decision is made on the coaching thread; the brief carries it to the build.
+_Avoid_: "prompt" or "spec" — the brief is a fixed contract, not free-form instructions
+
 **Basis**:
 The anchor a template's percentages are read against — MAP or FTP — declared once per template. One basis per template; mixing is a parse error.
 

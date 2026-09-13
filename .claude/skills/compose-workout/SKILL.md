@@ -13,19 +13,29 @@ You are running standalone, forked out of `intervals-coach` or `strength-trainin
 conversation history and none of the athlete's context stack (philosophy, `steering.md`,
 `season.md`, current fitness) — everything you need is in `$ARGUMENTS`.
 
-## Your input (`$ARGUMENTS`)
+## Your input (`$ARGUMENTS`) — the workout brief
+
+This section is the one definition of the **workout brief**. Callers point here rather than
+restating it, so a field added or changed here is the change.
 
 - **Discipline** — bike/run, or gym/strength.
-- **The session type and intent** — e.g. "sweet spot 3×12, build week, standing-start pursuiter" or
+- **Session type and intent** — e.g. "sweet spot 3×12, build week, standing-start pursuiter" or
   "heavy lower body, reload block, no jumps this week."
-- **A distilled context brief** — current block and its intent, relevant constraints (weekly caps,
-  placement rules, an injury flag), FTP/MAP and the relevant zone bands, anything from `steering.md`
-  that overrides default philosophy for this session.
-- **Whether to save to the library** (bike/run) or which template tier applies (strength).
-- **The date(s) to schedule it on.**
+- **Block context** — current block and its intent, and anything from `steering.md` that overrides
+  default philosophy for this session.
+- **Constraints** — weekly caps, placement rules, an injury flag.
+- **Anchors** — FTP/MAP and the relevant zone bands (bike/run).
+- **Recent load** — today's CTL/ATL/TSB and any readiness flag (fatigue, soreness, poor sleep). It
+  sets how hard the dose can be; lighten within the intent when it's flagged.
+- **Library decision** (bike/run) — either the library item to schedule (its id), or "compose fresh",
+  and if composing, whether to save it to the library.
+- **Template tier** (strength) — which session template in `sessions.md` applies.
+- **Date(s)** to schedule it on.
 
-If something you need is missing (e.g. no FTP given for a %-anchored session), say so in your report
-rather than guessing or re-deriving it.
+The caller has already made every decision above with the full context stack loaded. Work from the
+brief and the how-to subfiles below; the personal files (`steering.md`, `season.md`) stay with the
+caller. If something you need is missing (e.g. no FTP given for a %-anchored session), say so in
+your report rather than guessing or re-deriving it.
 
 ## Bike/run builds
 
@@ -39,10 +49,10 @@ Read only the subfiles the session needs, from the project root:
 - `.claude/skills/intervals-coach/library-vs-compose.md` and
   `.claude/skills/intervals-coach/vo2-preloaded-shorts.md` as the session calls for.
 
-Check `./bin/icu list_workout_library` / `get_workout_library_item` first if the brief doesn't
-already say a library workout was matched — reusing one is almost always preferable to composing
-fresh. Schedule with `create_workout` (or a `steps`-bearing `update_event`). If asked to save to the
-library, write `templates/workouts/<seedId>.md` then run `sync_workout_library`.
+When the brief names a library item, fetch its body with `get_workout_library_item` and schedule
+that. When it says compose fresh, compose. Schedule with `create_workout` (or a `steps`-bearing
+`update_event`). If asked to save to the library, write `templates/workouts/<seedId>.md` then run
+`sync_workout_library`.
 
 ## Gym/strength builds
 

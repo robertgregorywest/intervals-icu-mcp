@@ -9,16 +9,13 @@ Workout-generation skill for the `intervals-icu-mcp` server. Activates when the 
 
 ## Invoked from within a coaching-session
 
-**Delegate the build to the `compose-workout` skill.** When you're running inside an active
-`coaching-session`, don't compose inline — invoke `compose-workout` (it runs forked, out of this
-conversation) with a distilled brief (discipline, session type/intent, the relevant zone bands and
-constraints, whether to save to the library, the date). It reads its own
-syntax/power-conversion/session-pattern subfiles and calls the write tools; you don't re-read them
-here and it doesn't re-read the full `steering.md`/`season.md` — it has no access to either, only
-the brief. Keep the decision of _what_ to build (library match vs compose, which template) here,
-where the philosophy and season context already live — delegate only the mechanical part.
+**Decide what to build here; hand the build to the `compose-workout` skill.** Run the session-start
+moves and the library check below as usual — the library match is a coaching decision and stays on
+this thread. Then invoke `compose-workout` (it runs forked, out of this conversation) with the
+**workout brief** its "Your input" section defines: the library item id or "compose fresh" goes in
+it. It reads the syntax/power-conversion/session-pattern subfiles and calls the write tools itself.
 
-Invoked standalone (the athlete asked you directly, no coaching-session in progress), compose inline
+Invoked standalone (the athlete asked you directly, no coaching-session in progress), build inline
 as below.
 
 ## Session-start moves
@@ -50,8 +47,7 @@ Does a library workout fit the intent?
                 └── No  → create_workout (calendar only)
 ```
 
-Everything past "does a library workout fit" is the mechanical build — inside a `coaching-session`
-this is exactly what gets handed to `compose-workout` (see above). Standalone, do it inline.
+Inside a `coaching-session`, the handoff to `compose-workout` sits just after the library answer.
 
 See [library-vs-compose.md](library-vs-compose.md) for the full reasoning.
 
