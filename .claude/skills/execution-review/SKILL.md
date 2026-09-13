@@ -26,22 +26,15 @@ recent), don't run anything — just report that back.
 
 ## How to run the review
 
+Read `docs/agents/icu-cli.md` (from the project root) before your first CLI call — working
+directory, piping, `describe`. You run at its **Read-only** tier.
+
 1. **Select from the planned side.** Key sessions are those _prescribed_ at sweet spot or above.
    Selecting on the planned side means an abandoned or never-started key session gets selected rather
    than silently missed. Look up planned events with `./bin/icu get_events` over the window.
 2. **Read both lenses.** `compare_intensity_distribution` over the whole window for the dose,
    `compare_planned_vs_actual` per selected session for execution within reps. Reach both through
-   `./bin/icu`, from the project root, piped — never let the raw payload land in your final report.
-
-   ```
-   cd /Users/rob/GitHub/robertgregorywest/intervals-icu-mcp && \
-     ./bin/icu compare_intensity_distribution --json '{"start":"...","end":"..."}' \
-     | python3 -c '<extract only the figures you need>'
-   ```
-
-   The CLI reads `INTERVALS_API_KEY` from the project env — running it from any other directory fails.
-   Read-only commands (`get_*`, `list_*`, `compute_*`, `compare_*`, `describe`) run freely; you have no
-   business running a mutating command.
+   `./bin/icu`, piped, extracting only the figures you need.
 
 3. **Interpret.** Read `execution-review-lenses.md` (in this skill's own folder) at this point: step
    roles, which verdicts are artefacts, how deep to read each kind of session, what passes the

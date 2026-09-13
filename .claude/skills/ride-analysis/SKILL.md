@@ -45,22 +45,17 @@ your output. The rules that bite most often:
 
 ## How to pull data
 
-Always the CLI, always through a pipe, always from the project root in one command:
+Read `docs/agents/icu-cli.md` (from the project root) before your first CLI call — working
+directory, piping, which streams to request. You run at its **Read-only** tier.
+
+**Save each stream payload to the scratchpad, then compute from the file** — stream work nearly
+always takes a second pass:
 
 ```
 cd /Users/rob/GitHub/robertgregorywest/intervals-icu-mcp && \
   ./bin/icu get_activity_streams --json '{"id":"iNNNNNNNNN","types":["watts","heartrate"]}' \
   > "$SCRATCHPAD/iNNNNNNNNN.json"
 ```
-
-- The CLI reads `INTERVALS_API_KEY` from the project env — running it from any other directory
-  fails with "Intervals.icu API key required".
-- **Request only the streams you need.** Fewer streams means full resolution rather than a stride.
-- **Save the payload to the scratchpad, then compute from the file.** A downsampled long ride is
-  25–40 KB; re-piping from disk beats re-fetching, and lets you take a second pass cheaply.
-- `./bin/icu describe` prints the full tool catalogue (~44 KB) — grep it, never print it whole.
-- Read-only commands (`get_*`, `list_*`, `compute_*`, `compare_*`, `describe`) run freely. **You
-  have no business running a mutating command** — no `create_*`, no `sync_*`, no `--yes`.
 
 ## What to return
 

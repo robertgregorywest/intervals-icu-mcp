@@ -59,14 +59,9 @@ Auto-regulate load by RPE/bar velocity, never absolute kg — the athlete's gym 
 
 ## Tool access
 
-Always the CLI, from the project root, in one command:
-
-```
-cd /Users/rob/GitHub/robertgregorywest/intervals-icu-mcp && ./bin/icu create_workout --json '{...}'
-```
-
-Read-only commands run freely; `create_*`/`sync_*` are idempotent and run freely too — you were
-asked to build this, so build it. `./bin/icu describe` is ~44 KB — grep it, never print it whole.
+Read `docs/agents/icu-cli.md` (from the project root) before your first CLI call — working
+directory, piping, `describe`. You run at its **Build** tier: you were asked to build this, so build
+it.
 
 ## What to return
 
