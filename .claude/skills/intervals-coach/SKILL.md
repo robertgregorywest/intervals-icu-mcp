@@ -7,16 +7,14 @@ description: Compose and schedule a single cycling/running workout on Intervals.
 
 Workout-generation skill for the `intervals-icu-mcp` server. Activates when the user asks for a workout — planning, building, scheduling, designing intervals — for Intervals.icu.
 
-## Invoked from within a coaching-session
+## Decide here, build in the fork
 
-**Decide what to build here; hand the build to the `compose-workout` skill.** Run the session-start
-moves and the library check below as usual — the library match is a coaching decision and stays on
-this thread. Then invoke `compose-workout` (it runs forked, out of this conversation) with the
-**workout brief** its "Your input" section defines: the library item id or "compose fresh" goes in
-it. It reads the syntax/power-conversion/session-pattern subfiles and calls the write tools itself.
-
-Invoked standalone (the athlete asked you directly, no coaching-session in progress), build inline
-as below.
+This skill decides _what_ to build — the session for the day, and whether a library workout fits —
+with the athlete in the conversation and the context stack loaded. The build itself always goes to
+the **`compose-workout`** skill, which runs forked, out of this conversation: invoke it with the
+**workout brief** its "Your input" section defines. It owns the mechanics — power conversion,
+session structure, workout-text syntax, the write tools — so they never load here. The same holds
+whether you arrived from a `coaching-session` or the athlete asked you directly.
 
 ## Session-start moves
 
@@ -38,31 +36,22 @@ get_coaching_context  +  list_workout_library     (parallel)
     ▼
 Does a library workout fit the intent?
     │
-    ├── Yes → schedule it via create_workout (look up the body with get_workout_library_item if needed)
+    ├── Yes → library decision = that item's id
     │
-    └── No  → compose. Then ask: should this be saved to the library for reuse?
-                │
-                ├── Yes → write templates/workouts/<seedId>.md, then sync_workout_library
-                │          — see power-conversion.md
-                └── No  → create_workout (calendar only)
+    └── No  → library decision = compose fresh. Ask: should it be saved to the library for reuse?
+    │
+    ▼
+Replacing a planned event? (agree it with the athlete, note its id)
+    │
+    ▼
+workout brief  →  compose-workout (forked)  →  relay its report
 ```
 
-Inside a `coaching-session`, the handoff to `compose-workout` sits just after the library answer.
-
 See [library-vs-compose.md](library-vs-compose.md) for the full reasoning.
-
-## Composing fresh (standalone invocation)
-
-Three things to get right:
-
-1. **Power targets at the API boundary** — emit absolute watts (`220w`, `160w-256w`). Reason in %MAP/%FTP, convert before calling tools. See [power-conversion.md](power-conversion.md).
-2. **Session structure** — warm-up, main set, cool-down norms vary by session type. See [session-patterns.md](session-patterns.md) for Z2, threshold, VO2, sweet spot, recovery, race-prep templates.
-3. **Workout-text syntax** — the format Intervals.icu expects in event/workout descriptions. See [syntax-cheatsheet.md](syntax-cheatsheet.md).
 
 ## Constraints
 
 - **Never** invent FTP/MAP — always derive from `get_coaching_context`.
-- **Emit absolute watts**, never `%MAP` (unparseable) and not `%FTP` in saved workouts (fragile) — see [power-conversion.md](power-conversion.md).
 - **Defer** to library workouts when the intent matches. Calibration drift between library and ad-hoc is real.
 - **Respect** the `coaching-philosophy` skill and the personal `docs/personal/` docs: bias, execution rules, "never" rules, weekly volume caps. `docs/personal/steering.md` overrides the philosophy on conflict.
 

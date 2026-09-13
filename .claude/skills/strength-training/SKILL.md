@@ -5,9 +5,10 @@ description: Compose and schedule a gym / strength session on Intervals.icu, and
 
 # strength-training
 
-Strength-and-conditioning skill for the `intervals-icu-mcp` server. Composes gym sessions and
-schedules them as `WeightTraining` events via **`create_strength_workout`**. It is the strength
-sibling of `intervals-coach` (which handles bike/run workouts).
+Strength-and-conditioning skill for the `intervals-icu-mcp` server. Decides the gym session and
+hands the build to the forked **`compose-strength-session`** skill, which schedules it as a
+`WeightTraining` event. It is the strength sibling of `intervals-coach` (which handles bike/run
+workouts).
 
 The method here is distilled from **Chris Peden (@chr1speden)** — S&C coach for the Decathlon CMA
 CGM WorldTour team, owner of Combined Athletic Performance — whose whole message is: strength
@@ -15,17 +16,15 @@ _serves_ the endurance goal, and the coach's real job is deciding what **not** t
 the operational "how"; the durable "why" lives in the `coaching-philosophy` skill's
 [strength pillar](../coaching-philosophy/strength.md).
 
-## Invoked from within a coaching-session
+## Decide here, build in the fork
 
-**Decide what to build here; hand the build to the `compose-strength-session` skill.** Block,
-frequency, intent, readiness and placement — the decision tree down to "pick a template" — stay on
-this thread, where the season and philosophy context already live. Pick the template tier from
-[sessions.md](sessions.md) for the phase, then invoke `compose-strength-session` (it runs forked, out
-of this conversation) with the **strength brief** its "Your input" section defines. It reads the exercise,
-session and periodization subfiles itself to fill the template in.
-
-Invoked standalone (the athlete asked you directly, no coaching-session in progress), run the whole
-decision tree inline as below.
+Block, frequency, intent, readiness, template tier and placement — the decision tree below — are
+decided here, with the athlete in the conversation and the season and philosophy context loaded.
+The build always goes to the **`compose-strength-session`** skill, which runs forked, out of this
+conversation: invoke it with the **strength brief** its "Your input" section defines. It reads the
+exercise, session and periodization subfiles itself to fill the template in and schedules the
+session. The same holds whether you arrived from a `coaching-session` or the athlete asked you
+directly.
 
 ## Session-start moves
 
@@ -59,17 +58,15 @@ What block are we in?  →  frequency (×/week) + intent      → periodization.
 Readiness OK + which bike days are hard this week?
     │
     ▼
-Pick a template for the phase                              → sessions.md
-    │   choose exercises by stimulus-to-fatigue ratio      → exercises.md
+Pick the template tier for the phase                       → sessions.md
+    │
     ▼
 Place it right (stack on a hard ride day; never before track;
     never a HI bike day after heavy lifting)
     │
     ▼
-create_strength_workout   (name, date, description = exercises · sets×reps · RPE)
+strength brief  →  compose-strength-session (forked)  →  relay its report
 ```
-
-Inside a `coaching-session`, the handoff to `compose-strength-session` sits just after "pick a template".
 
 ## The five principles (the lens for every decision)
 
