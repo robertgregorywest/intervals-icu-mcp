@@ -9,11 +9,13 @@ whole, where a Bash subcommand's output can be reduced before it ever gets there
 so there is nothing to trade off.
 
 ```
-cd /Users/rob/GitHub/robertgregorywest/intervals-icu-mcp && \
+cd <repo root> && \
   ./bin/icu get_activity_streams --json '{"id":"i165853469","types":["watts","heartrate"]}' \
   | python3 -c '<compute and print only the figures you will quote>'
 ```
 
+- **`<repo root>` is this checkout of the repo** — Claude Code's primary working directory. Substitute
+  the absolute path; the skills never hard-code one, so they work in any clone.
 - **`cd` to the project root in the same command.** The CLI reads `INTERVALS_API_KEY` from the
   project env; run it from anywhere else and it fails with "Intervals.icu API key required". This is
   the most common way to break a call — the working directory does not persist reliably between them.

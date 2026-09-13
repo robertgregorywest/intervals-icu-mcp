@@ -52,7 +52,7 @@ directory, piping, which streams to request. You run at its **Read-only** tier.
 always takes a second pass:
 
 ```
-cd /Users/rob/GitHub/robertgregorywest/intervals-icu-mcp && \
+cd <repo root> && \
   ./bin/icu get_activity_streams --json '{"id":"iNNNNNNNNN","types":["watts","heartrate"]}' \
   > "$SCRATCHPAD/iNNNNNNNNN.json"
 ```

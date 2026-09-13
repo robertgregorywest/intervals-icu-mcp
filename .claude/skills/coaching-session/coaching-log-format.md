@@ -73,7 +73,7 @@ header thread carry any state that must survive.
 5. **Commit** — `docs/personal/` is its own private git repo (the public repo ignores the path), so an uncommitted write lives on one machine only. Close the checkpoint with:
 
    ```
-   cd /Users/rob/GitHub/robertgregorywest/intervals-icu-mcp/docs/personal && \
+   cd <repo root>/docs/personal && \
      git add -A && git commit -m "coaching: <entry date> — <block>" && git push
    ```
 

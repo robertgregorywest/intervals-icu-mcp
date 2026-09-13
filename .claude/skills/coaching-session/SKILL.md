@@ -94,7 +94,7 @@ Keep `coaching-log.md` current so future sessions inherit this one's decisions a
 - **Done = durable.** `docs/personal/` is a private git repo, so a written log that is never committed is a log that exists on one machine. The checkpoint completes when
 
   ```
-  git -C /Users/rob/GitHub/robertgregorywest/intervals-icu-mcp/docs/personal status -sb --porcelain
+  git -C <repo root>/docs/personal status -sb --porcelain
   ```
 
   prints its branch line and nothing else — clean tree, no `ahead` marker. Run it and read it; don't assume the push landed. A session where nothing was loggable satisfies this too, having written nothing.
