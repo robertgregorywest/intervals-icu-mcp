@@ -40,11 +40,11 @@ your report rather than guessing or re-deriving it.
 
 Read only the subfiles the session needs, from the project root:
 
-- `.claude/skills/intervals-coach/power-conversion.md` — emit absolute watts at the API boundary;
+- `power-conversion.md` (this skill's folder) — emit absolute watts at the API boundary;
   reason in %MAP/%FTP, convert before calling tools.
 - `.claude/skills/intervals-coach/session-patterns.md` — structure norms by session type (Z2,
   threshold, VO2, sweet spot, recovery, race-prep).
-- `.claude/skills/intervals-coach/syntax-cheatsheet.md` — workout-text syntax Intervals.icu expects.
+- `syntax-cheatsheet.md` (this skill's folder) — workout-text syntax Intervals.icu expects.
 - `.claude/skills/intervals-coach/vo2-preloaded-shorts.md` as the session calls for.
 
 Where those files say to check `list_workout_library` first, the caller already has: the brief's

@@ -40,7 +40,7 @@ re-deriving it.
 Read only the subfiles the session needs, from the project root:
 
 - `.claude/skills/strength-training/sessions.md` — the template the brief's tier names.
-- `.claude/skills/strength-training/exercises.md` — fill the template by stimulus-to-fatigue ratio
+- `exercises.md` (this skill's folder) — fill the template by stimulus-to-fatigue ratio
   for the phase.
 - `.claude/skills/strength-training/periodization.md` — how dose shifts block to block, if the
   brief's block intent needs unpacking.

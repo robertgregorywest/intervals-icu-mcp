@@ -2,7 +2,7 @@
 
 Guidance for composing a session when no library workout fits the intent — check `list_workout_library` first (see [library-vs-compose.md](library-vs-compose.md)). Where a canonical shape already exists as a library workout, reuse it (`get_workout_library_item`) rather than recomposing it here.
 
-All targets in `%MAP` or `%FTP` — convert to watts before emitting (see [power-conversion.md](power-conversion.md)). Trim warm-up/cool-down for time-crunched sessions; never trim the main set. The `ramp` shorthand (`10m ramp 50–80% FTP`) is logical, not literal — apply **head-unit granularity** when you emit it (see [power-conversion.md](power-conversion.md)).
+All targets in `%MAP` or `%FTP` — convert to watts before emitting (see [power-conversion.md](../compose-workout/power-conversion.md)). Trim warm-up/cool-down for time-crunched sessions; never trim the main set. The `ramp` shorthand (`10m ramp 50–80% FTP`) is logical, not literal — apply **head-unit granularity** when you emit it (see [power-conversion.md](../compose-workout/power-conversion.md)).
 
 ## Z2 / endurance
 

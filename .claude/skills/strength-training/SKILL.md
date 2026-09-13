@@ -75,7 +75,7 @@ One line each; the reasoning and source posts are in [principles.md](principles.
 1. **Strength serves the bike** — aerobic work is always the higher priority; strength and fitness are built _together_, never traded off.
 2. **Minimum effective dose** — as much as necessary, not as much as possible. Ask "what can I _remove_?" before "what can I add?"
 3. **Train both ends of the force–velocity curve** — heavy builds the force ceiling; speed/jumps train how fast you reach it (RFD).
-4. **Pick exercises by stimulus-to-fatigue ratio for the phase** — multi-joint over isolation, stable over unstable, specificity over novelty. → [exercises.md](exercises.md)
+4. **Pick exercises by stimulus-to-fatigue ratio for the phase** — multi-joint over isolation, stable over unstable, specificity over novelty. → [exercises.md](../compose-strength-session/exercises.md)
 5. **Individualise; evidence-informed, not evidence-blind** — no fixed template; decide for the athlete and the moment in the season.
 
 ## Constraints (respect the coaching-philosophy execution rules)
