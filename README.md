@@ -7,7 +7,7 @@ An MCP (Model Context Protocol) server for accessing your [Intervals.icu](https:
 - **29 tools** covering activities, calendar events, fitness metrics, power curves, workout creation, a managed workout library, wellness, analysis, weekly summaries, planned-vs-actual session verification, intensity-distribution comparison, track lap-split alignment and timed session records, and a one-call coaching snapshot
 - **Structured workout creation**: build interval sessions on your Intervals.icu calendar using the native workout text syntax
 - **Workout library as tracked files**: curated workouts live as Markdown templates in `templates/workouts/`, written in %MAP / %FTP. One command renders them at your current test values and reconciles your Intervals.icu library, so absolute watts follow your fitness.
-- **Coach mode**: bundled skills carry the coaching logic — `coaching-philosophy` (durable principles, tracked in git), `coaching-session`, and `plan-workout` (workout generation). Personalise with your gitignored `docs/personal/steering.md` (overrides that win on conflict) and `season.md`. Athlete state (FTP, zones, fitness) comes from the `get_coaching_context` tool — always fresh, no files to maintain.
+- **Coach mode** (Claude Code, from a clone): repo skills carry the coaching logic — `coaching-philosophy` (durable principles, tracked in git), `coaching-session`, `plan-workout` and `plan-strength-training`. Personalise with your gitignored `docs/personal/steering.md` (overrides that win on conflict) and `season.md`. Athlete state (FTP, zones, fitness) comes from the `get_coaching_context` tool — always fresh, no files to maintain.
 - **Analysis tools**: aerobic decoupling, interval comparison, power curves, and fitness trends
 
 ## Quick Start
@@ -85,13 +85,19 @@ Requires **Node.js 20+**.
 | `get_track_session`              | One record and everything its splits imply — per lap the split, cumulative time, speed and the cadence the gear demands; per run the flying-portion aggregates (a standing lap is reported and excluded from every average), the opening/closing segments, the decline `(v_close/v_open)³ − 1`, and the Σv² pacing figures                                                                   |
 | `compare_track_sessions`         | The head-to-head table for reading a race against the races before it: every lap position with each run's split and its delta against the first run listed, plus total, flying, segment and decline rows. Refuses runs of differing lap counts rather than half-matching them                                                                                                                |
 
-## MCP Prompts
-
-| Prompt           | Description                                                                                                                                                                 |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `setup_coaching` | Interviews the athlete and emits their personal `season.md` + `steering.md` for `docs/personal/`. Philosophy is the tracked `coaching-philosophy` skill, not authored here. |
-
 ## Coach mode
+
+The MCP server covers the Intervals.icu interaction — the tools above, in any MCP client. Coach mode is the layer above it: Claude Code skills (`coaching-session`, `plan-workout`, `plan-strength-training` and the forked skills they delegate to) that reach Intervals.icu through the repo's `./bin/icu` CLI and read and write your personal files in `docs/personal/`. They need the repo itself, so coach mode means working from a clone:
+
+```bash
+git clone https://github.com/robertgregorywest/intervals-icu-mcp.git
+cd intervals-icu-mcp
+npm install
+cp .env.example .env   # then set INTERVALS_API_KEY — ./bin/icu loads it
+claude                 # run Claude Code from the repo root
+```
+
+Then start a session with `/coaching-session`.
 
 Coach mode is a four-tier context stack — most-durable first, later tiers override earlier ones on conflict — none of which require restarting the server:
 
@@ -104,17 +110,7 @@ Coach mode is a four-tier context stack — most-durable first, later tiers over
 
 The durable coaching **philosophy is tracked in git** as the `coaching-philosophy` skill — the base every install shares. A single athlete personalises it with the gitignored `docs/personal/steering.md` (overrides) and `season.md`; when a steering tweak proves durable, promote it up into the skill.
 
-**Bootstrapping**: run the `setup_coaching` MCP prompt. The LLM reads the `coaching-philosophy` skill, calls `get_coaching_context` for FTP/zones/current fitness, interviews you on your current season and any personal steering, then emits `season.md` + `steering.md` for `docs/personal/`.
-
-**Skill installation**: the coaching skills ship in this repo at `.claude/skills/` and are already available locally. To use them in another project, install via the [`skills`](https://github.com/vercel-labs/skills) CLI:
-
-```bash
-npx skills add robertgregorywest/intervals-icu-mcp --skill coaching-philosophy --skill coaching-session --skill plan-workout
-```
-
-Add `-g` to install globally instead of per-project. Drop the `--skill` flags to pick interactively from everything in `.claude/skills/`.
-
-**Hand-authoring**: scaffolds for the personal `season.md` and `steering.md` live at [`templates/personal/`](templates/personal/).
+**Bootstrapping**: copy the scaffolds at [`templates/personal/`](templates/personal/) into `docs/personal/` and fill in `season.md` and `steering.md`. `coaching-log.md` is created by the first session.
 
 ## Workout library
 
@@ -142,7 +138,7 @@ Calendar and workout creation:
 - "Create a 4x8 minute threshold workout at 250w with 4 minute recoveries for next Tuesday"
 - "Add a strength session to my calendar for tomorrow — 3 sets of squats, deadlifts, and lunges"
 
-Coach mode + workout library (after running `/setup_coaching`):
+Coach mode + workout library (from a clone, once `docs/personal/` is set up):
 
 - "Plan the next two weeks based on my current macro phase"
 - "Browse my workout library and pick something appropriate for tomorrow given my fatigue"

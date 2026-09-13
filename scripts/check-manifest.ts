@@ -1,5 +1,5 @@
 #!/usr/bin/env tsx
-// Verify manifest.json tools[]/prompts[] match what the server actually
+// Verify manifest.json tools[] matches what the server actually
 // registers. Drift doesn't break the server (the live list comes from
 // tools/list over MCP) but it breaks discoverability in the Claude Desktop UI.
 // Exits non-zero on drift so the release flow can gate on it.
@@ -9,7 +9,7 @@
 // adapters register in a loop over TOOLS, so it matched nothing and the check
 // failed unconditionally. Anything that can silently match zero names is a
 // check that can rot into a no-op — hence the guard below.
-import { readFileSync, readdirSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 import { TOOLS } from "../src/registry.js";
@@ -20,24 +20,8 @@ function read(rel: string): string {
   return readFileSync(resolve(root, rel), "utf8");
 }
 
-/** Prompts are registered with string literals, so source matching is fine. */
-function promptNames(): string[] {
-  const sources = [
-    read("src/mcp/server.ts"),
-    ...readdirSync(resolve(root, "src/mcp/prompts"))
-      .filter((f) => f.endsWith(".ts"))
-      .map((f) => read(`src/mcp/prompts/${f}`)),
-  ].join("\n");
-  const out = new Set<string>();
-  for (const m of sources.matchAll(/\bregisterPrompt\(\s*"([^"]+)"/g)) {
-    out.add(m[1]);
-  }
-  return [...out].sort();
-}
-
 interface Manifest {
   tools?: Array<{ name: string }>;
-  prompts?: Array<{ name: string }>;
 }
 
 const manifest = JSON.parse(read("manifest.json")) as Manifest;
@@ -47,11 +31,6 @@ const checks = [
     label: "tools",
     registered: TOOLS.map((t) => t.name).sort(),
     declared: (manifest.tools ?? []).map((t) => t.name).sort(),
-  },
-  {
-    label: "prompts",
-    registered: promptNames(),
-    declared: (manifest.prompts ?? []).map((p) => p.name).sort(),
   },
 ];
 
@@ -85,7 +64,7 @@ for (const { label, registered, declared } of checks) {
 if (drift) {
   console.error(
     "\nUpdate manifest.json before tagging. " +
-      "Each tools[] entry is { name }; each prompts[] entry needs name, description, text."
+      "Each tools[] entry is { name }."
   );
   process.exit(1);
 }

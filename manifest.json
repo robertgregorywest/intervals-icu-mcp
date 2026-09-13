@@ -112,13 +112,6 @@
       "name": "sync_workout_library"
     }
   ],
-  "prompts": [
-    {
-      "name": "setup_coaching",
-      "description": "Walk the athlete through a short interview, then emit their personal season.md and steering.md for docs/personal/ (philosophy is the tracked coaching-philosophy skill).",
-      "text": "Run this prompt to bootstrap your personal coaching files. The LLM reads the coaching-philosophy skill (your durable principles, tracked in git), calls get_coaching_context for FTP/zones/fitness, then interviews you on your current season and any personal steering. The output is season.md and steering.md for docs/personal/ \u2014 layered on top of the philosophy skill, steering overrides on conflict."
-    }
-  ],
   "author": {
     "name": "Rob West",
     "email": "robertgregorywest@gmail.com"

@@ -20,7 +20,7 @@ Read the coaching context stack, most-durable first; **later layers override ear
 4. **`get_coaching_context`** — live snapshot: FTP, MAP, **MAP zones** (`mapZones` — the canonical coaching zones), HR/pace zones, CTL/ATL/TSB, ramp rate, 7-day wellness trend.
 5. **Read `docs/personal/coaching-log.md`** — running log of past sessions: read the `Current state / open threads` header in full, plus the recent dated entries. Carries decisions, rationale, and subjective context that aren't re-derivable from the sources above.
 
-The `coaching-philosophy` skill ships with the server, so it's always present. If `season.md` or `steering.md` is missing, note the gap and suggest running the `setup_coaching` MCP prompt to generate them. `coaching-log.md` may not exist yet — that's fine, it's created on the first write.
+The `coaching-philosophy` skill ships with the repo, so it's always present. If `season.md` or `steering.md` is missing, note the gap and point the athlete at the scaffolds in `templates/personal/` to write them. `coaching-log.md` may not exist yet — that's fine, it's created on the first write.
 
 **Timed track sessions are records, not prose.** `docs/personal/track/` holds one file per timed session — the measurement basis plus the lap-timer export — and `list_track_sessions` / `get_track_session` / `compare_track_sessions` compute every speed, cadence, segment, decline and head-to-head from them on demand. Read `docs/personal/track-context.md` before any track work for the measurement basis and the model caveats, but **take the splits from the tools**: the prose no longer carries lap tables. When a new race or timed session comes in, **file it as a record** — write `docs/personal/track/<id>.md` with the frontmatter basis and the export in a fenced `splits` block — rather than typing a table into `season.md` or the log. Once it is filed, `compute_track_lap_power` and `write_track_runs` take `sessionId` in place of pasted splits, so the export is never transcribed twice. See `docs/adr/0008-timed-splits-are-tracked-records.md`.
 
@@ -54,9 +54,6 @@ The `coaching-philosophy` skill ships with the server, so it's always present. I
 **Reach every Intervals.icu tool through `./bin/icu`, piped.** Read
 [docs/agents/icu-cli.md](../../../docs/agents/icu-cli.md) before your first call — working directory,
 piping, the scratchpad, `describe`. This skill runs at the **Coaching** tier there.
-
-- **One MCP-only exception:** `setup_coaching` is an MCP _prompt_, not a registry tool, so it has no
-  CLI equivalent. It only comes up when `steering.md` or `season.md` is missing.
 
 **Invoke the `ride-analysis` skill for multi-activity stream work.** It runs forked, out of this
 conversation — its tool output stays out entirely; only its report comes back. Worth it when a

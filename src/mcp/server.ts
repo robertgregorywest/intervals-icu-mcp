@@ -6,7 +6,6 @@ import { formatToolError } from "../errors.js";
 import { TOOLS } from "../registry.js";
 import type { ToolDef } from "../registry.js";
 import { STATIC_INSTRUCTIONS } from "./syntax-doc.js";
-import { registerSetupCoachingPrompt } from "./prompts/setup-coaching.js";
 
 const require = createRequire(import.meta.url);
 const { version } = require("../../package.json") as { version: string };
@@ -66,8 +65,6 @@ export function createMcpServer(client: IIntervalsClient): McpServer {
   for (const t of TOOLS) {
     registerTool(t);
   }
-
-  registerSetupCoachingPrompt(server);
 
   return server;
 }

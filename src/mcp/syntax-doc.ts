@@ -43,7 +43,6 @@ export const TOOL_INVENTORY = `## Tool inventory (high-level)
 - **Athlete** — \`get_athlete\`: profile, FTP, zones.
 - **Planning** — \`forecast_training_load\`: what would this week do to CTL/ATL/TSB? Costs proposed sessions from their own workout text and projects the trajectory **without writing anything**. Use it to check a draft block against its ramp target before committing it, rather than writing events and reading \`icu_ctl\` back. Proposed sessions overlay the calendar by date, so a partly-fixed week needs no restating. Every figure names its basis and its source.
 - **Coaching** — \`get_coaching_context\`: one-call snapshot of athlete profile + today's fitness + recent wellness trend. Call at session start to ground workout decisions.
-- **Prompts** — \`setup_coaching\`: user-invokable; walks the athlete through an interview and emits their personal \`season.md\` and \`steering.md\` for \`docs/personal/\`. The durable philosophy is the tracked \`coaching-philosophy\` skill.
 `;
 
 export const STATIC_INSTRUCTIONS =

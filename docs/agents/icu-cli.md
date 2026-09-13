@@ -16,8 +16,8 @@ cd <repo root> && \
 
 - **`<repo root>` is this checkout of the repo** — Claude Code's primary working directory. Substitute
   the absolute path; the skills never hard-code one, so they work in any clone.
-- **`cd` to the project root in the same command.** The CLI reads `INTERVALS_API_KEY` from the
-  project env; run it from anywhere else and it fails with "Intervals.icu API key required". This is
+- **`cd` to the project root in the same command.** The CLI reads `INTERVALS_API_KEY` from the repo's
+  `.env`; run it from anywhere else and it fails with "Intervals.icu API key required". This is
   the most common way to break a call — the working directory does not persist reliably between them.
 - **Pipe even the shaped results.** `forecast_training_load` returns every day and every week; if you
   are quoting weekly ramp, print the week rows and drop the rest. The habit matters more than any one

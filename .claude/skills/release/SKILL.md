@@ -7,7 +7,7 @@ description: Cut a new release of intervals-icu-mcp: bump versions in package.js
 
 ## Steps
 
-- [ ] Verify `manifest.json` `tools[]` and `prompts[]` match what the server registers (see check below)
+- [ ] Verify `manifest.json` `tools[]` matches what the server registers (see check below)
 - [ ] Bump `version` in `package.json`
 - [ ] Bump `version` in `manifest.json` to match
 - [ ] Commit: `git add package.json manifest.json && git commit -m "chore: release vX.Y.Z"`
@@ -17,7 +17,7 @@ Pushing the tag triggers the GitHub Actions workflow, which handles build, test,
 
 ## Manifest staleness check
 
-The manifest's `tools[]` and `prompts[]` arrays must match what the server actually registers — they're how Claude Desktop's UI advertises capabilities. Drift here doesn't break the server (the live tool list comes from `tools/list` over MCP), but it does break discoverability for users browsing the bundle.
+The manifest's `tools[]` array must match what the server actually registers — it's how Claude Desktop's UI advertises capabilities. Drift here doesn't break the server (the live tool list comes from `tools/list` over MCP), but it does break discoverability for users browsing the bundle.
 
 Run before bumping versions:
 
@@ -25,9 +25,9 @@ Run before bumping versions:
 npm run check:manifest
 ```
 
-This compares the `tool("…")` / `registerPrompt("…")` registrations in `src/mcp/` against `manifest.json` and exits non-zero on drift (`scripts/check-manifest.mjs`). The logic lives in a committed script rather than inline shell so it's a single stable command — allowlist `Bash(npm run check:manifest)` to skip the permission prompt.
+This compares the tool registry (`src/registry.ts`) against `manifest.json` and exits non-zero on drift (`scripts/check-manifest.mjs`). The logic lives in a committed script rather than inline shell so it's a single stable command — allowlist `Bash(npm run check:manifest)` to skip the permission prompt.
 
-If something's missing from the manifest, add it before tagging. Each `tools[]` entry is `{ "name": "..." }`; each `prompts[]` entry needs `name`, `description`, and `text` (validated by `npx mcpb validate manifest.json`).
+If something's missing from the manifest, add it before tagging. Each `tools[]` entry is `{ "name": "..." }` (validated by `npx mcpb validate manifest.json`).
 
 ## MCPB / Claude Desktop Gotchas
 
