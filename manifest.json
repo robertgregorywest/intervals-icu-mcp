@@ -3,7 +3,7 @@
   "version": "0.6.1",
   "name": "intervals-icu-mcp",
   "display_name": "Intervals.icu",
-  "description": "Access your Intervals.icu training data \u2014 activities, calendar, fitness metrics, power curves, workout planning, and a managed library of saved workouts that can act as a coaching template store.",
+  "description": "Access your Intervals.icu training data — activities, calendar, fitness metrics, power curves, workout planning, and a managed library of saved workouts that can act as a coaching template store.",
   "server": {
     "type": "node",
     "entry_point": "dist/mcp/stdio.js",
@@ -20,7 +20,7 @@
     "intervals_api_key": {
       "type": "string",
       "title": "Intervals.icu API Key",
-      "description": "Your Intervals.icu API key (Settings \u2192 API)",
+      "description": "Your Intervals.icu API key (Settings → API)",
       "required": true,
       "sensitive": true
     },
@@ -110,6 +110,15 @@
     },
     {
       "name": "sync_workout_library"
+    },
+    {
+      "name": "list_track_sessions"
+    },
+    {
+      "name": "get_track_session"
+    },
+    {
+      "name": "compare_track_sessions"
     }
   ],
   "author": {
