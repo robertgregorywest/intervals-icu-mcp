@@ -48,8 +48,10 @@ Read only the subfiles the session needs, from the project root:
 - `.claude/skills/intervals-coach/session-patterns.md` — structure norms by session type (Z2,
   threshold, VO2, sweet spot, recovery, race-prep).
 - `.claude/skills/intervals-coach/syntax-cheatsheet.md` — workout-text syntax Intervals.icu expects.
-- `.claude/skills/intervals-coach/library-vs-compose.md` and
-  `.claude/skills/intervals-coach/vo2-preloaded-shorts.md` as the session calls for.
+- `.claude/skills/intervals-coach/vo2-preloaded-shorts.md` as the session calls for.
+
+Where those files say to check `list_workout_library` first, the caller already has: the brief's
+library decision is that check's answer.
 
 When the brief names a library item, fetch its body with `get_workout_library_item` and schedule
 that. When it says compose fresh, compose. Schedule with `create_workout` — or, when the brief
