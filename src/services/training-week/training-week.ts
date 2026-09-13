@@ -17,7 +17,9 @@ export class TrainingWeek implements ITrainingWeek {
   async getTrainingWeekSummary(
     weekStart?: string
   ): Promise<TrainingWeekSummary> {
-    const start = weekStart ?? currentMonday();
+    const start =
+      weekStart ??
+      (this.deps.today ? mondayOf(this.deps.today()) : currentMonday());
     const end = addDays(start, 6);
 
     const [activities, wellness, events] = await Promise.all([
@@ -139,6 +141,11 @@ function currentMonday(): string {
   const offset = dow === 0 ? -6 : 1 - dow;
   today.setDate(today.getDate() + offset);
   return today.toISOString().slice(0, 10);
+}
+
+function mondayOf(date: string): string {
+  const dow = new Date(`${date}T00:00:00Z`).getUTCDay();
+  return addDays(date, dow === 0 ? -6 : 1 - dow);
 }
 
 function addDays(date: string, days: number): string {

@@ -1,5 +1,5 @@
 import { createHttpClient } from "./client.js";
-import type { IHttpClient } from "./client.js";
+import type { FetchFn, IHttpClient } from "./client.js";
 import { parseClientConfig } from "./config.js";
 import { createEventsApi } from "./services/events/index.js";
 import type { IEventsApi } from "./services/events/index.js";
@@ -193,6 +193,10 @@ export interface IntervalsClientOptions {
   apiKey?: string;
   athleteId?: string;
   baseUrl?: string;
+  /** Replaces the network — the eval harness replays recorded responses. */
+  fetchFn?: FetchFn;
+  /** "Today" as YYYY-MM-DD; pinned by the eval harness to the scenario date. */
+  today?: () => string;
 }
 
 export class IntervalsClient implements IIntervalsClient {
@@ -211,6 +215,7 @@ export class IntervalsClient implements IIntervalsClient {
   private trackSessions: ITrackSessions;
   private trainingLoadForecast: ITrainingLoadForecast;
   private trainingWeek: ITrainingWeek;
+  private today: () => string;
 
   constructor(options: IntervalsClientOptions = {}) {
     const config = parseClientConfig({
@@ -219,8 +224,9 @@ export class IntervalsClient implements IIntervalsClient {
       baseUrl: options.baseUrl ?? "https://intervals.icu",
     });
     const { athleteId } = config;
+    this.today = options.today ?? (() => new Date().toISOString().slice(0, 10));
 
-    this.httpClient = createHttpClient(config);
+    this.httpClient = createHttpClient(config, options.fetchFn);
     this.events = createEventsApi(this.httpClient, athleteId);
     this.workoutBuilder = createWorkoutBuilder();
     this.athlete = createAthleteApi(this.httpClient, athleteId);
@@ -264,6 +270,7 @@ export class IntervalsClient implements IIntervalsClient {
       activitiesApi: this.activities,
       wellnessApi: this.wellness,
       eventsApi: this.events,
+      today: this.today,
     });
   }
 
@@ -320,8 +327,7 @@ export class IntervalsClient implements IIntervalsClient {
   }
 
   async getFitnessSummary(): Promise<WellnessRecord> {
-    const today = new Date().toISOString().slice(0, 10);
-    return this.wellness.getWellnessDay(today);
+    return this.wellness.getWellnessDay(this.today());
   }
 
   // Power curves
@@ -450,7 +456,7 @@ export class IntervalsClient implements IIntervalsClient {
         activitiesApi: this.activities,
         powerCurvesApi: this.powerCurves,
       },
-      opts
+      { ...opts, today: opts?.today ?? this.today() }
     );
   }
 
@@ -471,7 +477,8 @@ export class IntervalsClient implements IIntervalsClient {
         activitiesApi: this.activities,
         powerCurvesApi: this.powerCurves,
       },
-      overrides
+      overrides,
+      { today: this.today() }
     );
   }
 }
