@@ -7,6 +7,20 @@ description: Compose and schedule a single cycling/running workout on Intervals.
 
 Workout-generation skill for the `intervals-icu-mcp` server. Activates when the user asks for a workout — planning, building, scheduling, designing intervals — for Intervals.icu.
 
+## Invoked from within a coaching-session
+
+**Delegate the build to the `compose-workout` skill.** When you're running inside an active
+`coaching-session`, don't compose inline — invoke `compose-workout` (it runs forked, out of this
+conversation) with a distilled brief (discipline, session type/intent, the relevant zone bands and
+constraints, whether to save to the library, the date). It reads its own
+syntax/power-conversion/session-pattern subfiles and calls the write tools; you don't re-read them
+here and it doesn't re-read the full `steering.md`/`season.md` — it has no access to either, only
+the brief. Keep the decision of _what_ to build (library match vs compose, which template) here,
+where the philosophy and season context already live — delegate only the mechanical part.
+
+Invoked standalone (the athlete asked you directly, no coaching-session in progress), compose inline
+as below.
+
 ## Session-start moves
 
 **Reuse, don't repeat.** If you arrived from a `coaching-session` (or already pulled them this turn), the `get_coaching_context` snapshot and the personal files (`steering.md`, `season.md`) are already in context — reuse them, don't re-fetch. `list_workout_library` is _not_ usually among them, so run it regardless. Invoked cold, do both calls in parallel:
@@ -36,9 +50,12 @@ Does a library workout fit the intent?
                 └── No  → create_workout (calendar only)
 ```
 
+Everything past "does a library workout fit" is the mechanical build — inside a `coaching-session`
+this is exactly what gets handed to `compose-workout` (see above). Standalone, do it inline.
+
 See [library-vs-compose.md](library-vs-compose.md) for the full reasoning.
 
-## Composing fresh
+## Composing fresh (standalone invocation)
 
 Three things to get right:
 

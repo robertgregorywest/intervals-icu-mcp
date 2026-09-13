@@ -1,6 +1,7 @@
 ---
 name: coaching-session
 description: Start a broad coaching session for cycling training. Loads athlete philosophy, season plan, and live fitness state, then supports training load analysis, block/week planning, recovery guidance, race prep, and performance analysis. Use when the user wants a training conversation beyond composing a single workout — e.g. "how's my training looking", "plan my week", "review a recent ride", "am I ready for my race".
+disable-model-invocation: true
 ---
 
 # coaching-session
@@ -27,13 +28,11 @@ The `coaching-philosophy` skill ships with the server, so it's always present. I
 
 **Open on what was delivered, not on what was planned.** Once the stack is loaded, review the elapsed window before offering analysis, drafting a plan, or composing a session — every downstream judgement should be conditioned on delivered work.
 
-1. **Window** — from `reviewed-through` in the log header to today; see the table in [coaching-log-format.md](coaching-log-format.md) for a missing, stale, or too-recent watermark. Skip the review when the window holds no key session, and leave the watermark alone.
-2. **Select from the planned side** — key sessions are those _prescribed_ at sweet spot or above, read off the planned events. Selecting on the planned side means a key session that was abandoned or never started gets selected rather than silently missed.
-3. **Read both lenses** — `compare_intensity_distribution` over the whole window for the dose, `compare_planned_vs_actual` per selected session for execution within reps.
-4. **Interpret** — read [execution-review.md](execution-review.md) at this point (not at session start): step roles, which verdicts are artefacts, how deep to read each kind of session, and what passes the reporting threshold.
-5. **Done = every selected session dispositioned.** Each session picked in step 2 has been read through both lenses and landed on one of two dispositions: **reported** (it met the recurrence threshold) or **held** (seen once — not raised now, but ready if the athlete asks). A window where everything landed as prescribed completes at _one line_ plus the middle-band figure, not at silence. A review skipped under step 1 completes on saying it was skipped. The watermark is the record that this ran, and it advances at the log checkpoint — never here.
+1. **Window** — from `reviewed-through` in the log header to today; see the table in [coaching-log-format.md](coaching-log-format.md) for a missing, stale, or too-recent watermark. Skip delegating below when the window holds no key session, and leave the watermark alone.
+2. **Invoke the `execution-review` skill** — it runs forked, out of this conversation. Pass the window (watermark → today) and, if already in hand, the athlete's `mapZones` as its arguments. It selects key sessions, runs `compare_intensity_distribution` and `compare_planned_vs_actual`, interprets against its own reporting rules, and returns interpreted findings only — the raw comparison JSON never enters this conversation.
+3. **Done = the skill's report received.** A window where everything landed as prescribed comes back as _one line_ plus the middle-band figure, not silence. A window skipped under step 1 doesn't need invoking at all — note it was skipped. The watermark is the record that this ran, and it advances at the log checkpoint — never here.
 
-**A narrow request doesn't skip the review.** If the athlete opens with something specific ("move Thursday's session"), run the review anyway so you hold full context, but **answer their request first** and raise findings only where they bear on it.
+**A narrow request doesn't skip the review.** If the athlete opens with something specific ("move Thursday's session"), delegate the review anyway so you hold full context, but **answer their request first** and raise findings only where they bear on it.
 
 ## Scope
 
@@ -42,13 +41,13 @@ The `coaching-philosophy` skill ships with the server, so it's always present. I
 | Training load        | `get_coaching_context` (CTL/ATL/TSB, ramp rate, readiness)                                                                                                                                         |
 | Week/block planning  | Combine season position + fitness snapshot + philosophy rules, then cost the draft with `forecast_training_load` — see _Load check_ below                                                          |
 | Performance analysis | `get_fitness_summary`, `get_power_curve`, `compare_intervals`                                                                                                                                      |
-| Execution review     | `compare_intensity_distribution` (dose delivered, window or session), `compare_planned_vs_actual` (execution within reps) — see _Execution review_ above                                           |
+| Execution review     | Delegated — `execution-review` skill (forked) runs `compare_intensity_distribution` and `compare_planned_vs_actual` and returns interpreted findings — see _Execution review_ above                |
 | Aerobic efficiency   | `get_aerobic_decoupling`                                                                                                                                                                           |
 | Recovery guidance    | Wellness trend from `get_coaching_context` (fatigue, soreness, HRV, sleep)                                                                                                                         |
 | Race prep            | Align current fitness + taper logic with season.md A/B races                                                                                                                                       |
 | Track / IP analysis  | `list_track_sessions`, `get_track_session` (lap table, segments, decline, Σv²), `compare_track_sessions` (head-to-head) — records live in `docs/personal/track/`; see the session-start note above |
-| Workout composition  | Delegated — bike/run to `intervals-coach`, gym to `strength-training` (see Constraints)                                                                                                            |
-| Ride deep-dive       | Delegated — `ride-analyst` subagent for raw-stream work across activities (see _Tool access_ below)                                                                                                |
+| Workout composition  | Delegated — bike/run to `intervals-coach`, gym to `strength-training`, both of which hand the mechanical build to the `compose-workout` skill (forked) when invoked from here (see Constraints)    |
+| Ride deep-dive       | Delegated — `ride-analysis` skill (forked) for raw-stream work across activities (see _Tool access_ below)                                                                                         |
 
 ## Tool access — use the CLI
 
@@ -79,16 +78,16 @@ cd /Users/rob/GitHub/robertgregorywest/intervals-icu-mcp && \
 - **One MCP-only exception:** `setup_coaching` is an MCP _prompt_, not a registry tool, so it has no
   CLI equivalent. It only comes up when `steering.md` or `season.md` is missing.
 
-**Delegate multi-activity stream work to the `ride-analyst` subagent.** Its tool output stays out of
-this conversation entirely; only its report comes back. Worth it when a question needs raw
-time-series across more than one activity — matched-window decoupling comparisons, CP/W′ fits,
-ramp-test validation, rep-by-rep reconstruction from laps. Not worth it for a single figure off a
-single ride, where a cold start costs more than the pipe saves.
+**Invoke the `ride-analysis` skill for multi-activity stream work.** It runs forked, out of this
+conversation — its tool output stays out entirely; only its report comes back. Worth it when a
+question needs raw time-series across more than one activity — matched-window decoupling
+comparisons, CP/W′ fits, ramp-test validation, rep-by-rep reconstruction from laps. Not worth it for
+a single figure off a single ride, where a cold start costs more than the pipe saves.
 
-**Split it the right way: delegate the computation, keep the interpretation.** The subagent has none
-of the context stack and is instructed not to coach. Ask it for numbers, the basis behind them, and
-anything that would make a figure misleading; decide what they _mean_ here, where the philosophy,
-`steering.md`, `season.md` and the log are loaded.
+**Split it the right way: delegate the computation, keep the interpretation.** The skill runs with
+none of the context stack and is instructed not to coach. Ask it for numbers, the basis behind them,
+and anything that would make a figure misleading; decide what they _mean_ here, where the
+philosophy, `steering.md`, `season.md` and the log are loaded.
 
 ## Load check (when planning a week or block)
 

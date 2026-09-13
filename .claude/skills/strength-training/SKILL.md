@@ -15,6 +15,18 @@ _serves_ the endurance goal, and the coach's real job is deciding what **not** t
 the operational "how"; the durable "why" lives in the `coaching-philosophy` skill's
 [strength pillar](../coaching-philosophy/strength.md).
 
+## Invoked from within a coaching-session
+
+**Delegate the build to the `compose-workout` skill** once you know the block, frequency, intent,
+readiness, and placement (steps 1–3 of the decision tree below stay here, where the season and
+philosophy context already live). It runs forked, out of this conversation — hand it a distilled
+brief (discipline, phase/intent, RPE-based dose constraints, which day and why) rather than having it
+re-read `season.md`/`steering.md` and the exercise/session/periodization subfiles itself; it has no
+access to either, only the brief.
+
+Invoked standalone (the athlete asked you directly, no coaching-session in progress), run the whole
+decision tree inline as below.
+
 ## Session-start moves
 
 **Reuse, don't repeat.** If you arrived from a `coaching-session` (or already gathered these this
@@ -56,6 +68,9 @@ Place it right (stack on a hard ride day; never before track;
     ▼
 create_strength_workout   (name, date, description = exercises · sets×reps · RPE)
 ```
+
+Everything from "pick a template" down is the mechanical build — inside a `coaching-session` this is
+what gets handed to `compose-workout` (see above). Standalone, do it inline.
 
 ## The five principles (the lens for every decision)
 

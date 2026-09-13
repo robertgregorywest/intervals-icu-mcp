@@ -81,7 +81,7 @@ header thread carry any state that must survive.
 
 ## Review window
 
-The window the execution review sweeps at session start (see [execution-review.md](execution-review.md) for how the findings are read). Derived from the watermark, never from "the last few days":
+The window the `execution-review` skill sweeps at session start. Derived from the watermark, never from "the last few days":
 
 | Watermark state                                     | Window                                                                                               |
 | --------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
