@@ -109,6 +109,26 @@ describe("replay misses", () => {
       { key: "GET /api/v1/athlete/i1/activities" },
     ]);
   });
+
+  it("tops up the cassette through a fallback instead of missing", async () => {
+    const real = vi
+      .fn()
+      .mockImplementation(async () => new Response("[1]", { status: 200 }));
+    const topUp = replayFetch({
+      dir,
+      captureFile,
+      fallback: recordingFetch({ dir, captureFile, fetchFn: real }),
+    });
+    expect(await (await topUp(`${BASE}/activities`)).json()).toEqual([1]);
+    await topUp(`${BASE}/activities`);
+    expect(real).toHaveBeenCalledTimes(1);
+
+    const replayed = await replayFetch({ dir, captureFile })(
+      `${BASE}/activities`
+    );
+    expect(await replayed.json()).toEqual([1]);
+    expect(readdirSync(tmp)).not.toContain("misses.jsonl");
+  });
 });
 
 describe("write capture", () => {
@@ -172,6 +192,15 @@ describe("evalClientOptions", () => {
   it("supplies a dummy key in replay mode", () => {
     const opts = evalClientOptions({ ICU_REPLAY_DIR: dir });
     expect(opts.apiKey).toBe("replay");
+    expect(opts.fetchFn).toBeTypeOf("function");
+  });
+
+  it("keeps the real key when topping up a cassette", () => {
+    const opts = evalClientOptions({
+      ICU_REPLAY_DIR: dir,
+      ICU_RECORD_MISSING: "1",
+    });
+    expect(opts.apiKey).toBeUndefined();
     expect(opts.fetchFn).toBeTypeOf("function");
   });
 

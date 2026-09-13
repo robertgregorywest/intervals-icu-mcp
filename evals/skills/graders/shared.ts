@@ -54,6 +54,44 @@ export const readOnly: Grader = (_spec, run) => {
   };
 };
 
+/**
+ * The captured writes are exactly `expect` — each `{method, path, body?}`
+ * (path and body regexes, body tested against the JSON request body)
+ * matched by one distinct write, and nothing else written.
+ */
+export const writes: Grader = (spec, run) => {
+  const expected = (Array.isArray(spec.expect) ? spec.expect : []) as Array<{
+    method: string;
+    path: string;
+    body?: string;
+  }>;
+  const unmatched = [...run.writes];
+  const missing: string[] = [];
+  for (const e of expected) {
+    const path = new RegExp(e.path);
+    const body = e.body ? new RegExp(e.body) : null;
+    const i = unmatched.findIndex(
+      (w) =>
+        w.method === e.method.toUpperCase() &&
+        path.test(w.path) &&
+        (!body || body.test(JSON.stringify(w.body)))
+    );
+    if (i === -1)
+      missing.push(`${e.method} ${e.path}${body ? ` ~ /${e.body}/` : ""}`);
+    else unmatched.splice(i, 1);
+  }
+  const problems = [
+    ...missing.map((m) => `missing ${m}`),
+    ...unmatched.map((w) => `unexpected ${w.method} ${w.path}`),
+  ];
+  return {
+    passed: problems.length === 0,
+    explanation: problems.length
+      ? problems.join("; ")
+      : `${run.writes.length} write(s) as expected`,
+  };
+};
+
 /** Reported, never scored: requests the recorded scenario could not answer. */
 export const noReplayMisses: Grader = (_spec, run) => ({
   passed: run.misses.length === 0,

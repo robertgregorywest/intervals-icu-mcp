@@ -14,6 +14,7 @@
     "prepare": "husky",
     "sandcastle": "npx tsx .sandcastle/main.ts",
     "eval:skills": "tsx evals/skills/run.ts",
+    "eval:capture": "tsx evals/skills/capture.ts",
     "eval:typecheck": "tsc --noEmit -p evals/skills"
   },
   "keywords": [

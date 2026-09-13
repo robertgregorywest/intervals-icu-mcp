@@ -4,6 +4,7 @@
 //
 //   npm run eval:skills -- --case er-* --models claude-sonnet-5 --effort low,high --trials 3
 //   npm run eval:skills -- --case <id> --record   # fill a case's cassette live
+//   npm run eval:skills -- --case <id> --models … --record-missing   # top it up
 
 import { execFileSync } from "node:child_process";
 import {
@@ -47,6 +48,7 @@ const { values: args } = parseArgs({
     scenarios: { type: "string", default: "docs/personal/evals/scenarios" },
     results: { type: "string", default: "docs/personal/evals/results" },
     record: { type: "boolean", default: false },
+    "record-missing": { type: "boolean", default: false },
     "keep-workspace": { type: "boolean", default: false },
   },
 });
@@ -69,6 +71,10 @@ if (!["inherit", "pinned"].includes(subagentModel)) {
   throw new Error("--subagent-model is inherit or pinned");
 }
 const record = args.record;
+// Replay what the cassette holds; fetch and add whatever a run asks beyond it.
+const topUp = args["record-missing"];
+if (record && topUp) throw new Error("--record or --record-missing, not both");
+const live = record || topUp;
 const trials = record ? 1 : Number(args.trials);
 const maxCost = Number(args["max-cost-usd"]);
 
@@ -106,7 +112,7 @@ const stamp = new Date().toISOString().replace(/[:.]/g, "-");
 const resultsDir = resolve(
   REPO_ROOT,
   args.results,
-  record ? `${stamp}-record` : stamp
+  record ? `${stamp}-record` : topUp ? `${stamp}-top-up` : stamp
 );
 mkdirSync(resultsDir, { recursive: true });
 
@@ -116,7 +122,7 @@ function git(...a: string[]): string {
 
 const config = {
   startedAt: new Date().toISOString(),
-  mode: record ? "record" : "replay",
+  mode: record ? "record" : topUp ? "top-up" : "replay",
   models,
   efforts,
   trials,
@@ -162,15 +168,26 @@ function readJsonl<T>(file: string): T[] {
     .map((l) => JSON.parse(l) as T);
 }
 
-function recordEnv(evalCase: EvalCase): Record<string, string> {
+function credentials(): Record<string, string> {
   const dotenv = parseDotenv(readFileSync(join(REPO_ROOT, ".env")));
   if (!dotenv.INTERVALS_API_KEY)
-    throw new Error("--record needs INTERVALS_API_KEY in .env");
+    throw new Error("Recording needs INTERVALS_API_KEY in .env");
   return {
     INTERVALS_API_KEY: dotenv.INTERVALS_API_KEY,
     INTERVALS_ATHLETE_ID: dotenv.INTERVALS_ATHLETE_ID ?? "0",
-    ICU_RECORD_DIR: join(evalCase.dir, "cassette"),
   };
+}
+
+function cassetteEnv(cassetteDir: string): Record<string, string> {
+  if (record) return { ...credentials(), ICU_RECORD_DIR: cassetteDir };
+  if (topUp) {
+    return {
+      ...credentials(),
+      ICU_REPLAY_DIR: cassetteDir,
+      ICU_RECORD_MISSING: "1",
+    };
+  }
+  return { ICU_REPLAY_DIR: cassetteDir, INTERVALS_API_KEY: "" };
 }
 
 let spent = 0;
@@ -203,15 +220,10 @@ async function execute(spec: RunSpec): Promise<RunRecord> {
       env: {
         ICU_NOW: evalCase.scenarioDate,
         ICU_CAPTURE_FILE: captureFile,
-        ...(record
-          ? recordEnv(evalCase)
-          : {
-              ICU_REPLAY_DIR: join(evalCase.dir, "cassette"),
-              INTERVALS_API_KEY: "",
-            }),
+        ...cassetteEnv(cassetteDir),
       },
-      allowedDomains: record ? ["intervals.icu"] : [],
-      writableDirs: record ? [runDir, cassetteDir] : [runDir],
+      allowedDomains: live ? ["intervals.icu"] : [],
+      writableDirs: live ? [runDir, cassetteDir] : [runDir],
       maxBudgetUsd: Number(args["run-budget-usd"]),
     });
     config.claudeVersion ??= agent.claudeVersion;

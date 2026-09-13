@@ -24,7 +24,8 @@ export interface EvalClientOptions {
 /**
  * Client options from the eval env switches — `ICU_REPLAY_DIR` (replay) or
  * `ICU_RECORD_DIR` (record), with `ICU_CAPTURE_FILE` for writes, and
- * `ICU_NOW` to pin "today". Empty when none are set.
+ * `ICU_NOW` to pin "today". `ICU_RECORD_MISSING` alongside a replay dir
+ * records whatever the cassette lacks. Empty when none are set.
  */
 export function evalClientOptions(
   env: Record<string, string | undefined>
@@ -43,7 +44,15 @@ export function evalClientOptions(
     throw new Error("Set ICU_REPLAY_DIR or ICU_RECORD_DIR, not both");
   }
   const captureFile = env.ICU_CAPTURE_FILE ?? join(dir, "..", "writes.jsonl");
-  if (env.ICU_REPLAY_DIR) {
+  if (env.ICU_REPLAY_DIR && env.ICU_RECORD_MISSING) {
+    // Top-up: what the cassette holds is replayed, anything else is fetched
+    // live and added to it. Needs the real key.
+    opts.fetchFn = replayFetch({
+      dir,
+      captureFile,
+      fallback: recordingFetch({ dir, captureFile }),
+    });
+  } else if (env.ICU_REPLAY_DIR) {
     opts.fetchFn = replayFetch({ dir, captureFile });
     // Replay never reaches the network, so no real key is needed.
     opts.apiKey = env.INTERVALS_API_KEY || "replay";
@@ -203,6 +212,8 @@ export interface ReplayOptions {
   captureFile: string;
   /** Where unrecorded GETs are logged; defaults beside the capture file. */
   missesFile?: string;
+  /** Answers unrecorded GETs instead of a 404 — a recordingFetch, to top up. */
+  fallback?: FetchFn;
 }
 
 /** GETs answered from the cassette; writes captured, never sent. */
@@ -217,6 +228,7 @@ export function replayFetch(opts: ReplayOptions): FetchFn {
     const key = cassetteKey(method, url);
     const file = entryPath(opts.dir, key);
     if (!existsSync(file)) {
+      if (opts.fallback) return opts.fallback(input, init);
       const miss: ReplayMiss = { key };
       appendJsonl(missesFile, miss);
       return jsonResponse(404, {
