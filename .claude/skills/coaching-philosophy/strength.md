@@ -8,4 +8,4 @@ hard ride days so easy days stay truly easy.
 
 The operational "how" — exercise selection by stimulus-to-fatigue ratio, session templates per
 block, and scheduling a gym session via `create_strength_workout` — lives in the
-**`strength-training` skill**.
+**`plan-strength-training` skill**.

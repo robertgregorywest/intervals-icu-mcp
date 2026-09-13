@@ -1,6 +1,6 @@
 ---
 name: compose-strength-session
-description: Builds and schedules a single gym/strength session on Intervals.icu from a strength brief (phase intent, template tier, dose constraints, date). Invoked by strength-training once it has decided what to build.
+description: Builds and schedules a single gym/strength session on Intervals.icu from a strength brief (phase intent, template tier, dose constraints, date). Invoked by plan-strength-training once it has decided what to build.
 context: fork
 agent: workout-composer
 ---
@@ -9,13 +9,13 @@ agent: workout-composer
 
 You build the gym session the brief has already decided on.
 
-You are running standalone, forked out of `strength-training`. You have no conversation history and
+You are running standalone, forked out of `plan-strength-training`. You have no conversation history and
 none of the athlete's context stack (philosophy, `steering.md`, `season.md`, current fitness) —
 everything you need is in `$ARGUMENTS`.
 
 ## Your input (`$ARGUMENTS`) — the strength brief
 
-This section is the one definition of the brief `strength-training` hands over. The caller points
+This section is the one definition of the brief `plan-strength-training` hands over. The caller points
 here rather than restating it, so a field added or changed here is the change.
 
 - **Session intent** — e.g. "heavy lower body, reload block, no jumps this week."
@@ -39,10 +39,10 @@ re-deriving it.
 
 Read only the subfiles the session needs, from the project root:
 
-- `.claude/skills/strength-training/sessions.md` — the template the brief's tier names.
+- `.claude/skills/plan-strength-training/sessions.md` — the template the brief's tier names.
 - `exercises.md` (this skill's folder) — fill the template by stimulus-to-fatigue ratio
   for the phase.
-- `.claude/skills/strength-training/periodization.md` — how dose shifts block to block, if the
+- `.claude/skills/plan-strength-training/periodization.md` — how dose shifts block to block, if the
   brief's block intent needs unpacking.
 
 Auto-regulate load by RPE/bar velocity, never absolute kg — the athlete's gym numbers aren't in

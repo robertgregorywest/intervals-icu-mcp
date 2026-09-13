@@ -1,9 +1,9 @@
 ---
-name: strength-training
-description: Compose and schedule a gym / strength session on Intervals.icu, and reason about how strength supports the bike. Use when the user asks to plan, build, schedule, or review a gym / strength / lifting / S&C session, mentions squats/deadlifts/step-ups/jumps, asks how many gym sessions to run, or how strength transfers to the standing start or the pursuit.
+name: plan-strength-training
+description: Plan a gym / strength session on Intervals.icu — decide block dose, template tier and placement, then hand the build to compose-strength-session — and reason about how strength supports the bike. Use when the user asks to plan, build, schedule, or review a gym / strength / lifting / S&C session, mentions squats/deadlifts/step-ups/jumps, asks how many gym sessions to run, or how strength transfers to the standing start or the pursuit.
 ---
 
-# strength-training
+# plan-strength-training
 
 Strength-and-conditioning skill for the `intervals-icu-mcp` server. Decides the gym session and
 hands the build to the forked **`compose-strength-session`** skill, which schedules it as a
