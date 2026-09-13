@@ -187,7 +187,12 @@ function cassetteEnv(cassetteDir: string): Record<string, string> {
       ICU_RECORD_MISSING: "1",
     };
   }
-  return { ICU_REPLAY_DIR: cassetteDir, INTERVALS_API_KEY: "" };
+  // Cassette keys carry the athlete id they were recorded under; the key stays out.
+  return {
+    ICU_REPLAY_DIR: cassetteDir,
+    INTERVALS_API_KEY: "",
+    INTERVALS_ATHLETE_ID: credentials().INTERVALS_ATHLETE_ID,
+  };
 }
 
 let spent = 0;
