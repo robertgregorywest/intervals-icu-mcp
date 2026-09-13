@@ -31,6 +31,8 @@ restating it, so a field added or changed here is the change.
   and if composing, whether to save it to the library.
 - **Template tier** (strength) — which session template in `sessions.md` applies.
 - **Date(s)** to schedule it on.
+- **Event to replace** (optional) — the id of a planned event on the calendar that this build
+  replaces, which the athlete has agreed to on the coaching thread. Absent, the build is a new event.
 
 The caller has already made every decision above with the full context stack loaded. Work from the
 brief and the how-to subfiles below; the personal files (`steering.md`, `season.md`) stay with the
@@ -50,9 +52,9 @@ Read only the subfiles the session needs, from the project root:
   `.claude/skills/intervals-coach/vo2-preloaded-shorts.md` as the session calls for.
 
 When the brief names a library item, fetch its body with `get_workout_library_item` and schedule
-that. When it says compose fresh, compose. Schedule with `create_workout` (or a `steps`-bearing
-`update_event`). If asked to save to the library, write `templates/workouts/<seedId>.md` then run
-`sync_workout_library`.
+that. When it says compose fresh, compose. Schedule with `create_workout` — or, when the brief
+names an event to replace, a `steps`-bearing `update_event --yes` on that id. If asked to save to the
+library, write `templates/workouts/<seedId>.md` then run `sync_workout_library`.
 
 ## Gym/strength builds
 
@@ -71,7 +73,8 @@ Auto-regulate load by RPE/bar velocity, never absolute kg — the athlete's gym 
 
 Read `docs/agents/icu-cli.md` (from the project root) before your first CLI call — working
 directory, piping, `describe`. You run at its **Build** tier: you were asked to build this, so build
-it.
+it. The one `--yes` you run is `update_event` on the event id the brief names to replace; every
+other change to an existing event goes back to the caller in your report.
 
 ## What to return
 
