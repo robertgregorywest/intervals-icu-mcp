@@ -12,7 +12,9 @@
     "check:manifest": "tsx scripts/check-manifest.ts",
     "mcpb:pack": "mcpb pack",
     "prepare": "husky",
-    "sandcastle": "npx tsx .sandcastle/main.ts"
+    "sandcastle": "npx tsx .sandcastle/main.ts",
+    "eval:skills": "tsx evals/skills/run.ts",
+    "eval:typecheck": "tsc --noEmit -p evals/skills"
   },
   "keywords": [
     "intervals-icu",
