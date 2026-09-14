@@ -15,9 +15,19 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 
-// Paths never copied into a run's workspace: the eval suite itself (the agent
-// must not see cases or graders), and trees irrelevant to coaching.
-const EXCLUDE = ["evals", "tests", ".sandcastle", ".github", "docs/personal"];
+// Paths never copied into a run's workspace: the eval suite and the skill that
+// builds its cases (the agent must not see how it is graded), and trees
+// irrelevant to coaching.
+const EXCLUDE = [
+  "evals",
+  ".claude/skills/eval-case",
+  "docs/evals.md",
+  "docs/adr/0009-skill-evals.md",
+  "tests",
+  ".sandcastle",
+  ".github",
+  "docs/personal",
+];
 
 export type SubagentModel = "inherit" | "pinned";
 

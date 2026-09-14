@@ -69,8 +69,9 @@ docs/personal/evals/scenarios/plan-workout/pw-replace-sat-19/
 For each trial the runner:
 
 1. **Builds a workspace.** It copies your working tree to a temporary directory, including
-   uncommitted skill edits, since those are usually what you're testing. `evals/`, `tests/` and
-   your real `docs/personal` are left out, so the agent can't see the cases or the graders. The
+   uncommitted skill edits, since those are usually what you're testing. `evals/`, `tests/`, this
+   guide, ADR 0009, the `eval-case` skill and your real `docs/personal` are left out, so the agent
+   can't see the cases or how they're graded. The
    case's `personal/` files go into the workspace's `docs/personal/`.
 2. **Makes forked skills use the model under test.** The `execution-analyst` and
    `workout-composer` agent definitions pin `model: sonnet`. The workspace copy switches them to
@@ -228,6 +229,11 @@ A case should come from a real moment in your history where you know what good c
 a review window where you know what should be reported, or a planning request where the season plan
 or steering dictates the answer. Aim for a mix: typical cases, edge cases, and _negative_ cases,
 where the right answer is to push back or write nothing.
+
+The `/eval-case` skill walks through the steps below with you. It suggests moments that fill gaps
+in the suite, interviews you for the ground truth, takes exact grader values from the recorded
+data, and calibrates the graders against your verdict on trial runs. It asks before every step that
+costs money. The steps also work by hand.
 
 **1. Capture it.** Choose the date the moment happened and the prompt you would have typed:
 
