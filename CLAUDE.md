@@ -12,6 +12,7 @@ MCP server and CLI tool for the Intervals.icu API plus tools and skills to suppo
 - **MCP adapter** (`src/mcp/`) — `server.ts` registers each Tool; `syntax-doc.ts` is the source of truth for the workout-text `instructions`.
 - **CLI adapter** (`src/cli/main.ts`, entrypoint `bin/icu`) — projects Tools as Bash subcommands via `tsx`, so it always runs the latest `src/` with no rebuild or MCP reconnect. Use it while iterating on a tool's own source, since the MCP process won't see `src/` edits until reconnected. `./bin/icu describe` prints the full catalogue; mutating commands need `--yes`. Allowlist `get_*`/`list_*`/`compute_*`/`compare_*`/`describe` as read-only; run `create_*`/`sync_*` freely (idempotent); prompt before allowlisting mutating commands. See `docs/adr/0002-cli-json-input.md`.
 - **Tests** (`tests/`) — mirror `src/` structure. Use injectable fetch (not global mocks).
+- **Skill evals** (`evals/skills/`) — `npm run eval:skills` scores the coaching skills against recorded scenarios in the private `docs/personal/evals/`. **Manual only, and every run costs money** — never add it to `npm test`, the hook or the release, and don't run it unasked. See `docs/evals.md` and `docs/adr/0009-skill-evals.md`.
 
 New tools/services: service with interface → tool handler in `src/tools/` → entry in `src/registry.ts` → both adapters pick it up automatically.
 

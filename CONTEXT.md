@@ -179,6 +179,20 @@ _Avoid_: treating a locally parsed document as authoritative over the platform's
 The fitness and fatigue a **Forecast** starts from, together with the date it was read for. Taken from what the athlete _delivered_ as at that date, not from the platform's projection onto planned work — on a day carrying both, the two differ.
 _Avoid_: seeding from a planned figure; reporting a ramp for the first forecast day without reaching seven days behind the Seed, where the delivered history that defines it lives.
 
+**Scenario**:
+A real moment in the athlete's history, frozen for a skill eval: a prompt, a scenario date that stands in for "today", the personal files as they stood then, a **Cassette**, and the graders a good run must pass. Stored privately as a case directory (`docs/personal/evals/scenarios/<skill>/<id>/case.yaml`); "case" is the same thing in flags and file names.
+_Avoid_: "test" or "fixture" (a Scenario is judged, not asserted); inventing a Scenario that never happened.
+
+**Cassette**:
+A Scenario's recorded Intervals.icu GET responses, one file per request, replayed by `bin/icu` so a run never reaches the network. Writes are never recorded or sent — they are captured to the run's `writes.jsonl` and answered with a synthetic success.
+_Avoid_: "snapshot" or "mock" — the cassette is real platform responses, not hand-made ones.
+
+**Trial**:
+One agent run of one Scenario at one model × effort. Trials repeat because the agent is not deterministic.
+
+**Cell**:
+Every **Trial** of one Scenario at one model × effort. The unit results are reported and compared in: mean score, pass rate, and **pass^k** — whether every Trial passed.
+
 ## Relationships
 
 - A **Tool** is registered once in the **Tool registry**
@@ -217,4 +231,5 @@ _Avoid_: seeding from a planned figure; reporting a ramp for the first forecast 
 ## Flagged ambiguities
 
 - "verdict" was used for two unrelated judgements — resolved: a **Verdict** judges delivery against prescription, an **Alignment verdict** judges how well a measurement was placed. They travel in different results and neither implies the other; a run can be ridden exactly to prescription and still align `weak`.
+- "seed" has two senses — a **Seed** is where a **Forecast** starts; a _seed case_ (tag `seed`) is one of the first **Scenarios** built for a skill. Unrelated; say "seed case" in full for the latter.
 - "tool" was used for both the registered operation and its MCP form — resolved: the registered unit is a **Tool**; its MCP-surface form is an **MCP tool** (a **Projection**), and its CLI-surface form is a **CLI command**.

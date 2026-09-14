@@ -141,8 +141,20 @@ const GRADERS: Record<string, string> = {
   - type: skillInvoked
     skill: compose-workout
   - type: noReplayMisses
-  # TODO: workout graders (step 4 of #20) — oneWorkoutWritten, workoutParses,
-  # targetsInBand, durationWithin, libraryDecision.
+  # TODO: exactly the calendar writes a good run makes (expect: [] for none),
+  # on the workout's date — not necessarily the scenario date.
+  - type: writes
+    expect:
+      - method: POST
+        path: /events(/bulk)?$
+        body: '"start_date_local":"${date}'
+  - type: workoutParses
+  # TODO: the intent's watts and time, e.g.
+  # - type: targetsInBand
+  #   band: [lowW, highW]
+  #   workMinutes: { min: 0, max: 0 }
+  # - type: durationWithin
+  #   maxMinutes: 90
   - type: llmRubric
     name: coaching-fit
     criteria: |
