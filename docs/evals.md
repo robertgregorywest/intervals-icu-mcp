@@ -21,6 +21,7 @@ issue #20. This guide is about using the evals.
 - [Running the evals](#running-the-evals)
 - [Reading results](#reading-results)
 - [Comparing two result sets](#comparing-two-result-sets)
+- [Re-grading without the agent](#re-grading-without-the-agent)
 - [Seeing which cases exist](#seeing-which-cases-exist)
 - [Adding a new case](#adding-a-new-case)
 - [Adjusting a case](#adjusting-a-case)
@@ -207,6 +208,25 @@ Compare like with like:
   differ.
 - Check the header line for `(dirty)` or `PARTIAL`. `PARTIAL` means the cost ceiling skipped runs.
 
+## Re-grading without the agent
+
+`eval:grade` runs a case's current graders over a run without starting the agent, so it costs
+nothing (unless you pass `--judge`, which also runs `llmRubric`):
+
+```sh
+# A stored run, after you've edited the case's graders
+npm run eval:grade -- --case pw-replace-sat-19 \
+  --run docs/personal/evals/results/<timestamp>/runs/pw-replace-sat-19/claude-sonnet-5__low/t1
+
+# A hand-made bad run, to prove the graders catch it
+npm run eval:grade -- --case pw-replace-sat-19 --writes bad-writes.jsonl [--final bad-final.md]
+```
+
+A hand-made run is the writes a bad run would make, one `{"method", "path", "body"}` per line in
+the same shape as a real `writes.jsonl`, and/or its reply as text. It has no transcript, so
+`completed`, `skillInvoked` and `noReplayMisses` are skipped. A case earns its place when the bad
+run you'd expect from a plausible model FAILS.
+
 ## Seeing which cases exist
 
 ```sh
@@ -293,8 +313,10 @@ git -C docs/personal commit -m "evals: add pw-midweek-cap"
 
 ## Adjusting a case
 
-Most adjustments are edits to `case.yaml`, and you don't need to re-record. Any change to a case
-makes earlier results for it incomparable, so re-run it before comparing.
+Most adjustments are edits to `case.yaml`, and you don't need to re-record. After a grader edit,
+check it for free with [`eval:grade`](#re-grading-without-the-agent) against stored runs and a
+hand-made bad run. Any change to a case makes earlier results for it incomparable, so re-run it
+before comparing.
 
 | To change…                          | Do this                                                                                                                                 |
 | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |

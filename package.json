@@ -17,6 +17,7 @@
     "eval:capture": "tsx evals/skills/capture.ts",
     "eval:compare": "tsx evals/skills/compare.ts",
     "eval:cases": "tsx evals/skills/cases.ts",
+    "eval:grade": "tsx evals/skills/grade.ts",
     "eval:typecheck": "tsc --noEmit -p evals/skills"
   },
   "keywords": [

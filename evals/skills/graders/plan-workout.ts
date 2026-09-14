@@ -167,13 +167,16 @@ export const targetsInBand: Grader = (spec, run) => {
     let workSeconds = 0;
     for (const { step, reps } of leafSteps(parsed.doc.steps)) {
       if (!step.power) continue;
+      const stepName = step.text
+        ? `"${step.text}"`
+        : `${minutes(step.duration ?? 0)} step`;
       const { target, unresolved } = resolvePowerTarget(
         step.power,
         anchors,
         step.ramp
       );
       if (!target) {
-        problems.push(`${label}: "${step.text}" ${unresolved ?? "no target"}`);
+        problems.push(`${label}: ${stepName} ${unresolved ?? "no target"}`);
         continue;
       }
       const lo = Math.round(target.low ?? target.watts ?? 0);
@@ -182,7 +185,7 @@ export const targetsInBand: Grader = (spec, run) => {
       workSeconds += (step.duration ?? 0) * reps;
       if (lo < lowW - tolerance || hi > highW + tolerance) {
         problems.push(
-          `${label}: "${step.text}" at ${lo === hi ? lo : `${lo}–${hi}`} W, outside ${lowW}–${highW} W`
+          `${label}: ${stepName} at ${lo === hi ? lo : `${lo}–${hi}`} W, outside ${lowW}–${highW} W`
         );
       }
     }

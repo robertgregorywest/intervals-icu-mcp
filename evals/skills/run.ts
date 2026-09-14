@@ -21,6 +21,7 @@ import type { CapturedWrite, ReplayMiss } from "../../src/cassette.js";
 import { gradeRun, score } from "./graders/index.js";
 import { runAgent } from "./lib/agent.js";
 import { loadCases } from "./lib/case.js";
+import { readJsonl } from "./lib/jsonl.js";
 import { extract } from "./lib/transcript.js";
 import {
   EFFORTS,
@@ -158,14 +159,6 @@ interface RunRecord {
   durationMs: number;
   error: string | null;
   runDir: string;
-}
-
-function readJsonl<T>(file: string): T[] {
-  if (!existsSync(file)) return [];
-  return readFileSync(file, "utf8")
-    .split("\n")
-    .filter(Boolean)
-    .map((l) => JSON.parse(l) as T);
 }
 
 function credentials(): Record<string, string> {
