@@ -5,9 +5,14 @@ import type {
   RunArtifacts,
 } from "../lib/types.js";
 import * as executionReview from "./execution-review.js";
+import * as planWorkout from "./plan-workout.js";
 import * as shared from "./shared.js";
 
-const GRADERS: Record<string, Grader> = { ...shared, ...executionReview };
+const GRADERS: Record<string, Grader> = {
+  ...shared,
+  ...executionReview,
+  ...planWorkout,
+};
 
 // Reported alongside the score but never part of it.
 const INFO_ONLY = new Set(["noReplayMisses"]);
