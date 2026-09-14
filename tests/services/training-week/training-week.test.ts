@@ -96,6 +96,32 @@ describe("TrainingWeek.getTrainingWeekSummary", () => {
     expect(startDay).toBe(1);
   });
 
+  it.each([
+    ["2026-09-07", "Monday", "2026-09-07"],
+    ["2026-09-09", "Wednesday", "2026-09-07"],
+    ["2026-09-13", "Sunday", "2026-09-07"],
+    ["2026-01-01", "Thursday across a year boundary", "2025-12-29"],
+  ])(
+    "starts the week on the Monday of a pinned today (%s, %s)",
+    async (today, _day, monday) => {
+      const deps = { ...createDeps(), today: () => today };
+      const result = await createTrainingWeek(deps).getTrainingWeekSummary();
+
+      expect(result.week.start).toBe(monday);
+      expect(deps.activitiesApi.getActivities).toHaveBeenCalledWith(
+        monday,
+        result.week.end
+      );
+    }
+  );
+
+  it("prefers an explicit weekStart over the pinned today", async () => {
+    const deps = { ...createDeps(), today: () => "2026-09-13" };
+    const result =
+      await createTrainingWeek(deps).getTrainingWeekSummary("2026-04-27");
+    expect(result.week.start).toBe("2026-04-27");
+  });
+
   it("returns null fitness when wellness is empty", async () => {
     const deps = createDeps();
     (

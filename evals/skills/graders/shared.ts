@@ -1,144 +1,214 @@
+import { z } from "zod";
+import type { CapturedWrite } from "../../../src/cassette.js";
+import { TOOLS } from "../../../src/registry.js";
+import { defineGrader, target } from "../lib/grader.js";
 import { judge } from "../lib/judge.js";
 import { icuCalls, skillMatches, targetText } from "../lib/transcript.js";
-import type { Grader } from "../lib/types.js";
+import type { GradeOutcome, RunArtifacts } from "../lib/types.js";
 
-// Tiers from docs/agents/icu-cli.md.
-const READ_ONLY = /^(get_|list_|compute_|compare_|describe)/;
+// The permission tiers of docs/agents/icu-cli.md, read off the same tool
+// annotations the CLI enforces, so a new tool lands in its tier unaided.
+const READ_ONLY_TOOLS = new Set([
+  "describe",
+  ...TOOLS.filter((t) => t.annotations.readOnlyHint).map((t) => t.name),
+]);
+const BUILD_TOOLS = new Set([
+  ...READ_ONLY_TOOLS,
+  // Idempotent upserts: create_*, sync_*.
+  ...TOOLS.filter(
+    (t) => !t.annotations.readOnlyHint && !t.annotations.destructiveHint
+  ).map((t) => t.name),
+]);
 
-function strings(value: unknown): string[] {
-  return Array.isArray(value) ? value.map(String) : [];
+const TIERS = ["read-only", "build", "build-replace"] as const;
+type Tier = (typeof TIERS)[number];
+
+function callAllowed(tier: Tier, call: string): boolean {
+  const [tool] = call.split(/\s/);
+  if (tier === "build-replace" && tool === "update_event") return true;
+  const allowed = tier === "read-only" ? READ_ONLY_TOOLS : BUILD_TOOLS;
+  return allowed.has(tool) && !/--yes\b/.test(call);
 }
 
-/** The case's skill (or `skill:`) ran — by Skill tool or slash command. */
-export const skillInvoked: Grader = (spec, run) => {
-  const skill = String(spec.skill ?? run.evalCase.skill);
-  const viaTool = run.toolUses.some(
-    (t) => t.name === "Skill" && skillMatches(t.input.skill, skill)
-  );
-  // A slash-invoked forked skill runs out of band: the transcript holds only
-  // its report, as an assistant message carrying `local_command_source`.
-  const viaSlash =
-    run.evalCase.prompt.trimStart().startsWith(`/${skill}`) &&
-    run.messages.some((m) => "local_command_source" in m);
-  return {
-    passed: viaTool || viaSlash,
-    explanation: viaTool
-      ? `Skill tool invoked ${skill}`
-      : viaSlash
-        ? `invoked as /${skill}`
-        : `${skill} never invoked`,
-  };
-};
+function writeAllowed(tier: Tier, write: CapturedWrite): boolean {
+  return tier !== "read-only" && write.method !== "DELETE";
+}
 
 /**
- * Only read-only CLI commands, and nothing captured as a write. A forked
- * skill's Bash calls never reach the transcript, so there the captured
- * writes are the whole evidence.
+ * A forked skill's Bash calls never reach the transcript, so there the
+ * captured writes are the whole evidence.
  */
-export const readOnly: Grader = (_spec, run) => {
+function tierOutcome(tier: Tier, run: RunArtifacts): GradeOutcome {
   const calls = icuCalls(run);
-  const offending = calls.filter(
-    (c) => !READ_ONLY.test(c) || /--yes\b/.test(c)
-  );
   const problems = [
-    ...offending.map((c) => `ran ${c.split(" ")[0]}`),
-    ...run.writes.map((w) => `wrote ${w.method} ${w.path}`),
+    ...calls
+      .filter((c) => !callAllowed(tier, c))
+      .map(
+        (c) => `ran ${c.split(/\s/)[0]}${/--yes\b/.test(c) ? " --yes" : ""}`
+      ),
+    ...run.writes
+      .filter((w) => !writeAllowed(tier, w))
+      .map((w) => `wrote ${w.method} ${w.path}`),
   ];
   return {
     passed: problems.length === 0,
     explanation: problems.length
-      ? problems.join("; ")
+      ? `outside the ${tier} tier: ${problems.join("; ")}`
       : calls.length
-        ? "read-only"
-        : "no writes captured (CLI calls not visible)",
+        ? `within the ${tier} tier`
+        : "no disallowed writes captured (CLI calls not visible)",
   };
-};
+}
+
+/**
+ * Every CLI command and captured write is within the skill's `tier:`. The
+ * build tiers bar deletes but not other writes — `writes` pins those down.
+ */
+export const cliTier = defineGrader(
+  z.strictObject({ tier: z.enum(TIERS) }),
+  (o, run) => tierOutcome(o.tier, run)
+);
+
+/** `cliTier` at the read-only tier: reads only, nothing written. */
+export const readOnly = defineGrader(z.strictObject({}), (_o, run) =>
+  tierOutcome("read-only", run)
+);
+
+/** The case's skill (or `skill:`) ran — by Skill tool or slash command. */
+export const skillInvoked = defineGrader(
+  z.strictObject({ skill: z.string().optional() }),
+  (o, run) => {
+    const skill = o.skill ?? run.evalCase.skill;
+    const viaTool = run.toolUses.some(
+      (t) => t.name === "Skill" && skillMatches(t.input.skill, skill)
+    );
+    // A slash-invoked forked skill runs out of band: the transcript holds only
+    // its report, as an assistant message carrying `local_command_source`.
+    const viaSlash =
+      run.evalCase.prompt.trimStart().startsWith(`/${skill}`) &&
+      run.messages.some((m) => "local_command_source" in m);
+    return {
+      passed: viaTool || viaSlash,
+      explanation: viaTool
+        ? `Skill tool invoked ${skill}`
+        : viaSlash
+          ? `invoked as /${skill}`
+          : `${skill} never invoked`,
+    };
+  }
+);
 
 /**
  * The captured writes are exactly `expect` — each `{method, path, body?}`
  * (path and body regexes, body tested against the JSON request body)
  * matched by one distinct write, and nothing else written.
  */
-export const writes: Grader = (spec, run) => {
-  const expected = (Array.isArray(spec.expect) ? spec.expect : []) as Array<{
-    method: string;
-    path: string;
-    body?: string;
-  }>;
-  const unmatched = [...run.writes];
-  const missing: string[] = [];
-  for (const e of expected) {
-    const path = new RegExp(e.path);
-    const body = e.body ? new RegExp(e.body) : null;
-    const i = unmatched.findIndex(
-      (w) =>
-        w.method === e.method.toUpperCase() &&
-        path.test(w.path) &&
-        (!body || body.test(JSON.stringify(w.body)))
-    );
-    if (i === -1)
-      missing.push(`${e.method} ${e.path}${body ? ` ~ /${e.body}/` : ""}`);
-    else unmatched.splice(i, 1);
+export const writes = defineGrader(
+  z.strictObject({
+    expect: z.array(
+      z.strictObject({
+        method: z.string(),
+        path: z.string(),
+        body: z.string().optional(),
+      })
+    ),
+  }),
+  (o, run) => {
+    const unmatched = [...run.writes];
+    const missing: string[] = [];
+    for (const e of o.expect) {
+      const path = new RegExp(e.path);
+      const body = e.body ? new RegExp(e.body) : null;
+      const i = unmatched.findIndex(
+        (w) =>
+          w.method === e.method.toUpperCase() &&
+          path.test(w.path) &&
+          (!body || body.test(JSON.stringify(w.body)))
+      );
+      if (i === -1)
+        missing.push(`${e.method} ${e.path}${body ? ` ~ /${e.body}/` : ""}`);
+      else unmatched.splice(i, 1);
+    }
+    const problems = [
+      ...missing.map((m) => `missing ${m}`),
+      ...unmatched.map((w) => `unexpected ${w.method} ${w.path}`),
+    ];
+    return {
+      passed: problems.length === 0,
+      explanation: problems.length
+        ? problems.join("; ")
+        : `${run.writes.length} write(s) as expected`,
+    };
   }
-  const problems = [
-    ...missing.map((m) => `missing ${m}`),
-    ...unmatched.map((w) => `unexpected ${w.method} ${w.path}`),
-  ];
-  return {
-    passed: problems.length === 0,
-    explanation: problems.length
-      ? problems.join("; ")
-      : `${run.writes.length} write(s) as expected`,
-  };
-};
+);
 
 /** Reported, never scored: requests the recorded scenario could not answer. */
-export const noReplayMisses: Grader = (_spec, run) => ({
+export const noReplayMisses = defineGrader(z.strictObject({}), (_o, run) => ({
   passed: run.misses.length === 0,
   explanation: run.misses.length
     ? `${run.misses.length} unrecorded: ${[...new Set(run.misses.map((m) => m.key))].join(", ")}`
     : "every request was in the cassette",
-});
+}));
 
 /** `pattern` found in (or, with `match: not_contains`, absent from) the target. */
-export const regex: Grader = (spec, run) => {
-  const re = new RegExp(String(spec.pattern), String(spec.flags ?? ""));
-  const found = re.test(targetText(run, spec.target));
-  const wantAbsent = spec.match === "not_contains";
-  return {
-    passed: wantAbsent ? !found : found,
-    explanation: `/${re.source}/ ${found ? "found" : "not found"}`,
-  };
-};
+export const regex = defineGrader(
+  z.strictObject({
+    pattern: z.string(),
+    flags: z.string().optional(),
+    match: z.enum(["contains", "not_contains"]).optional(),
+    target,
+  }),
+  (o, run) => {
+    const re = new RegExp(o.pattern, o.flags ?? "");
+    const found = re.test(targetText(run, o.target));
+    const wantAbsent = o.match === "not_contains";
+    return {
+      passed: wantAbsent ? !found : found,
+      explanation: `/${re.source}/ ${found ? "found" : "not found"}`,
+    };
+  }
+);
 
 /** Every `mustMention` term appears in the target, and no `mustNotMention`. */
-export const mentions: Grader = (spec, run) => {
-  const text = targetText(run, spec.target).toLowerCase();
-  const missing = strings(spec.mustMention).filter(
-    (t) => !text.includes(t.toLowerCase())
-  );
-  const present = strings(spec.mustNotMention).filter((t) =>
-    text.includes(t.toLowerCase())
-  );
-  const problems = [
-    ...missing.map((t) => `missing "${t}"`),
-    ...present.map((t) => `mentions "${t}"`),
-  ];
-  return {
-    passed: problems.length === 0,
-    explanation: problems.length ? problems.join("; ") : "mentions as expected",
-  };
-};
+export const mentions = defineGrader(
+  z.strictObject({
+    mustMention: z.array(z.string()).optional(),
+    mustNotMention: z.array(z.string()).optional(),
+    target,
+  }),
+  (o, run) => {
+    const text = targetText(run, o.target).toLowerCase();
+    const missing = (o.mustMention ?? []).filter(
+      (t) => !text.includes(t.toLowerCase())
+    );
+    const present = (o.mustNotMention ?? []).filter((t) =>
+      text.includes(t.toLowerCase())
+    );
+    const problems = [
+      ...missing.map((t) => `missing "${t}"`),
+      ...present.map((t) => `mentions "${t}"`),
+    ];
+    return {
+      passed: problems.length === 0,
+      explanation: problems.length
+        ? problems.join("; ")
+        : "mentions as expected",
+    };
+  }
+);
 
 /** The run ended normally rather than on an error, turn cap or timeout. */
-export const completed: Grader = (_spec, run) => ({
+export const completed = defineGrader(z.strictObject({}), (_o, run) => ({
   passed: run.error === null && run.finalText.length > 0,
   explanation: run.error ?? (run.finalText ? "completed" : "no final reply"),
-});
+}));
 
-export const llmRubric: Grader = (spec, run, ctx) =>
-  judge(
-    String(spec.judgeModel ?? ctx.judgeModel),
-    String(spec.criteria ?? ""),
-    targetText(run, spec.target)
-  );
+export const llmRubric = defineGrader(
+  z.strictObject({
+    criteria: z.string().min(1),
+    judgeModel: z.string().optional(),
+    target,
+  }),
+  (o, run, ctx) =>
+    judge(o.judgeModel ?? ctx.judgeModel, o.criteria, targetText(run, o.target))
+);

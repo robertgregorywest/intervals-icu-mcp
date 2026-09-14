@@ -3,6 +3,7 @@ import {
   appendFileSync,
   existsSync,
   mkdirSync,
+  readdirSync,
   readFileSync,
   writeFileSync,
 } from "node:fs";
@@ -23,7 +24,7 @@ export interface EvalClientOptions {
 
 /**
  * Client options from the eval env switches — `ICU_REPLAY_DIR` (replay) or
- * `ICU_RECORD_DIR` (record), with `ICU_CAPTURE_FILE` for writes, and
+ * `ICU_RECORD_DIR` (record), each with `ICU_CAPTURE_FILE` for writes, and
  * `ICU_NOW` to pin "today". `ICU_RECORD_MISSING` alongside a replay dir
  * records whatever the cassette lacks. Empty when none are set.
  */
@@ -43,7 +44,12 @@ export function evalClientOptions(
   if (env.ICU_REPLAY_DIR && env.ICU_RECORD_DIR) {
     throw new Error("Set ICU_REPLAY_DIR or ICU_RECORD_DIR, not both");
   }
-  const captureFile = env.ICU_CAPTURE_FILE ?? join(dir, "..", "writes.jsonl");
+  const captureFile = env.ICU_CAPTURE_FILE;
+  if (!captureFile) {
+    throw new Error(
+      "ICU_CAPTURE_FILE is required with ICU_REPLAY_DIR/ICU_RECORD_DIR — writes are captured there, never sent"
+    );
+  }
   if (env.ICU_REPLAY_DIR && env.ICU_RECORD_MISSING) {
     // Top-up: what the cassette holds is replayed, anything else is fetched
     // live and added to it. Needs the real key.
@@ -91,6 +97,16 @@ export function cassetteKey(method: string, url: string): string {
   return `${method.toUpperCase()} ${u.pathname}${query ? `?${query}` : ""}`;
 }
 
+/** Every recorded entry in a cassette directory. */
+export function readCassette(dir: string): CassetteEntry[] {
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter((f) => f.endsWith(".json"))
+    .map(
+      (f) => JSON.parse(readFileSync(join(dir, f), "utf8")) as CassetteEntry
+    );
+}
+
 function entryPath(dir: string, key: string): string {
   const hash = createHash("sha1").update(key).digest("hex").slice(0, 16);
   return join(dir, `${hash}.json`);
@@ -114,41 +130,45 @@ function parseBody(init?: RequestInit): unknown {
   }
 }
 
-let syntheticId = 900_000_000;
-
-function withId(value: unknown, fallbackId: number | null): unknown {
-  if (value === null || typeof value !== "object" || Array.isArray(value)) {
-    return value;
-  }
-  if ("id" in value) return value;
-  return { ...value, id: fallbackId ?? syntheticId++ };
+/** JSON, text and XML are stored readable; anything else as base64. */
+function isTextual(contentType: string): boolean {
+  return /^text\/|[/+](json|xml)\b|javascript/i.test(contentType);
 }
+
+type WriteCapture = (url: string, init: RequestInit | undefined) => Response;
 
 // Echo the request body back as the platform would, with ids filled in — the
 // write services only read `id` and the fields they sent.
-function captureWrite(
-  url: string,
-  init: RequestInit | undefined,
-  captureFile: string
-): Response {
-  const u = new URL(url);
-  const method = methodOf(init);
-  const body = parseBody(init);
-  const write: CapturedWrite = {
-    method,
-    path: u.pathname,
-    query: Object.fromEntries(u.searchParams.entries()),
-    body,
+function writeCapture(captureFile: string): WriteCapture {
+  let nextId = 900_000_000;
+  const withId = (value: unknown, fallbackId: number | null): unknown => {
+    if (value === null || typeof value !== "object" || Array.isArray(value)) {
+      return value;
+    }
+    if ("id" in value) return value;
+    return { ...value, id: fallbackId ?? nextId++ };
   };
-  appendJsonl(captureFile, write);
 
-  if (method === "DELETE") return new Response(null, { status: 204 });
-  const tail = Number(u.pathname.split("/").pop());
-  const pathId = Number.isInteger(tail) ? tail : null;
-  const echoed = Array.isArray(body)
-    ? body.map((item) => withId(item, null))
-    : withId(body ?? {}, pathId);
-  return jsonResponse(200, echoed);
+  return (url, init) => {
+    const u = new URL(url);
+    const method = methodOf(init);
+    const body = parseBody(init);
+    const write: CapturedWrite = {
+      method,
+      path: u.pathname,
+      query: Object.fromEntries(u.searchParams.entries()),
+      body,
+    };
+    appendJsonl(captureFile, write);
+
+    if (method === "DELETE") return new Response(null, { status: 204 });
+    const tail = Number(u.pathname.split("/").pop());
+    const pathId = Number.isInteger(tail) ? tail : null;
+    const echoed = Array.isArray(body)
+      ? body.map((item) => withId(item, null))
+      : withId(body ?? {}, pathId);
+    return jsonResponse(200, echoed);
+  };
 }
 
 function jsonResponse(status: number, body: unknown): Response {
@@ -173,17 +193,16 @@ export interface RecordingOptions {
 /** Real GETs, saved to the cassette; writes captured, never sent. */
 export function recordingFetch(opts: RecordingOptions): FetchFn {
   const realFetch = opts.fetchFn ?? globalThis.fetch;
+  const capture = writeCapture(opts.captureFile);
   mkdirSync(opts.dir, { recursive: true });
   return async (input, init) => {
     const url = toUrl(input);
     const method = methodOf(init);
-    if (method !== "GET") return captureWrite(url, init, opts.captureFile);
+    if (method !== "GET") return capture(url, init);
 
     const response = await realFetch(input, init);
     const contentType = response.headers.get("content-type") ?? "";
-    const binary =
-      (init?.headers as Record<string, string> | undefined)?.Accept ===
-      "application/octet-stream";
+    const binary = !isTextual(contentType);
     const bytes = new Uint8Array(await response.arrayBuffer());
     const key = cassetteKey(method, url);
     // Errors are not recorded — a transient 5xx must not become the fixture.
@@ -220,10 +239,11 @@ export interface ReplayOptions {
 export function replayFetch(opts: ReplayOptions): FetchFn {
   const missesFile =
     opts.missesFile ?? join(dirname(opts.captureFile), "misses.jsonl");
+  const capture = writeCapture(opts.captureFile);
   return async (input, init) => {
     const url = toUrl(input);
     const method = methodOf(init);
-    if (method !== "GET") return captureWrite(url, init, opts.captureFile);
+    if (method !== "GET") return capture(url, init);
 
     const key = cassetteKey(method, url);
     const file = entryPath(opts.dir, key);

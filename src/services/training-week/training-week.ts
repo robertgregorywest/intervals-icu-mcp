@@ -1,3 +1,4 @@
+import { isoToday } from "../../clock.js";
 import type { Activity } from "../activities/index.js";
 import type { WellnessRecord } from "../wellness/index.js";
 import type { IntervalsEvent } from "../../types.js";
@@ -17,9 +18,7 @@ export class TrainingWeek implements ITrainingWeek {
   async getTrainingWeekSummary(
     weekStart?: string
   ): Promise<TrainingWeekSummary> {
-    const start =
-      weekStart ??
-      (this.deps.today ? mondayOf(this.deps.today()) : currentMonday());
+    const start = weekStart ?? mondayOf((this.deps.today ?? isoToday)());
     const end = addDays(start, 6);
 
     const [activities, wellness, events] = await Promise.all([
@@ -133,14 +132,6 @@ function numericField(obj: Record<string, unknown>, key: string): number {
 
 function round1(n: number): number {
   return Math.round(n * 10) / 10;
-}
-
-function currentMonday(): string {
-  const today = new Date();
-  const dow = today.getDay();
-  const offset = dow === 0 ? -6 : 1 - dow;
-  today.setDate(today.getDate() + offset);
-  return today.toISOString().slice(0, 10);
 }
 
 function mondayOf(date: string): string {

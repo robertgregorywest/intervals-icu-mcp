@@ -1,6 +1,10 @@
-import { describe, it, expect, vi } from "vitest";
-import type { IIntervalsClient } from "../../src/index.js";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { IntervalsClient, type IIntervalsClient } from "../../src/index.js";
 import { runCli, type CliIO } from "../../src/cli/main.js";
+import { evalClientOptions, recordingFetch } from "../../src/cassette.js";
 
 function makeIO(isTTY = false): CliIO & {
   outLines: string[];
@@ -218,5 +222,83 @@ describe("CLI --help", () => {
     expect(io.exitCode).toBe(0);
     const output = io.outLines.join("\n") + io.errLines.join("\n");
     expect(output).toContain("describe");
+  });
+});
+
+// What bin/icu does under the eval harness: the client built from the env
+// switches, so a skill's CLI calls replay a cassette and capture writes.
+describe("CLI under eval replay", () => {
+  let tmp: string;
+  let env: Record<string, string>;
+
+  beforeEach(async () => {
+    tmp = mkdtempSync(join(tmpdir(), "cli-replay-"));
+    env = {
+      ICU_REPLAY_DIR: join(tmp, "cassette"),
+      ICU_CAPTURE_FILE: join(tmp, "writes.jsonl"),
+      ICU_NOW: "2026-09-06",
+    };
+    const live = vi.fn().mockResolvedValue(
+      new Response(JSON.stringify({ id: "i1", name: "Recorded" }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      })
+    );
+    await recordingFetch({
+      dir: env.ICU_REPLAY_DIR,
+      captureFile: env.ICU_CAPTURE_FILE,
+      fetchFn: live,
+    })("https://intervals.icu/api/v1/athlete/i1");
+  });
+
+  afterEach(() => rmSync(tmp, { recursive: true, force: true }));
+
+  const client = () =>
+    new IntervalsClient({
+      apiKey: "",
+      athleteId: "i1",
+      ...evalClientOptions(env),
+    });
+
+  it("answers a read from the cassette with no API key", async () => {
+    const io = makeIO();
+    await runCli(["get_athlete"], client, io);
+    expect(io.exitCode).toBeNull();
+    expect(JSON.parse(io.outLines[0])).toMatchObject({ name: "Recorded" });
+  });
+
+  it("captures create_workout instead of sending it", async () => {
+    const io = makeIO();
+    await runCli(
+      [
+        "create_workout",
+        "--json",
+        JSON.stringify({
+          name: "VO2 5x4",
+          date: "2026-09-08",
+          sportType: "Ride",
+          steps: [{ duration: "4m", target: "300w" }],
+        }),
+      ],
+      client,
+      io
+    );
+    expect(io.errLines).toEqual([]);
+    const [write] = readFileSync(env.ICU_CAPTURE_FILE, "utf8")
+      .trim()
+      .split("\n")
+      .map((l) => JSON.parse(l));
+    expect(write).toMatchObject({
+      method: "POST",
+      path: expect.stringMatching(/\/athlete\/i1\/events/),
+    });
+    expect(JSON.stringify(write.body)).toContain("2026-09-08");
+  });
+
+  it("reports an unrecorded read as a clear error", async () => {
+    const io = makeIO();
+    await runCli(["get_fitness_summary"], client, io);
+    expect(io.exitCode).toBe(1);
+    expect(io.errLines.join("\n")).toMatch(/Not in the recorded scenario/);
   });
 });

@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { parse } from "yaml";
+import { graderOptions } from "../graders/index.js";
 import type { EvalCase } from "./types.js";
 
 function findCaseFiles(root: string): string[] {
@@ -29,6 +30,14 @@ function loadCase(file: string): EvalCase {
   if (!Array.isArray(raw.graders) || raw.graders.length === 0) {
     throw new Error(`${file}: needs at least one grader`);
   }
+  raw.graders.forEach((spec, i) => {
+    try {
+      graderOptions(spec);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      throw new Error(`${file}: graders[${i}] ${message}`);
+    }
+  });
   return {
     ...raw,
     scenarioDate: String(raw.scenarioDate),

@@ -1,6 +1,7 @@
 import type { IActivitiesApi } from "../activities/index.js";
 import type { IAthleteApi, SportSetting } from "../athlete/index.js";
 import type { IPowerCurvesApi } from "../power-curves/index.js";
+import { isoToday } from "../../clock.js";
 import { deriveLatestMap } from "../map/index.js";
 import type {
   InputField,
@@ -33,7 +34,7 @@ export async function resolveInputs(
   overrides: PowerProfileOverrides = {},
   opts: ResolveOptions = {}
 ): Promise<ResolvedInputs> {
-  const today = opts.today ?? new Date().toISOString().slice(0, 10);
+  const today = opts.today ?? isoToday();
   const warnings: string[] = [];
 
   const [athleteRaw, mapDerivation] = await Promise.all([
@@ -231,8 +232,7 @@ function pickCyclingSport(
 ): Record<string, unknown> | null {
   if (!athlete) return null;
   const settings = (athlete["sportSettings"] ?? athlete["sport_settings"]) as
-    | SportSetting[]
-    | undefined;
+    SportSetting[] | undefined;
   if (!Array.isArray(settings)) return null;
   const cycling = settings.find((s) =>
     (s.types ?? []).some((t) => /ride|cycl|bike/i.test(t))

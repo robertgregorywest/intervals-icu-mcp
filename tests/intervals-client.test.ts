@@ -69,3 +69,50 @@ describe("IntervalsClient config validation", () => {
     ).not.toThrow();
   });
 });
+
+describe("IntervalsClient pinned today", () => {
+  const TODAY = "2026-09-06";
+
+  function pinnedClient() {
+    const urls: string[] = [];
+    const fetchFn = async (input: Parameters<typeof fetch>[0]) => {
+      const url = String(input);
+      urls.push(url);
+      const body = /\/athlete\/i1$/.test(new URL(url).pathname)
+        ? { id: "i1", sportSettings: [] }
+        : [];
+      return new Response(JSON.stringify(body), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    };
+    const client = new IntervalsClient({
+      apiKey: "k",
+      athleteId: "i1",
+      fetchFn,
+      today: () => TODAY,
+    });
+    return { client, urls };
+  }
+
+  it("anchors the coaching context's window on the pinned day", async () => {
+    const { client, urls } = pinnedClient();
+    const ctx = await client.getCoachingContext();
+    expect(ctx.asOf).toBe(TODAY);
+    const wellness = urls.find((u) => u.includes("/wellness?"));
+    expect(new URL(wellness!).searchParams.get("newest")).toBe(TODAY);
+  });
+
+  it("looks back for MAP from the pinned day when profiling power", async () => {
+    const { client, urls } = pinnedClient();
+    await client.computePowerProfile().catch(() => undefined);
+    const activities = urls.find((u) => u.includes("/activities?"));
+    expect(new URL(activities!).searchParams.get("newest")).toBe(TODAY);
+  });
+
+  it("keeps an explicit coaching-context today over the pinned one", async () => {
+    const { client } = pinnedClient();
+    const ctx = await client.getCoachingContext({ today: "2026-08-01" });
+    expect(ctx.asOf).toBe("2026-08-01");
+  });
+});

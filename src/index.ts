@@ -1,5 +1,6 @@
 import { createHttpClient } from "./client.js";
 import type { FetchFn, IHttpClient } from "./client.js";
+import { isoToday } from "./clock.js";
 import { parseClientConfig } from "./config.js";
 import { createEventsApi } from "./services/events/index.js";
 import type { IEventsApi } from "./services/events/index.js";
@@ -224,7 +225,7 @@ export class IntervalsClient implements IIntervalsClient {
       baseUrl: options.baseUrl ?? "https://intervals.icu",
     });
     const { athleteId } = config;
-    this.today = options.today ?? (() => new Date().toISOString().slice(0, 10));
+    this.today = options.today ?? isoToday;
 
     this.httpClient = createHttpClient(config, options.fetchFn);
     this.events = createEventsApi(this.httpClient, athleteId);

@@ -11,6 +11,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 import { parseArgs } from "node:util";
+import { fmt } from "./lib/format.js";
 
 const REPO_ROOT = resolve(import.meta.dirname, "../..");
 
@@ -28,10 +29,12 @@ if (positionals.length !== 2) {
 }
 const threshold = Number(args.threshold);
 
+// `arm` is absent from summaries written before the no-skills baseline.
 interface Cell {
   caseId: string;
   model: string;
   effort: string;
+  arm?: string;
   trials: number;
   meanScore: number;
   passRate: number;
@@ -44,6 +47,7 @@ interface Run {
   caseId: string;
   model: string;
   effort: string;
+  arm?: string;
   grades: Array<{ name: string; passed: boolean; weight: number }>;
 }
 
@@ -75,9 +79,9 @@ const cand = load(positionals[1]);
 const A = base.summary;
 const B = cand.summary;
 
-// Cells pair on case × model × effort. When the two sides swept a different
-// single model (or effort), that dimension is the thing being compared, so
-// cells pair across it instead.
+// Cells pair on case × model × effort × arm. When the two sides swept a
+// different single model (or effort), that dimension is the thing being
+// compared, so cells pair across it instead.
 function pairsOn(dim: "models" | "efforts"): boolean {
   const a = A[dim];
   const b = B[dim];
@@ -90,8 +94,14 @@ function pairsOn(dim: "models" | "efforts"): boolean {
 const byModel = pairsOn("models");
 const byEffort = pairsOn("efforts");
 
-function key(c: { caseId: string; model: string; effort: string }): string {
-  return [c.caseId, byModel ? c.model : "", byEffort ? c.effort : ""].join(
+function key(c: {
+  caseId: string;
+  model: string;
+  effort: string;
+  arm?: string;
+}): string {
+  const arm = c.arm === "no-skills" ? "no-skills" : "";
+  return [c.caseId, byModel ? c.model : "", byEffort ? c.effort : "", arm].join(
     "\t"
   );
 }
@@ -114,7 +124,6 @@ function graderRates(s: Summary, k: string): Map<string, number> {
   return new Map([...tally].map(([n, t]) => [n, t.pass / t.total]));
 }
 
-const fmt = (n: number, d = 2) => n.toFixed(d);
 const signed = (n: number, d = 2) => `${n >= 0 ? "+" : ""}${n.toFixed(d)}`;
 const pct = (n: number) => `${Math.round(n * 100)}%`;
 

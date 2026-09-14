@@ -35,7 +35,8 @@ issue #20. This guide is about using the evals.
 | **Cassette** | The scenario's recorded Intervals.icu responses, replayed so a run never touches the live account.                                                      |
 | **Grader**   | One check on a run: pass or fail, with an explanation.                                                                                                  |
 | **Trial**    | One agent run of one scenario at one model × effort.                                                                                                    |
-| **Cell**     | All the trials of one scenario at one model × effort. Results are reported per cell.                                                                    |
+| **Cell**     | All the trials of one scenario at one model × effort (and arm). Results are reported per cell.                                                          |
+| **Arm**      | `skills`, the case as written, or `no-skills`, the baseline: the same case with the skills removed.                                                     |
 
 The code is split between two repos:
 
@@ -146,7 +147,16 @@ npm run eval:skills -- --skill plan-workout --models claude-sonnet-5,claude-opus
 | `--judge-model id`              | `claude-sonnet-5` | Model for `llmRubric`; keep it fixed across comparisons |
 | `--subagent-model`              | `inherit`         | `pinned` keeps forked skills on sonnet                  |
 | `--keep-workspace`              | off               | Keeps the temporary workspace so you can inspect it     |
+| `--baseline-no-skills`          | off               | Adds the no-skills arm (see below)                      |
 | `--record` / `--record-missing` | off               | Fill or top up cassettes (see above)                    |
+
+### The no-skills baseline
+
+`--baseline-no-skills` runs every case a second time with `.claude/skills` and `.claude/agents`
+removed from the workspace. A case that scores as well without the skills points at a skill the
+model no longer needs. In that arm `skillInvoked` reports without scoring, since there is nothing to
+invoke, and cases whose prompt is a slash command sit it out, since the command is the skill. Runs
+land under `<model>__<effort>__no-skills/` and print with `(no-skills)`.
 
 ## Reading results
 
@@ -154,21 +164,28 @@ The runner prints a line for each run, with the failing graders under it. At the
 table with one row per cell (the figures below are illustrative):
 
 ```
-FAIL pw-replace-sat-19 claude-sonnet-5/low t1  score 0.78  $0.31  9 turns  62s
+FAIL pw-replace-sat-19 claude-sonnet-5/low t1  score 0.78  $0.31  812k/21k tok  9 turns  62s
      ✗ trimmed-2x15-at-88-95pct: PUT Threshold 2×20 on 2026-09-19: "Threshold" at 275–305 W, outside 252–272 W; …
 
-CASE               MODEL            EFFORT  SCORE  PASS%  PASS^k  $/RUN  TURNS
-pw-replace-sat-19  claude-sonnet-5  low     0.78   0%     no      0.31   9.0
+CASE               MODEL            EFFORT  SCORE  PASS%  PASS^k  $/RUN  TOKENS    TURNS
+pw-replace-sat-19  claude-sonnet-5  low     0.78   0%     no      0.31   812k/21k  9.0
+
+MODEL            EFFORT  CASES  SCORE  PASS^k  $/RUN  TOKENS    TURNS
+claude-sonnet-5  low     1      0.78   0/1     0.31   812k/21k  9.0
 ```
 
 - **SCORE** is the cell's mean score. **PASS%** is the share of trials that passed.
 - **PASS^k** is `yes` only if every trial passed. It's the strictest measure and the one to watch:
   a coach that gets it right two times out of three is not reliable.
+- **TOKENS** is read / written: fresh plus cached input, then output, summed over every model the
+  session used, forked skills included.
+- The second table rolls the cells up by model × effort across cases. Its PASS^k counts the cells
+  where every trial passed.
 - The results directory, `docs/personal/evals/results/<timestamp>/` (with a `-record` or `-top-up`
   suffix for those modes), contains:
   - `config.json`: the models, efforts, judge, git sha, and `skillsDirty` (whether uncommitted
     skill or source edits were included in the run)
-  - `summary.json`: every cell, plus every run's grades and explanations
+  - `summary.json`: the model × effort roll-up, every cell, and every run's grades and explanations
   - `runs/<case>/<model>__<effort>/t<n>/`:
     - `transcript.jsonl`: the full agent session
     - `final.md`: its final reply
@@ -192,7 +209,7 @@ npm run eval:compare -- 2026-09-13T17-22-58-117Z 2026-09-20T09-00-00-000Z
 Each argument is a results directory, or just its timestamp name. The first is the baseline and the
 second is the candidate.
 
-- **How cells are paired.** Cells pair on case × model × effort. If each side ran a single, different
+- **How cells are paired.** Cells pair on case × model × effort × arm. If each side ran a single, different
   model (or effort), that dimension is the thing being compared, so cells pair across it: `sonnet/low`
   on the left against `opus/low` on the right.
 - **What it prints.** One row per cell, showing score, pass^k and cost as baseline → candidate. A
@@ -332,44 +349,49 @@ before comparing.
 
 Every grader takes an optional `name:` (shown in results and comparisons) and `weight:` (default
 1). Graders that read the reply take `target:`: `skillReport` reads the forked skill's report, and
-the default is the session's final reply.
+`final` (the default) the session's final reply. Each grader's options are checked when a case
+loads, so a misspelt or missing option stops the run before anything is spent.
 
 **Shared**
 
-| Grader           | Passes when                                                                                                                                                  | Options                               |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------- |
-| `completed`      | The session finished normally, not on an error, the turn cap or the timeout                                                                                  | —                                     |
-| `skillInvoked`   | The skill ran (by the Skill tool or slash command)                                                                                                           | `skill:` (defaults to the case's)     |
-| `readOnly`       | No mutating CLI command and no captured write                                                                                                                | —                                     |
-| `writes`         | The captured writes are exactly `expect:`: each `{method, path, body?}` (path and body are regexes, body tested against the JSON) matched once, nothing else | `expect:` (`[]` means write nothing)  |
-| `regex`          | `pattern:` is found, or with `match: not_contains`, absent                                                                                                   | `pattern:`, `flags:`, `target:`       |
-| `mentions`       | Every `mustMention:` term appears and no `mustNotMention:` term does (case-insensitive)                                                                      | `target:`                             |
-| `llmRubric`      | A majority of three judge votes say PASS against `criteria:`                                                                                                 | `criteria:`, `judgeModel:`, `target:` |
-| `noReplayMisses` | Every request was in the cassette. **Reported only, never scored**                                                                                           | —                                     |
+| Grader           | Passes when                                                                                                                                                                                                   | Options                                         |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------- |
+| `completed`      | The session finished normally, not on an error, the turn cap or the timeout                                                                                                                                   | —                                               |
+| `skillInvoked`   | The skill ran (by the Skill tool or slash command). `skill: compose-workout` checks that plan-workout handed the build to its fork                                                                            | `skill:` (defaults to the case's)               |
+| `cliTier`        | Every CLI command and captured write is within the skill's permission tier. Tiers come from the tool annotations the CLI enforces. The build tiers bar deletes but not other writes; `writes` pins those down | `tier:` `read-only`, `build` or `build-replace` |
+| `readOnly`       | `cliTier` at `read-only`: no mutating CLI command and no captured write                                                                                                                                       | —                                               |
+| `writes`         | The captured writes are exactly `expect:`: each `{method, path, body?}` (path and body are regexes, body tested against the JSON) matched once, nothing else                                                  | `expect:` (`[]` means write nothing)            |
+| `regex`          | `pattern:` is found, or with `match: not_contains`, absent                                                                                                                                                    | `pattern:`, `flags:`, `target:`                 |
+| `mentions`       | Every `mustMention:` term appears and no `mustNotMention:` term does (case-insensitive)                                                                                                                       | `mustMention:`, `mustNotMention:`, `target:`    |
+| `llmRubric`      | A majority of three judge votes say PASS against `criteria:`                                                                                                                                                  | `criteria:`, `judgeModel:`, `target:`           |
+| `noReplayMisses` | Every request was in the cassette. **Reported only, never scored**                                                                                                                                            | —                                               |
 
 **execution-review**
 
-| Grader          | Passes when                                                                     | Options                     |
-| --------------- | ------------------------------------------------------------------------------- | --------------------------- |
-| `watermarkLine` | The report ends on `reviewed through: <date>` or `skipped: no key session in …` | `expect:` (a specific line) |
-| `noRawDump`     | The report holds findings only: no raw JSON and no long tables                  | `maxTableRows:` (default 8) |
+| Grader                  | Passes when                                                                                                                                                                                                    | Options                                                                                                                      |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `watermarkLine`         | The report ends on `reviewed through: <date>` or `skipped: no key session in …`                                                                                                                                | `expect:` (a specific line)                                                                                                  |
+| `noRawDump`             | The report holds findings only: no raw JSON (fenced or inline, nested or not) and no long tables                                                                                                               | `maxTableRows:` (default 8)                                                                                                  |
+| `sessionsDispositioned` | Each key session lands where the ground truth says. `reported`: a line names it without marking it held. `held`: it isn't raised, so every line naming it (if any) says held, not raised, one-off or seen once | `sessions: [{match, as}]`, where `match` is a regex for how the report may name the session and `as` is `reported` or `held` |
 
 **plan-workout**
 
 These graders read the workouts the run wrote to the calendar (captured POST, bulk POST and PUT
 requests on `/events`). They parse the text the way Intervals.icu would, and resolve `%` and `Z`
-targets against the FTP and power zones in the case's cassette. All three take `date:` to look only
+targets against the athlete's FTP and power zones, fetched as the skill would have seen them: through
+a client replaying the case's cassette on its scenario date. All three take `date:` to look only
 at the workout on that day, and fail if no workout was written.
 
-| Grader           | Passes when                                                                                                                                                                                                                                                               | Options                                                                               |
-| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| `workoutParses`  | Every written workout parses into steps, with no line the platform would drop                                                                                                                                                                                             | `date:`                                                                               |
-| `targetsInBand`  | Every work step (a target at or above `workAbove`, by default 90% of the band's floor) sits inside `band:`. With `workMinutes:`, the total time of those work steps is within range as well. That is how a trimmed 2×15 is told apart from a full 2×20 at the same watts. | `band: [lowW, highW]`, `tolerance:`, `workAbove:`, `workMinutes: {min, max}`, `date:` |
-| `durationWithin` | The workout's total time is within range                                                                                                                                                                                                                                  | `minMinutes:`, `maxMinutes:`, `date:`                                                 |
+| Grader           | Passes when                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Options                                                                                                        |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `workoutParses`  | Every written workout parses into steps, with no line the platform would drop                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `date:`                                                                                                        |
+| `targetsInBand`  | Every work step (a target at or above `workAbove`, by default 90% of the band's floor) sits inside the band. The band is a MAP zone, `zone: L5` or `zone: [L3, L4]`, taken from the scenario's `mapZones`; or explicit watts, `band:`, for an intent the zones don't draw, such as a %FTP prescription. With `workMinutes:`, the total time of those work steps is within range as well. That is how a trimmed 2×15 is told apart from a full 2×20 at the same watts. A workout with nothing in the band fails naming its hardest step. | `zone:` or `band: [lowW, highW]` (one of them), `tolerance:`, `workAbove:`, `workMinutes: {min, max}`, `date:` |
+| `durationWithin` | The workout's total time is within range                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | `minMinutes:`, `maxMinutes:`, `date:`                                                                          |
 
 Anchors can be overridden with `ftp:` and `powerZones:`, or `sport:` to read a sport other than
 Ride.
 
-To add a grader, write a function in `evals/skills/graders/<skill>.ts` with the `Grader` signature
-(`(spec, run, ctx) => { passed, explanation }`), and add its module to `graders/index.ts`. A case
-uses it by its export name as `type:`.
+To add a grader, export a `defineGrader(options, grade)` from `evals/skills/graders/<skill>.ts`:
+`options` is a zod `strictObject` of what a case may set, and `grade` is
+`(options, run, ctx) => { passed, explanation }`. If it's a new module, add it to
+`graders/index.ts`. A case uses the grader by its export name as `type:`.

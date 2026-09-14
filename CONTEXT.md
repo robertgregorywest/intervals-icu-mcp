@@ -191,7 +191,10 @@ _Avoid_: "snapshot" or "mock" — the cassette is real platform responses, not h
 One agent run of one Scenario at one model × effort. Trials repeat because the agent is not deterministic.
 
 **Cell**:
-Every **Trial** of one Scenario at one model × effort. The unit results are reported and compared in: mean score, pass rate, and **pass^k** — whether every Trial passed.
+Every **Trial** of one Scenario at one model × effort (and **Arm**). The unit results are reported and compared in: mean score, pass rate, and **pass^k** — whether every Trial passed.
+
+**Arm**:
+Whether a Trial runs with the skills (`skills`) or without them (`no-skills`, the baseline: `.claude/skills` and `.claude/agents` removed). A Scenario that scores as well without the skills points at a skill the model no longer needs.
 
 ## Relationships
 

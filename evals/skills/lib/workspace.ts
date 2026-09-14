@@ -29,12 +29,18 @@ const EXCLUDE = [
   "docs/personal",
 ];
 
+// Also removed for the no-skills baseline arm: the skills and the agent
+// types their forks run in.
+const SKILL_PATHS = [".claude/skills", ".claude/agents"];
+
 export type SubagentModel = "inherit" | "pinned";
 
 export interface WorkspaceOptions {
   repoRoot: string;
   caseDir: string;
   subagentModel: SubagentModel;
+  /** False for the no-skills baseline arm. */
+  skills: boolean;
 }
 
 /**
@@ -43,6 +49,7 @@ export interface WorkspaceOptions {
  */
 export function buildWorkspace(opts: WorkspaceOptions): string {
   const ws = mkdtempSync(join(tmpdir(), "icu-eval-"));
+  const exclude = opts.skills ? EXCLUDE : [...EXCLUDE, ...SKILL_PATHS];
   const files = execFileSync(
     "git",
     ["ls-files", "--cached", "--others", "--exclude-standard", "-z"],
@@ -51,7 +58,7 @@ export function buildWorkspace(opts: WorkspaceOptions): string {
     .toString()
     .split("\0")
     .filter(Boolean)
-    .filter((f) => !EXCLUDE.some((p) => f === p || f.startsWith(`${p}/`)));
+    .filter((f) => !exclude.some((p) => f === p || f.startsWith(`${p}/`)));
 
   for (const file of files) {
     const src = join(opts.repoRoot, file);

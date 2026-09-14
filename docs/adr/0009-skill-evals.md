@@ -38,9 +38,23 @@ written workout parses, whether its work steps sit in the intended watt band. A 
 (majority of three) covers only the qualitative criteria. `plan-workout`'s 2×20 failure moved from
 a judge call to `targetsInBand` for this reason: a code grader cannot be talked round.
 
-`oneWorkoutWritten` and `libraryDecision`, listed in the issue, did not become graders of their own:
-the `writes` grader states the exact calendar writes a run should make, and whether the library was
-used is judged by the rubric.
+`oneWorkoutWritten`, `libraryDecision` and `composeForked`, listed in the issue, did not become
+graders of their own. The `writes` grader states the exact calendar writes a run should make.
+`skillInvoked` with `skill: compose-workout` checks the fork. Whether the library was used is judged
+by the rubric. Two of the issue's graders were renamed when built: `noRawJson` became `noRawDump`,
+since it also bounds tables, and `readOnlyRespected` became `cliTier`, with `readOnly` as its
+read-only preset. The tiers come from the tool annotations the CLI already enforces, not from a
+copied list of command prefixes. `targetsInBand` takes its band from the scenario's `mapZones`, as
+the issue intended, and also accepts explicit watts for %FTP prescriptions, which the MAP zones
+don't draw.
+
+Each grader declares its options as a zod schema, and `case.yaml` is checked against them when a case
+loads, so a misspelt option fails before any money is spent rather than mid-sweep. Graders that
+need athlete data (anchors, zones) get it through the same client `bin/icu` uses, replaying the
+case's cassette on its scenario date, so they never depend on the cassette's file format.
+
+`--baseline-no-skills` adds the issue's no-skills arm: the same cases with the skills and their
+agent types removed, to spot a skill the model no longer needs.
 
 ## Scenarios are private; the runner is public
 
@@ -52,7 +66,9 @@ under a cost ceiling.
 
 ## Consequences
 
-- The eval dependencies (`evals/skills/package.json`) stay out of the server's dependency tree.
+- The eval dependencies (`evals/skills/package.json`) stay out of the server's dependency tree, so
+  `evals/skills` is type-checked by `npm run eval:typecheck`, not by the hook, which would fail on
+  a clone without them installed.
 - A skill that reaches Intervals.icu other than through `bin/icu` would escape replay.
 - Claude Code's own system prompt carries the real date; the appended scenario date and `ICU_NOW`
   dominate in practice, and the date-bearing graders would show it if they stopped doing so.

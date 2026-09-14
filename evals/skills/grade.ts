@@ -20,7 +20,7 @@ import { gradeRun, score } from "./graders/index.js";
 import { loadCases } from "./lib/case.js";
 import { readJsonl } from "./lib/jsonl.js";
 import { extract } from "./lib/transcript.js";
-import type { RunArtifacts } from "./lib/types.js";
+import type { Arm, RunArtifacts } from "./lib/types.js";
 
 const REPO_ROOT = resolve(import.meta.dirname, "../..");
 
@@ -48,22 +48,29 @@ if (!evalCase || evalCase.id !== args.case) {
   throw new Error(`No case ${args.case}`);
 }
 
+interface StoredRun {
+  error?: string | null;
+  arm?: Arm;
+}
+
+let arm: Arm = "skills";
+
 function stored(runDir: string): RunArtifacts {
   const dir = resolve(runDir);
   const messages = readJsonl<SDKMessage>(join(dir, "transcript.jsonl"));
   if (messages.length === 0) throw new Error(`No transcript in ${dir}`);
   const runJson = join(dir, "run.json");
-  const error = existsSync(runJson)
-    ? ((JSON.parse(readFileSync(runJson, "utf8")) as { error: string | null })
-        .error ?? null)
-    : null;
+  const rec: StoredRun = existsSync(runJson)
+    ? (JSON.parse(readFileSync(runJson, "utf8")) as StoredRun)
+    : {};
+  arm = rec.arm ?? "skills";
   return {
     evalCase,
     messages,
     ...extract(messages),
     writes: readJsonl<CapturedWrite>(join(dir, "writes.jsonl")),
     misses: readJsonl<ReplayMiss>(join(dir, "misses.jsonl")),
-    error,
+    error: rec.error ?? null,
   };
 }
 
@@ -96,7 +103,10 @@ run.evalCase = {
   graders: evalCase.graders.filter((g) => !skipped.includes(g)),
 };
 
-const grades = await gradeRun(run, { judgeModel: args["judge-model"]! });
+const grades = await gradeRun(run, {
+  judgeModel: args["judge-model"]!,
+  arm,
+});
 for (const g of grades) {
   console.log(
     `${g.passed ? "✓" : "✗"} ${g.name}${g.weight === 0 ? " (info)" : ""}: ${g.explanation}`

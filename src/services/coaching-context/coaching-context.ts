@@ -2,6 +2,7 @@ import type { IAthleteApi, SportSetting } from "../athlete/index.js";
 import type { IWellnessApi, WellnessRecord } from "../wellness/index.js";
 import type { IActivitiesApi } from "../activities/index.js";
 import type { IPowerCurvesApi } from "../power-curves/index.js";
+import { isoToday } from "../../clock.js";
 import { deriveLatestMap } from "../map/index.js";
 import { computeZones, extractPeaks } from "../power-profile/index.js";
 import type {
@@ -31,7 +32,7 @@ export async function buildCoachingContext(
   opts: CoachingContextOptions = {}
 ): Promise<CoachingContext> {
   const days = clampDays(opts.days);
-  const today = opts.today ?? new Date().toISOString().slice(0, 10);
+  const today = opts.today ?? isoToday();
   const oldest = addDays(today, -(days - 1));
 
   const [athleteRaw, wellnessRaw, curveRaw] = await Promise.all([

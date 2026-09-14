@@ -2,11 +2,12 @@ import { appendFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   query,
+  type ModelUsage,
   type Options,
   type SDKMessage,
   type SDKUserMessage,
 } from "@anthropic-ai/claude-agent-sdk";
-import type { Effort, EvalCase } from "./types.js";
+import type { Effort, EvalCase, TokenCounts } from "./types.js";
 
 export interface AgentRunOptions {
   evalCase: EvalCase;
@@ -28,8 +29,21 @@ export interface AgentRunResult {
   costUsd: number;
   turns: number;
   durationMs: number;
-  modelUsage: Record<string, unknown>;
+  modelUsage: Record<string, ModelUsage>;
+  /** Summed over every model the session used, forks included. */
+  tokens: TokenCounts;
   claudeVersion: string | null;
+}
+
+function sumTokens(usage: Record<string, ModelUsage>): TokenCounts {
+  const t: TokenCounts = { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 };
+  for (const u of Object.values(usage)) {
+    t.input += u.inputTokens;
+    t.output += u.outputTokens;
+    t.cacheRead += u.cacheReadInputTokens;
+    t.cacheWrite += u.cacheCreationInputTokens;
+  }
+  return t;
 }
 
 function userMessage(text: string): SDKUserMessage {
@@ -122,6 +136,7 @@ export async function runAgent(opts: AgentRunOptions): Promise<AgentRunResult> {
     turns: 0,
     durationMs: 0,
     modelUsage: {},
+    tokens: sumTokens({}),
     claudeVersion: null,
   };
   const started = Date.now();
@@ -136,7 +151,9 @@ export async function runAgent(opts: AgentRunOptions): Promise<AgentRunResult> {
       if (m.type === "result") {
         result.costUsd = m.total_cost_usd;
         result.turns += m.num_turns;
+        // Session totals, like total_cost_usd: the latest result has them all.
         result.modelUsage = m.modelUsage;
+        result.tokens = sumTokens(m.modelUsage);
         if (m.subtype !== "success") result.error = m.subtype;
         releaseTurn();
       }

@@ -5,6 +5,7 @@ import { join } from "node:path";
 import {
   cassetteKey,
   evalClientOptions,
+  readCassette,
   recordingFetch,
   replayFetch,
 } from "../src/cassette.js";
@@ -74,16 +75,28 @@ describe("record then replay", () => {
         headers: { "content-type": "application/octet-stream" },
       })
     );
-    const init = { headers: { Accept: "application/octet-stream" } };
-    await recordingFetch({ dir, captureFile, fetchFn: real })(
-      `${BASE}/file`,
-      init
-    );
-    const replayed = await replayFetch({ dir, captureFile })(
-      `${BASE}/file`,
-      init
-    );
+    await recordingFetch({ dir, captureFile, fetchFn: real })(`${BASE}/file`);
+    expect(readCassette(dir)[0]).toMatchObject({ binary: true });
+    const replayed = await replayFetch({ dir, captureFile })(`${BASE}/file`);
     expect(new Uint8Array(await replayed.arrayBuffer())).toEqual(bytes);
+  });
+
+  it("stores JSON readable, keyed at the top of the entry", async () => {
+    const real = vi.fn().mockResolvedValue(
+      new Response('{"id":"i1"}', {
+        status: 200,
+        headers: { "content-type": "application/json;charset=UTF-8" },
+      })
+    );
+    await recordingFetch({ dir, captureFile, fetchFn: real })(BASE);
+    expect(readCassette(dir)).toEqual([
+      {
+        key: "GET /api/v1/athlete/i1",
+        status: 200,
+        contentType: "application/json;charset=UTF-8",
+        body: '{"id":"i1"}',
+      },
+    ]);
   });
 
   it("does not record error responses", async () => {
@@ -128,6 +141,12 @@ describe("replay misses", () => {
     );
     expect(await replayed.json()).toEqual([1]);
     expect(readdirSync(tmp)).not.toContain("misses.jsonl");
+  });
+});
+
+describe("readCassette", () => {
+  it("is empty for a cassette not yet recorded", () => {
+    expect(readCassette(dir)).toEqual([]);
   });
 });
 
@@ -190,7 +209,10 @@ describe("evalClientOptions", () => {
   });
 
   it("supplies a dummy key in replay mode", () => {
-    const opts = evalClientOptions({ ICU_REPLAY_DIR: dir });
+    const opts = evalClientOptions({
+      ICU_REPLAY_DIR: dir,
+      ICU_CAPTURE_FILE: captureFile,
+    });
     expect(opts.apiKey).toBe("replay");
     expect(opts.fetchFn).toBeTypeOf("function");
   });
@@ -198,11 +220,21 @@ describe("evalClientOptions", () => {
   it("keeps the real key when topping up a cassette", () => {
     const opts = evalClientOptions({
       ICU_REPLAY_DIR: dir,
+      ICU_CAPTURE_FILE: captureFile,
       ICU_RECORD_MISSING: "1",
     });
     expect(opts.apiKey).toBeUndefined();
     expect(opts.fetchFn).toBeTypeOf("function");
   });
+
+  it.each(["ICU_REPLAY_DIR", "ICU_RECORD_DIR"])(
+    "requires a capture file with %s",
+    (switchName) => {
+      expect(() => evalClientOptions({ [switchName]: dir })).toThrow(
+        /ICU_CAPTURE_FILE is required/
+      );
+    }
+  );
 
   it("rejects replay and record together", () => {
     expect(() =>

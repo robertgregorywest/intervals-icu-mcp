@@ -1,14 +1,24 @@
 import type { SDKMessage } from "@anthropic-ai/claude-agent-sdk";
+import type { z } from "zod";
 import type { CapturedWrite, ReplayMiss } from "../../../src/cassette.js";
 
 export const EFFORTS = ["low", "medium", "high", "xhigh", "max"] as const;
 export type Effort = (typeof EFFORTS)[number];
 
-/** One grader entry in a case's `graders:` list. */
+/**
+ * `skills` runs the case as written; `no-skills` is the baseline arm, the
+ * same case with `.claude/skills` and `.claude/agents` removed — to spot a
+ * skill the model no longer needs.
+ */
+export type Arm = "skills" | "no-skills";
+
+/** One grader entry in a case's `graders:` list, as written in case.yaml. */
 export interface GraderSpec {
   type: string;
+  name?: string;
   /** Relative weight in the run's score; 0 reports without scoring. */
   weight?: number;
+  /** Grader-specific options, checked against its schema at load. */
   [option: string]: unknown;
 }
 
@@ -67,10 +77,21 @@ export interface GradeResult extends GradeOutcome {
 
 export interface GraderContext {
   judgeModel: string;
+  arm: Arm;
 }
 
-export type Grader = (
-  spec: GraderSpec,
-  run: RunArtifacts,
-  ctx: GraderContext
-) => GradeOutcome | Promise<GradeOutcome>;
+export interface GraderDef<O> {
+  options: z.ZodType<O>;
+  grade(
+    opts: O,
+    run: RunArtifacts,
+    ctx: GraderContext
+  ): GradeOutcome | Promise<GradeOutcome>;
+}
+
+export interface TokenCounts {
+  input: number;
+  output: number;
+  cacheRead: number;
+  cacheWrite: number;
+}

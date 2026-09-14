@@ -5,10 +5,11 @@
 //   npm run eval:capture -- --skill execution-review --id er-rp-miss \
 //     --date 2026-08-09 --prompt "/execution-review window 2026-08-02 → 2026-08-09" --record
 
-import { execFileSync, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { parseArgs } from "node:util";
+import { git as gitIn } from "./lib/git.js";
 
 const REPO_ROOT = resolve(import.meta.dirname, "../..");
 const PERSONAL = join(REPO_ROOT, "docs", "personal");
@@ -48,11 +49,7 @@ if (existsSync(caseDir) && !args.force) {
   throw new Error(`${caseDir} exists — pass --force to overwrite its skeleton`);
 }
 
-function git(...a: string[]): string {
-  return execFileSync("git", ["-C", PERSONAL, ...a])
-    .toString()
-    .trim();
-}
+const git = (...a: string[]) => gitIn(PERSONAL, ...a);
 
 // docs/personal is its own repo: take the last commit on or before the
 // scenario date, or the working tree when the history starts later.
@@ -118,6 +115,12 @@ const GRADERS: Record<string, string> = {
     expect: ${q(`reviewed through: ${date}`)}
   - type: noRawDump
   - type: noReplayMisses
+  # TODO: each key session in the window and where it should land — reported
+  # (recurs, so raised) or held (seen once). \`match\` is how the report may name it.
+  # - type: sessionsDispositioned
+  #   sessions:
+  #     - { match: "6 Aug|08-06", as: reported }
+  #     - { match: "2 Aug|08-02", as: held }
   # TODO: what this window should surface or hold, e.g.
   # - type: mentions
   #   mustMention: []
@@ -149,9 +152,9 @@ const GRADERS: Record<string, string> = {
         path: /events(/bulk)?$
         body: '"start_date_local":"${date}'
   - type: workoutParses
-  # TODO: the intent's watts and time, e.g.
+  # TODO: the intent's zone (or watts) and time, e.g.
   # - type: targetsInBand
-  #   band: [lowW, highW]
+  #   zone: L5            # a MAP zone, or [L3, L4]; or band: [lowW, highW] for a %FTP intent
   #   workMinutes: { min: 0, max: 0 }
   # - type: durationWithin
   #   maxMinutes: 90

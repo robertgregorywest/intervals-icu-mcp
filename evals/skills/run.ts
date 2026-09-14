@@ -5,8 +5,8 @@
 //   npm run eval:skills -- --case er-* --models claude-sonnet-5 --effort low,high --trials 3
 //   npm run eval:skills -- --case <id> --record   # fill a case's cassette live
 //   npm run eval:skills -- --case <id> --models … --record-missing   # top it up
+//   npm run eval:skills -- --skill plan-workout --baseline-no-skills   # + a no-skills arm
 
-import { execFileSync } from "node:child_process";
 import {
   existsSync,
   mkdirSync,
@@ -21,13 +21,17 @@ import type { CapturedWrite, ReplayMiss } from "../../src/cassette.js";
 import { gradeRun, score } from "./graders/index.js";
 import { runAgent } from "./lib/agent.js";
 import { loadCases } from "./lib/case.js";
+import { fmt, tokens } from "./lib/format.js";
+import { git } from "./lib/git.js";
 import { readJsonl } from "./lib/jsonl.js";
 import { extract } from "./lib/transcript.js";
 import {
   EFFORTS,
+  type Arm,
   type Effort,
   type EvalCase,
   type GradeResult,
+  type TokenCounts,
 } from "./lib/types.js";
 import { buildWorkspace, type SubagentModel } from "./lib/workspace.js";
 
@@ -51,6 +55,7 @@ const { values: args } = parseArgs({
     record: { type: "boolean", default: false },
     "record-missing": { type: "boolean", default: false },
     "keep-workspace": { type: "boolean", default: false },
+    "baseline-no-skills": { type: "boolean", default: false },
   },
 });
 
@@ -77,6 +82,8 @@ const topUp = args["record-missing"];
 if (record && topUp) throw new Error("--record or --record-missing, not both");
 const live = record || topUp;
 const trials = record ? 1 : Number(args.trials);
+const arms: Arm[] =
+  args["baseline-no-skills"] && !live ? ["skills", "no-skills"] : ["skills"];
 const maxCost = Number(args["max-cost-usd"]);
 
 const cases = loadCases(resolve(REPO_ROOT, args.scenarios), {
@@ -90,8 +97,15 @@ interface RunSpec {
   evalCase: EvalCase;
   model: string;
   effort: Effort;
+  arm: Arm;
   trial: number;
 }
+
+// A slash-command prompt names the skill it runs, so it has no meaning
+// without skills: those cases sit the baseline out.
+const noBaseline = arms.includes("no-skills")
+  ? cases.filter((c) => c.prompt.trimStart().startsWith("/")).map((c) => c.id)
+  : [];
 
 const specs: RunSpec[] = [];
 for (const evalCase of cases) {
@@ -102,8 +116,11 @@ for (const evalCase of cases) {
   }
   for (const model of record ? models.slice(0, 1) : models) {
     for (const effort of record ? efforts.slice(0, 1) : efforts) {
-      for (let trial = 1; trial <= trials; trial++) {
-        specs.push({ evalCase, model, effort, trial });
+      for (const arm of arms) {
+        if (arm === "no-skills" && noBaseline.includes(evalCase.id)) continue;
+        for (let trial = 1; trial <= trials; trial++) {
+          specs.push({ evalCase, model, effort, arm, trial });
+        }
       }
     }
   }
@@ -117,23 +134,21 @@ const resultsDir = resolve(
 );
 mkdirSync(resultsDir, { recursive: true });
 
-function git(...a: string[]): string {
-  return execFileSync("git", a, { cwd: REPO_ROOT }).toString().trim();
-}
-
 const config = {
   startedAt: new Date().toISOString(),
   mode: record ? "record" : topUp ? "top-up" : "replay",
   models,
   efforts,
+  arms,
   trials,
   judgeModel: args["judge-model"],
   subagentModel,
   cases: cases.map((c) => c.id),
-  gitSha: git("rev-parse", "HEAD"),
+  gitSha: git(REPO_ROOT, "rev-parse", "HEAD"),
   // Uncommitted edits to anything the skills read make results unreproducible.
   skillsDirty:
     git(
+      REPO_ROOT,
       "status",
       "--porcelain",
       "--",
@@ -149,12 +164,14 @@ interface RunRecord {
   caseId: string;
   model: string;
   effort: Effort;
+  arm: Arm;
   trial: number;
   score: number;
   passed: boolean;
   grades: GradeResult[];
   costUsd: number;
   judgeCostUsd: number;
+  tokens: TokenCounts;
   turns: number;
   durationMs: number;
   error: string | null;
@@ -191,12 +208,12 @@ function cassetteEnv(cassetteDir: string): Record<string, string> {
 let spent = 0;
 
 async function execute(spec: RunSpec): Promise<RunRecord> {
-  const { evalCase, model, effort, trial } = spec;
+  const { evalCase, model, effort, arm, trial } = spec;
   const runDir = join(
     resultsDir,
     "runs",
     evalCase.id,
-    `${model}__${effort}`,
+    `${model}__${effort}${arm === "no-skills" ? "__no-skills" : ""}`,
     `t${trial}`
   );
   mkdirSync(runDir, { recursive: true });
@@ -207,6 +224,7 @@ async function execute(spec: RunSpec): Promise<RunRecord> {
     repoRoot: REPO_ROOT,
     caseDir: evalCase.dir,
     subagentModel,
+    skills: arm === "skills",
   });
   try {
     const agent = await runAgent({
@@ -233,19 +251,24 @@ async function execute(spec: RunSpec): Promise<RunRecord> {
       misses: readJsonl<ReplayMiss>(join(runDir, "misses.jsonl")),
       error: agent.error,
     };
-    const grades = await gradeRun(run, { judgeModel: args["judge-model"]! });
+    const grades = await gradeRun(run, {
+      judgeModel: args["judge-model"]!,
+      arm,
+    });
     const judgeCostUsd = grades.reduce((s, g) => s + (g.costUsd ?? 0), 0);
     const runScore = score(grades);
     const rec: RunRecord = {
       caseId: evalCase.id,
       model,
       effort,
+      arm,
       trial,
       score: runScore,
       passed: runScore === 1,
       grades,
       costUsd: agent.costUsd,
       judgeCostUsd,
+      tokens: agent.tokens,
       turns: agent.turns,
       durationMs: agent.durationMs,
       error: agent.error,
@@ -264,14 +287,14 @@ async function execute(spec: RunSpec): Promise<RunRecord> {
   }
 }
 
-function fmt(n: number, digits = 2): string {
-  return n.toFixed(digits);
+function armSuffix(arm: Arm): string {
+  return arm === "no-skills" ? " (no-skills)" : "";
 }
 
 function printRun(r: RunRecord): void {
   const status = r.passed ? "PASS" : "FAIL";
   console.log(
-    `${status} ${r.caseId} ${r.model}/${r.effort} t${r.trial}  score ${fmt(r.score)}  $${fmt(r.costUsd)}  ${r.turns} turns  ${Math.round(r.durationMs / 1000)}s${r.error ? `  [${r.error}]` : ""}`
+    `${status} ${r.caseId} ${r.model}/${r.effort}${armSuffix(r.arm)} t${r.trial}  score ${fmt(r.score)}  $${fmt(r.costUsd)}  ${tokens(r.tokens)} tok  ${r.turns} turns  ${Math.round(r.durationMs / 1000)}s${r.error ? `  [${r.error}]` : ""}`
   );
   for (const g of r.grades.filter((g) => !g.passed)) {
     console.log(
@@ -298,39 +321,77 @@ async function worker(): Promise<void> {
 }
 
 console.log(`${specs.length} run(s) → ${resultsDir}`);
+if (noBaseline.length) {
+  console.log(
+    `no-skills arm skips slash-command case(s): ${noBaseline.join(", ")}`
+  );
+}
 await Promise.all(
   Array.from({ length: Math.max(1, Number(args.concurrency)) }, worker)
 );
 
-// One cell per case × model × effort; pass^k = every trial passed.
-const cells = new Map<string, RunRecord[]>();
-for (const r of records) {
-  const key = `${r.caseId}\t${r.model}\t${r.effort}`;
-  cells.set(key, [...(cells.get(key) ?? []), r]);
+function groupBy<T>(items: T[], key: (t: T) => string): Map<string, T[]> {
+  const out = new Map<string, T[]>();
+  for (const t of items) out.set(key(t), [...(out.get(key(t)) ?? []), t]);
+  return out;
 }
-const summary = [...cells.entries()]
-  .map(([key, runs]) => {
-    const [caseId, model, effort] = key.split("\t");
-    const mean = (f: (r: RunRecord) => number) =>
-      runs.reduce((s, r) => s + f(r), 0) / runs.length;
+
+function meanOf<T>(items: T[], f: (t: T) => number): number {
+  return items.reduce((s, t) => s + f(t), 0) / Math.max(1, items.length);
+}
+
+function meanTokens<T>(items: T[], f: (t: T) => TokenCounts): TokenCounts {
+  return {
+    input: meanOf(items, (t) => f(t).input),
+    output: meanOf(items, (t) => f(t).output),
+    cacheRead: meanOf(items, (t) => f(t).cacheRead),
+    cacheWrite: meanOf(items, (t) => f(t).cacheWrite),
+  };
+}
+
+// One cell per case × model × effort (× arm); pass^k = every trial passed.
+const summary = [
+  ...groupBy(records, (r) =>
+    [r.caseId, r.model, r.effort, r.arm].join("\t")
+  ).values(),
+]
+  .map((runs) => {
+    const { caseId, model, effort, arm } = runs[0];
     return {
       caseId,
       model,
       effort,
+      arm,
       trials: runs.length,
-      meanScore: mean((r) => r.score),
-      passRate: mean((r) => (r.passed ? 1 : 0)),
+      meanScore: meanOf(runs, (r) => r.score),
+      passRate: meanOf(runs, (r) => (r.passed ? 1 : 0)),
       passAll: runs.every((r) => r.passed),
-      meanCostUsd: mean((r) => r.costUsd),
-      meanTurns: mean((r) => r.turns),
-      meanDurationS: mean((r) => r.durationMs / 1000),
+      meanCostUsd: meanOf(runs, (r) => r.costUsd),
+      meanTokens: meanTokens(runs, (r) => r.tokens),
+      meanTurns: meanOf(runs, (r) => r.turns),
+      meanDurationS: meanOf(runs, (r) => r.durationMs / 1000),
     };
   })
   .sort((a, b) =>
-    `${a.caseId}${a.model}${a.effort}`.localeCompare(
-      `${b.caseId}${b.model}${b.effort}`
-    )
+    [a.caseId, a.model, a.effort, a.arm]
+      .join("\t")
+      .localeCompare([b.caseId, b.model, b.effort, b.arm].join("\t"))
   );
+
+// Cells rolled up by model × effort (× arm), across cases.
+const rollup = [
+  ...groupBy(summary, (c) => [c.model, c.effort, c.arm].join("\t")).values(),
+].map((cs) => ({
+  model: cs[0].model,
+  effort: cs[0].effort,
+  arm: cs[0].arm,
+  cases: cs.length,
+  meanScore: meanOf(cs, (c) => c.meanScore),
+  passAllCells: cs.filter((c) => c.passAll).length,
+  meanCostUsd: meanOf(cs, (c) => c.meanCostUsd),
+  meanTokens: meanTokens(cs, (c) => c.meanTokens),
+  meanTurns: meanOf(cs, (c) => c.meanTurns),
+}));
 
 writeFileSync(join(resultsDir, "config.json"), JSON.stringify(config, null, 2));
 writeFileSync(
@@ -341,6 +402,7 @@ writeFileSync(
       partial: skipped.length > 0,
       skippedRuns: skipped.length,
       totalCostUsd: spent,
+      rollup,
       cells: summary,
       runs: records.map(({ grades, ...r }) => ({
         ...r,
@@ -357,10 +419,18 @@ writeFileSync(
   )
 );
 
-console.log("\nCASE\tMODEL\tEFFORT\tSCORE\tPASS%\tPASS^k\t$/RUN\tTURNS");
+console.log(
+  "\nCASE\tMODEL\tEFFORT\tSCORE\tPASS%\tPASS^k\t$/RUN\tTOKENS\tTURNS"
+);
 for (const c of summary) {
   console.log(
-    `${c.caseId}\t${c.model}\t${c.effort}\t${fmt(c.meanScore)}\t${Math.round(c.passRate * 100)}%\t${c.passAll ? "yes" : "no"}\t${fmt(c.meanCostUsd)}\t${fmt(c.meanTurns, 1)}`
+    `${c.caseId}\t${c.model}\t${c.effort}${armSuffix(c.arm)}\t${fmt(c.meanScore)}\t${Math.round(c.passRate * 100)}%\t${c.passAll ? "yes" : "no"}\t${fmt(c.meanCostUsd)}\t${tokens(c.meanTokens)}\t${fmt(c.meanTurns, 1)}`
+  );
+}
+console.log("\nMODEL\tEFFORT\tCASES\tSCORE\tPASS^k\t$/RUN\tTOKENS\tTURNS");
+for (const r of rollup) {
+  console.log(
+    `${r.model}\t${r.effort}${armSuffix(r.arm)}\t${r.cases}\t${fmt(r.meanScore)}\t${r.passAllCells}/${r.cases}\t${fmt(r.meanCostUsd)}\t${tokens(r.meanTokens)}\t${fmt(r.meanTurns, 1)}`
   );
 }
 console.log(

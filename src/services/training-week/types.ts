@@ -6,7 +6,7 @@ export interface TrainingWeekDeps {
   activitiesApi: IActivitiesApi;
   wellnessApi: IWellnessApi;
   eventsApi: IEventsApi;
-  /** "Today" as YYYY-MM-DD; defaults to the system clock. */
+  /** "Today" as YYYY-MM-DD; defaults to the system clock (UTC). */
   today?: () => string;
 }
 
