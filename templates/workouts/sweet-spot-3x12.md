@@ -6,12 +6,12 @@ basis: FTP
 purpose: Sustained sub-threshold volume in build. Lower fatigue cost than threshold, so more per week.
 ---
 
-Sub-threshold steady work. Lower fatigue cost than threshold, allowing higher weekly volume of sustained efforts during build phases. Hold cadence ≥ 85.
+Sub-threshold steady work. Lower fatigue cost than threshold, allowing higher weekly volume of sustained efforts during build phases. Hold cadence ≥ 85 on the reps.
 
 - Warm-up 12m 55-70%
 
 3x
-  - SST 12m 88-94%
+  - SST 12m 88-94% 85-105rpm
   - Recovery 4m 55%
 
 - Cooldown 10m 50%

@@ -6,7 +6,7 @@ basis: FTP
 purpose: Race-specific 2 km pursuit simulation — sprint start, then decaying power through anaerobic and VO2 zones.
 ---
 
-Pursuit-style effort with a progressive ramp-up, two activation sprints, then 5 × pursuit intervals stepping down from peak sprint power through anaerobic and VO2max zones. Each rep rehearses the shape of the event: a standing-start surge, then settling into a decaying but sustainable pace.
+Pursuit-style effort with a progressive ramp-up, two activation sprints, then 5 × pursuit intervals stepping down from peak sprint power through anaerobic and VO2max zones. Each rep rehearses the shape of the event: a standing-start surge, then settling into a decaying but sustainable pace. Keep cadence above 100 rpm through every pursuit step.
 
 - Warm Up 5m 60%
 - Ramp 1 1m 70%
@@ -24,9 +24,9 @@ Activation 2x
 - Recovery 3m 55%
 
 Main Set 4x
-  - Sprint 20s 250%
-  - Anaerobic 40s 130%
-  - VO2 1m30s 110%
+  - Sprint 20s 250% 100-130rpm
+  - Anaerobic 40s 130% 100-130rpm
+  - VO2 1m30s 110% 100-130rpm
   - Recovery 8m 55%
 
 - Cool Down 5m 40%

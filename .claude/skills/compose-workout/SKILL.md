@@ -44,7 +44,8 @@ Read only the subfiles the session needs, from the project root:
   reason in %MAP/%FTP, convert before calling tools.
 - `.claude/skills/plan-workout/session-patterns.md` — structure norms by session type (Z2,
   threshold, VO2, sweet spot, recovery, race-prep).
-- `syntax-cheatsheet.md` (this skill's folder) — workout-text syntax Intervals.icu expects.
+- `syntax-cheatsheet.md` (this skill's folder) — workout-text syntax Intervals.icu expects, and
+  when a step should carry a cadence (it becomes a judged condition of the rep).
 - `.claude/skills/plan-workout/vo2-preloaded-shorts.md` as the session calls for.
 
 Where those files say to check `list_workout_library` first, the caller already has: the brief's

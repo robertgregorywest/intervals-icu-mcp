@@ -18,7 +18,7 @@ Nx                                            # repeat block (blank lines around
 - **Power**: \`75%\`, \`95-105%\`, \`220w\`, \`160w-256w\`, \`Z2\`
 - **HR**: \`70% HR\`, \`Z2 HR\`, \`95% LTHR\`
 - **Pace**: \`60% Pace\`, \`Z2 Pace\`, \`5:00/km Pace\`
-- **Cadence**: \`90rpm\`
+- **Cadence**: \`90rpm\`, \`85-95rpm\`
 
 **Head-unit granularity**: a long/wide \`ramp\` (or wide-range) step collapses to a single average wattage on head units. Split ramps/progressions into steps of **≤ 2 min** and **≤ ~8% MAP (~25–30 W)** range each so the on-screen target steps upward. Steady-state target bands (e.g. a Z2 endurance block) are deliberate and stay as one step.
 

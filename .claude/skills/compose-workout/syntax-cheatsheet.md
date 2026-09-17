@@ -20,19 +20,19 @@ Lines starting with `- ` are steps. `Nx` introduces a repeat block whose followi
 - **Power**: `75%`, `95-105%`, `220w`, `160w-256w`, `Z2`
 - **HR**: `70% HR`, `Z2 HR`, `95% LTHR`
 - **Pace**: `60% Pace`, `Z2 Pace`, `5:00/km Pace`
-- **Cadence**: `90rpm`
+- **Cadence**: `90rpm`, `85-95rpm`
 
 ## Examples
 
 ### Sweet spot 3×12
 
 ```
-- Warm-up 10m ramp 50-80% 90rpm
-- 1m 90% 100rpm
+- Warm-up 10m ramp 50-80%
+- 1m 90%
 - 2m 60%
 
 3x
-- 12m 250w-265w 88rpm
+- 12m 250w-265w 85-105rpm
 - 5m 160w
 
 - Cool 5m 50%
@@ -56,10 +56,19 @@ Lines starting with `- ` are steps. `Nx` introduces a repeat block whose followi
 ### Z2 endurance
 
 ```
-- Warm-up 10m ramp 50-65% 90rpm
-- 75m 65-72% 90rpm
+- Warm-up 10m ramp 50-65%
+- 75m 65-72%
 - Cool 5m 50%
 ```
+
+## When to write a cadence
+
+A cadence on a step is a **condition of the rep**, not a suggestion: `compare_planned_vs_actual` judges every step that carries one (±5 rpm on a point, a range on its own band), and the execution review reports a miss. So:
+
+- **Write it where cadence is part of what the rep trains** — race-pace and pursuit work, VO2 preloads, cadence drills, a recovery spin whose point is high cadence.
+- **Use a range for a floor.** There's no `≥` token — "hold ≥ 85" is `85-105rpm`; "above 100" is `100-130rpm`. A point target is for a cadence the rep must sit on.
+- **Leave it off warm-ups, recoveries, settles and cool-downs** unless the brief makes it the point of that step. A habitual `90rpm` there creates verdicts nobody reads.
+- **Carry a cadence the brief or library item names.** Don't invent one the brief doesn't ask for; if a rep's intent clearly depends on cadence and the brief gives none, say so in your report.
 
 ## Gotchas
 

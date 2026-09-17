@@ -116,7 +116,7 @@ type:   Ride
 ------------------------------------------------------------------------
 Race-specific 2 km pursuit simulation — sprint start, then decaying power through anaerobic and VO2 zones.
 
-Pursuit-style effort with a progressive ramp-up, two activation sprints, then 5 × pursuit intervals stepping down from peak sprint power through anaerobic and VO2max zones. Each rep rehearses the shape of the event: a standing-start surge, then settling into a decaying but sustainable pace.
+Pursuit-style effort with a progressive ramp-up, two activation sprints, then 5 × pursuit intervals stepping down from peak sprint power through anaerobic and VO2max zones. Each rep rehearses the shape of the event: a standing-start surge, then settling into a decaying but sustainable pace. Keep cadence above 100 rpm through every pursuit step.
 
 - Warm Up 5m 175w
 
@@ -141,9 +141,9 @@ Activation 2x
 - Recovery 3m 160w
 
 Main Set 4x
-- Sprint 20s 725w
-- Anaerobic 40s 375w
-- VO2 1m30s 320w
+- Sprint 20s 250% 100-130rpm
+- Anaerobic 40s 130% 100-130rpm
+- VO2 1m30s 110% 100-130rpm
 - Recovery 8m 160w
 
 - Cool Down 5m 115w
@@ -285,12 +285,12 @@ type:   Ride
 ------------------------------------------------------------------------
 Sustained sub-threshold volume in build. Lower fatigue cost than threshold, so more per week.
 
-Sub-threshold steady work. Lower fatigue cost than threshold, allowing higher weekly volume of sustained efforts during build phases. Hold cadence ≥ 85.
+Sub-threshold steady work. Lower fatigue cost than threshold, allowing higher weekly volume of sustained efforts during build phases. Hold cadence ≥ 85 on the reps.
 
 - Warm-up 12m 160w-205w
 
 3x
-- SST 12m 255w-275w
+- SST 12m 88-94% 85-105rpm
 - Recovery 4m 160w
 
 - Cooldown 10m 145w
