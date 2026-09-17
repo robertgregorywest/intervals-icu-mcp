@@ -44,8 +44,16 @@ Does a library workout fit the intent?
 Replacing a planned event? (agree it with the athlete, note its id)
     │
     ▼
-workout brief  →  compose-workout (forked)  →  relay its report
+workout brief  →  compose-workout (forked)  →  one holding line, end turn
+    │
+    ▼
+report arrives  →  relay it
 ```
+
+**The build is a barrier.** `compose-workout` runs in the background: invoking it returns only an
+agent name, and its report arrives later as a notification. After dispatching, write one holding
+line ("Building <session> for <date>…") and end the turn. Relay what was written — or why the build
+stopped — only from the report itself.
 
 See [library-vs-compose.md](library-vs-compose.md) for the full reasoning.
 

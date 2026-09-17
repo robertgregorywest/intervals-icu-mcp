@@ -63,7 +63,7 @@ Depth scales with how narrow the prescribed band is: the narrower the band, the 
 
 **Silence is the default.** A window with nothing meeting the threshold produces **one line** — "the window's key sessions landed as prescribed" — plus the middle-band figure. Never a table. Never a per-session list.
 
-**The threshold is recurrence in the same structural position.** A rep-1 shortfall in two separate sessions is a pattern: report it, name the sessions that evidence it, and propose what would address it. The same shortfall once is not — don't raise it, but have it ready if the athlete asks about that session.
+**The threshold is recurrence in the same structural position.** A rep-1 shortfall in two separate sessions is a pattern: report it, name the sessions that evidence it, and propose what would address it. The same shortfall once is not — don't raise it, but have it ready if the athlete asks about that session. **Recurrence spans windows:** once in this window, in the structural position an open thread from the log already names, is the pattern recurring — report it as continuing that thread and say whether the thread's close condition is met.
 
 **Report the dose gap before planning further work.** If the window's delivered middle-band dose falls materially short of what was prescribed, say so explicitly _before_ drafting the next block, name the likely cause from the step-level findings, and don't quietly plan on the assumption the last block landed.
 

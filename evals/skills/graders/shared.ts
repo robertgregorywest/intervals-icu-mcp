@@ -1,3 +1,4 @@
+import type { SDKMessage } from "@anthropic-ai/claude-agent-sdk";
 import { z } from "zod";
 import type { CapturedWrite } from "../../../src/cassette.js";
 import { TOOLS } from "../../../src/registry.js";
@@ -94,6 +95,72 @@ export const skillInvoked = defineGrader(
         : viaSlash
           ? `invoked as /${skill}`
           : `${skill} never invoked`,
+    };
+  }
+);
+
+/**
+ * The session waited on its fork: the only reply text written before the
+ * fork's report came back fits in `maxChars` (a holding line or two). A
+ * forked skill runs in the background, so its report arrives as a
+ * task_notification; where it ran in the foreground, its tool result is the
+ * report.
+ */
+export const awaitsFork = defineGrader(
+  z.strictObject({
+    skill: z.string().optional(),
+    maxChars: z.number().int().min(0).optional(),
+  }),
+  (o, run) => {
+    const skill = o.skill ?? run.evalCase.skill;
+    const maxChars = o.maxChars ?? 280;
+    const dispatch = run.toolUses.find(
+      (t) =>
+        t.name === "Skill" &&
+        t.parentToolUseId === null &&
+        skillMatches(t.input.skill, skill)
+    );
+    if (!dispatch) {
+      return { passed: false, explanation: `${skill} never invoked` };
+    }
+    const notified = (m: SDKMessage): boolean =>
+      m.type === "system" &&
+      m.subtype === "task_notification" &&
+      m.tool_use_id === dispatch.id;
+    const returned = (m: SDKMessage): boolean =>
+      m.type === "user" &&
+      Array.isArray(m.message.content) &&
+      m.message.content.some(
+        (b) =>
+          typeof b === "object" &&
+          b !== null &&
+          "tool_use_id" in b &&
+          b.tool_use_id === dispatch.id
+      );
+    const arrival = run.messages.some(notified)
+      ? run.messages.findIndex(notified)
+      : run.messages.findIndex(returned);
+    if (arrival === -1) {
+      return { passed: false, explanation: `${skill} report never arrived` };
+    }
+    const before = run.messages
+      .slice(0, arrival)
+      .flatMap((m) =>
+        m.type === "assistant" &&
+        m.parent_tool_use_id === null &&
+        Array.isArray(m.message.content)
+          ? m.message.content
+          : []
+      )
+      .map((b) => (b.type === "text" ? b.text.trim() : ""))
+      .filter(Boolean)
+      .join("\n");
+    return {
+      passed: before.length <= maxChars,
+      explanation:
+        before.length <= maxChars
+          ? `${before.length} chars before the ${skill} report`
+          : `${before.length} chars before the ${skill} report: "${before.slice(0, 80).replace(/\s+/g, " ")}…"`,
     };
   }
 );

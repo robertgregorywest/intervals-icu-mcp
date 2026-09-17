@@ -29,10 +29,11 @@ The `coaching-philosophy` skill ships with the repo, so it's always present. If 
 **Open on what was delivered, not on what was planned.** Once the stack is loaded, review the elapsed window before offering analysis, drafting a plan, or composing a session — every downstream judgement should be conditioned on delivered work.
 
 1. **Window** — from `reviewed-through` in the log header to today; see the table in [coaching-log-format.md](coaching-log-format.md) for a missing, stale, or too-recent watermark. Settle the window from the header alone — a watermark less than a day old skips the review here, with the watermark left alone. Whether the window holds a key session is the skill's call, not this thread's: it needs the planned events, and those stay out of this conversation.
-2. **Invoke the `execution-review` skill** — it runs forked, out of this conversation. Pass the window (start → today) and, if already in hand, the athlete's `mapZones` as its arguments. It selects key sessions, runs `compare_intensity_distribution` and `compare_planned_vs_actual`, interprets against its own reporting rules, and returns interpreted findings only — the raw comparison JSON never enters this conversation.
-3. **Done = the skill's report received.** A window where everything landed as prescribed comes back as _one line_ plus the middle-band figure, not silence. A report of **reviewed through `<date>`** is the date the watermark advances to at the log checkpoint — never here. A report of **skipped** (no key session in the window) leaves the watermark alone; say it was skipped, as you would for a window skipped under step 1.
+2. **Invoke the `execution-review` skill** — it runs forked, out of this conversation. Pass as its arguments the window (start → today), the athlete's `mapZones`, and the log header's **open threads** verbatim (so a pattern first seen in an earlier window counts as recurring). It selects key sessions, runs `compare_intensity_distribution` and `compare_planned_vs_actual`, interprets against its own reporting rules, and returns interpreted findings only — the raw comparison JSON never enters this conversation.
+3. **Barrier: end the turn on one holding line** — "Reviewing delivered work `<start>` → `<today>`…" — and resume when the report arrives (see _Forks run in the background_ below). Mechanical requests may go out in the same response as the dispatch: a calendar move or delete, a single lookup. Anything that assesses, plans or recommends waits for the report.
+4. **Done = the skill's report received.** A window where everything landed as prescribed comes back as _one line_ plus the middle-band figure, not silence. A report of **reviewed through `<date>`** is the date the watermark advances to at the log checkpoint — never here. A report of **skipped** (no key session in the window) leaves the watermark alone; say it was skipped, as you would for a window skipped under step 1.
 
-**A narrow request doesn't skip the review.** If the athlete opens with something specific ("move Thursday's session"), delegate the review anyway so you hold full context, but **answer their request first** and raise findings only where they bear on it.
+**A narrow request still gets the review.** If the athlete opens with something specific ("move Thursday's session"), dispatch the review alongside it; once the report is in, raise findings only where they bear on the request.
 
 ## Scope
 
@@ -54,6 +55,13 @@ The `coaching-philosophy` skill ships with the repo, so it's always present. If 
 **Reach every Intervals.icu tool through `./bin/icu`, piped.** Read
 [docs/agents/icu-cli.md](../../../docs/agents/icu-cli.md) before your first call — working directory,
 piping, the scratchpad, `describe`. This skill runs at the **Coaching** tier there.
+
+**Forks run in the background.** `execution-review`, `ride-analysis`, and the `compose-workout` /
+`compose-strength-session` builds behind the planning skills return only an agent name when
+invoked; the report arrives later as a notification that re-invokes you. So every fork is a
+**barrier**: dispatch it, write one holding line naming what it is doing, and end the turn. Reason
+about the question it serves only once its report is in context — a pass made before then is spent
+without the facts and redone after.
 
 **Invoke the `ride-analysis` skill for multi-activity stream work.** It runs forked, out of this
 conversation — its tool output stays out entirely; only its report comes back. Worth it when a

@@ -65,8 +65,16 @@ Place it right (stack on a hard ride day; never before track;
     never a HI bike day after heavy lifting)
     │
     ▼
-strength brief  →  compose-strength-session (forked)  →  relay its report
+strength brief  →  compose-strength-session (forked)  →  one holding line, end turn
+    │
+    ▼
+report arrives  →  relay it
 ```
+
+**The build is a barrier.** `compose-strength-session` runs in the background: invoking it returns
+only an agent name, and its report arrives later as a notification. After dispatching, write one
+holding line ("Building <session> for <date>…") and end the turn. Relay what was written — or why the
+build stopped — only from the report itself.
 
 ## The five principles (the lens for every decision)
 

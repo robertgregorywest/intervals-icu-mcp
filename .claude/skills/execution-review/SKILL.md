@@ -1,6 +1,6 @@
 ---
 name: execution-review
-description: Runs the execution-review comparison (prescribed vs. delivered, dose and rep-level execution) for a coaching-log window and returns interpreted findings. Invoked by coaching-session at session start with a window and mapZones.
+description: Runs the execution-review comparison (prescribed vs. delivered, dose and rep-level execution) for a coaching-log window and returns interpreted findings. Invoked by coaching-session at session start with a window, mapZones and the log's open threads.
 context: fork
 agent: execution-analyst
 ---
@@ -21,6 +21,8 @@ everything you need is below or in `$ARGUMENTS`.
   and end date (today).
 - **`mapZones`** — the athlete's MAP-anchored coaching zones, if the caller already had them handy.
   If not supplied, fetch them yourself: `./bin/icu get_coaching_context` (from the project root).
+- **Open threads** — the log header's thread list, verbatim, each with the condition that would close
+  it. Your history of earlier windows: none of it is re-derivable from the calendar inside this one.
 
 ## How to run the review
 
@@ -40,7 +42,8 @@ directory, piping, `describe`. You run at its **Read-only** tier.
    reporting threshold, and the exact reporting rules ("What reaches the athlete"). The tools report
    deltas; deltas are not findings; that file is the difference.
 4. **Done = every selected session dispositioned.** Each session lands on **reported** (met the
-   recurrence threshold) or **held** (seen once — not raised now, ready if asked).
+   recurrence threshold, within the window or against an open thread) or **held** (seen once — not
+   raised now, ready if asked).
 
 ## What to return
 
