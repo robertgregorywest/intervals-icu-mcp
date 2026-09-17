@@ -47,7 +47,7 @@ describe("WorkoutBuilder", () => {
         },
       ];
       expect(builder.toDescription(steps)).toBe(
-        "- Warmup 15m ramp 40%-70% 85rpm",
+        "- Warmup 15m ramp 40%-70% 85rpm"
       );
     });
 
@@ -73,9 +73,7 @@ describe("WorkoutBuilder", () => {
           ],
         },
       ];
-      expect(builder.toDescription(steps)).toBe(
-        "4x\n- 2m 95%\n- 2m 55%",
-      );
+      expect(builder.toDescription(steps)).toBe("4x\n- 2m 95%\n- 2m 55%");
     });
 
     it("formats a repeat block with label", () => {
@@ -90,7 +88,7 @@ describe("WorkoutBuilder", () => {
         },
       ];
       expect(builder.toDescription(steps)).toBe(
-        "Main Set 4x\n- 2m 95%\n- 2m 55%",
+        "Main Set 4x\n- 2m 95%\n- 2m 55%"
       );
     });
 
@@ -110,7 +108,7 @@ describe("WorkoutBuilder", () => {
       expect(builder.toDescription(steps)).toBe(
         "- Warmup 10m 60%\n\n" +
           "Main Set 4x\n- 2m 95%\n- 2m 55%\n\n" +
-          "- Recovery 5m 50%",
+          "- Recovery 5m 50%"
       );
     });
 

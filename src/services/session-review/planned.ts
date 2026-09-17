@@ -73,6 +73,14 @@ function emit(
       typeof step.duration === "number" ? step.duration : undefined,
     target,
     cadence: step.cadence?.value,
+    cadenceRange:
+      typeof step.cadence?.start === "number" &&
+      typeof step.cadence?.end === "number"
+        ? {
+            low: Math.min(step.cadence.start, step.cadence.end),
+            high: Math.max(step.cadence.start, step.cadence.end),
+          }
+        : undefined,
     repIndex: rep?.index,
     repCount: rep?.count,
     stepInRep,

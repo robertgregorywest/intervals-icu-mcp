@@ -47,6 +47,7 @@ const alignedStepShape = z.object({
     durationSeconds: z.number().optional(),
     target: powerTargetShape.optional(),
     cadence: z.number().optional(),
+    cadenceRange: z.object({ low: z.number(), high: z.number() }).optional(),
   }),
   delivered: z
     .object({
@@ -62,9 +63,18 @@ const alignedStepShape = z.object({
       durationSeconds: z.number().optional(),
       watts: z.number().optional(),
       wattsFraction: z.number().optional(),
+      cadence: z.number().optional(),
     })
     .optional(),
   verdict: z.enum(["on-target", "over", "under", "not-attempted", "unmatched"]),
+  cadenceVerdict: z
+    .enum(["on-target", "over", "under"])
+    .optional()
+    .describe(
+      "Delivered average cadence against the planned cadence, judged " +
+        "independently of the power verdict. Present only when the step " +
+        "prescribes a cadence and recorded one."
+    ),
   note: z.string().optional(),
 });
 

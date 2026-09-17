@@ -466,6 +466,9 @@ export const TOOLS: ToolDef[] = [
       "beside the delivered duration and average power, the deltas, and a verdict " +
       "(on-target / over / under / not-attempted / unmatched). Repeat blocks are " +
       "compared rep by rep, so decay across reps is visible. " +
+      "Where a step prescribes a cadence, cadenceVerdict (on-target / over / under) " +
+      "and deltas.cadence judge the delivered average cadence beside the power " +
+      "verdict, never folded into it: point targets allow ±5 rpm, ranges their own band. " +
       "Steps are compared against the laps the head unit recorded, read from the " +
       "original upload — the faithful record of what the athlete marked. " +
       "Intervals.icu's own icu_intervals analysis is derived and editable and can " +

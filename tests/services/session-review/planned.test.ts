@@ -16,6 +16,31 @@ function fixture(name: string) {
 }
 
 describe("flattenPlannedSteps", () => {
+  it("carries a point cadence and a cadence range as the platform shapes them", () => {
+    const doc = {
+      steps: [
+        {
+          duration: 150,
+          power: { units: "w", start: 390, end: 410 },
+          cadence: { units: "rpm", value: 100 },
+        },
+        {
+          duration: 600,
+          power: { units: "w", value: 180 },
+          cadence: { units: "rpm", start: 85, end: 95 },
+        },
+        { duration: 300, power: { units: "w", value: 150 } },
+      ],
+    } as unknown as WorkoutDoc;
+    const [point, range, none] = flattenPlannedSteps(doc);
+    expect(point.cadence).toBe(100);
+    expect(point.cadenceRange).toBeUndefined();
+    expect(range.cadence).toBeUndefined();
+    expect(range.cadenceRange).toEqual({ low: 85, high: 95 });
+    expect(none.cadence).toBeUndefined();
+    expect(none.cadenceRange).toBeUndefined();
+  });
+
   it("expands a repeat block into one step per rep per inner step", () => {
     // Real event 107665970: 3× a 10-rep 30/30 block, plus surrounding steps.
     const { event } = fixture("vo2-repeats");

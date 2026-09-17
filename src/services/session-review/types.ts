@@ -39,6 +39,18 @@ export type StepVerdict =
   "on-target" | "over" | "under" | "not-attempted" | "unmatched";
 
 /**
+ * A step's delivered average cadence judged against its planned cadence.
+ * Reported beside the power `verdict`, never folded into it.
+ */
+export type CadenceVerdict = "on-target" | "over" | "under";
+
+/** A prescribed cadence band, e.g. `85-95rpm`. Both ends inclusive. */
+export interface CadenceRange {
+  low: number;
+  high: number;
+}
+
+/**
  * Which power figure a step's verdict was judged against.
  *
  * - `average-watts`     — the step's target/duration didn't call for normalized
@@ -81,7 +93,10 @@ export interface FlatPlannedStep {
   label?: string;
   durationSeconds?: number;
   target?: PowerTarget;
+  /** Point cadence target, rpm. */
   cadence?: number;
+  /** Band cadence target, when the step prescribes a range. */
+  cadenceRange?: CadenceRange;
   /** 1-based repetition number, when this step came from a repeat block. */
   repIndex?: number;
   /** Total repetitions in that block. */
@@ -115,6 +130,7 @@ export interface AlignedStep {
     durationSeconds?: number;
     target?: PowerTarget;
     cadence?: number;
+    cadenceRange?: CadenceRange;
   };
   /** Absent when the step is `unmatched` — never zero-filled or estimated. */
   delivered?: {
@@ -140,10 +156,19 @@ export interface AlignedStep {
     watts?: number;
     /** `watts` as a fraction of the prescribed target. */
     wattsFraction?: number;
+    /** Delivered minus prescribed average cadence, rpm. Zero when inside a band target. */
+    cadence?: number;
   };
   verdict: StepVerdict;
   /** Which power figure `verdict` and `deltas.watts` were judged against. */
   verdictBasis: VerdictBasis;
+  /**
+   * Delivered average cadence against the planned cadence. Present only when
+   * the step prescribes a cadence, was paired, was attempted, and recorded a
+   * cadence. Independent of `verdict`: a rep can be `on-target` on power and
+   * `under` on cadence.
+   */
+  cadenceVerdict?: CadenceVerdict;
   /** Why an `unmatched` step could not be compared. */
   note?: string;
 }

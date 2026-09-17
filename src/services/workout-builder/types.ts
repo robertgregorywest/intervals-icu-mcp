@@ -24,7 +24,7 @@ export interface WorkoutPlan {
 }
 
 export function isRepeatBlock(
-  step: WorkoutStep | RepeatBlock,
+  step: WorkoutStep | RepeatBlock
 ): step is RepeatBlock {
   return "iterations" in step;
 }

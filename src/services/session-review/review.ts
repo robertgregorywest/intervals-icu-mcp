@@ -3,6 +3,7 @@ import { ROLLING_WINDOW_SECONDS, normalizedPower } from "../analysis/index.js";
 import type {
   ActivityInterval,
   AlignedStep,
+  CadenceVerdict,
   DeliveredInterval,
   FlatPlannedStep,
   PlannedVsActualResult,
@@ -90,6 +91,14 @@ function wantsNormalizedPower(planned: FlatPlannedStep): boolean {
  * judged must not change what counts as an abandoned step.
  */
 export const NOT_ATTEMPTED_DURATION_FRACTION = 0.5;
+
+/**
+ * How far a step's average cadence may sit from a point cadence target and
+ * still be `on-target`. Fixed rpm rather than a fraction: cadence lives in a
+ * narrow absolute range, and 5 rpm either side of 100 is the same miss as
+ * either side of 80. A cadence band carries no tolerance, as with power.
+ */
+export const CADENCE_TOLERANCE_RPM = 5;
 
 /** Reduce raw intervals to the fields the comparison reads. */
 export function toDeliveredIntervals(
@@ -195,6 +204,45 @@ export function judgeStep(
     wattsFraction: reference ? round(delta / reference, 4) : undefined,
     verdictBasis: basis,
   };
+}
+
+/**
+ * Judge a step's delivered average cadence against its planned cadence.
+ * Returns nothing when the step prescribes no cadence, recorded none, or was
+ * not attempted — an abandoned step is not judged on cadence either. A band is
+ * satisfied anywhere inside it; outside, the delta is from the crossed edge.
+ */
+export function judgeCadence(
+  planned: FlatPlannedStep,
+  delivered: DeliveredInterval
+): { verdict: CadenceVerdict; delta: number } | undefined {
+  const actual = delivered.averageCadence;
+  if (actual === undefined) return undefined;
+  const prescribed = planned.durationSeconds;
+  if (
+    prescribed &&
+    delivered.durationSeconds < prescribed * NOT_ATTEMPTED_DURATION_FRACTION
+  ) {
+    return undefined;
+  }
+
+  const range = planned.cadenceRange;
+  if (range) {
+    if (actual > range.high) {
+      return { verdict: "over", delta: Math.round(actual - range.high) };
+    }
+    if (actual < range.low) {
+      return { verdict: "under", delta: Math.round(actual - range.low) };
+    }
+    return { verdict: "on-target", delta: 0 };
+  }
+
+  if (!planned.cadence || planned.cadence <= 0) return undefined;
+  const delta = Math.round(actual - planned.cadence);
+  if (Math.abs(actual - planned.cadence) <= CADENCE_TOLERANCE_RPM) {
+    return { verdict: "on-target", delta };
+  }
+  return { verdict: delta > 0 ? "over" : "under", delta };
 }
 
 /**
@@ -305,6 +353,7 @@ export function reviewSession(
         durationSeconds: step.durationSeconds,
         target: step.target,
         cadence: step.cadence,
+        cadenceRange: step.cadenceRange,
       },
       verdict: "unmatched",
       verdictBasis: wantsNormalizedPower(step)
@@ -341,6 +390,7 @@ export function reviewSession(
         : undefined;
 
     const judged = judgeStep(step, delivered, tolerance, normalizedWatts);
+    const cadence = judgeCadence(step, delivered);
 
     return {
       ...base,
@@ -360,9 +410,11 @@ export function reviewSession(
             : delivered.durationSeconds - step.durationSeconds,
         watts: judged.watts,
         wattsFraction: judged.wattsFraction,
+        cadence: cadence?.delta,
       },
       verdict: judged.verdict,
       verdictBasis: judged.verdictBasis,
+      cadenceVerdict: cadence?.verdict,
       note: judged.note,
     };
   });

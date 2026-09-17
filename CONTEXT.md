@@ -80,6 +80,10 @@ _Avoid_: treating `none` as an error — it is a deliberate refusal, and the rol
 The per-step judgement of delivery against prescription: `on-target`, `over`, `under`, `not-attempted` (delivered far less time than prescribed), `unmatched` (no interval could be paired). A range target is judged on its own band; a ramp is judged against its midpoint; `tolerance` governs point targets only.
 _Avoid_: "compliance" — that is Intervals.icu's own scalar figure, reported alongside but distinct from these Verdicts
 
+**Cadence verdict**:
+A step's delivered average cadence judged against its planned cadence — `on-target`, `over`, `under` — reported beside the power **Verdict** and never folded into it. A point target allows ±5 rpm; a cadence range is judged on its own band. Absent when the step prescribes no cadence, recorded none, or was not attempted.
+_Avoid_: reading an `on-target` **Verdict** as "the rep met its prescription" when the step also carries a cadence — a rep ridden in band on watts but well under its cadence did not do what was asked
+
 **Verdict basis**:
 Which power figure a **Verdict** was judged against: `average-watts` for point targets, ramps, and any step of 300s or less; `normalized-power` for a range target prescribed longer than 300s, since average power over a long outdoor step is depressed by coasting in a way normalized power is not; `normalized-power-fallback` when a step qualified for `normalized-power` but the activity's raw power stream didn't resolve its window, so the verdict fell back to average power. Reported on every step, including `unmatched`/`not-attempted` ones, naming what the rule would have chosen even where no comparison was reached.
 _Avoid_: quoting a step's average-watts delta as the finding when its **Verdict basis** is `normalized-power` — that figure is reported alongside but is deliberately not what the verdict used.

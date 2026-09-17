@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import {
+  judgeCadence,
   judgeStep,
   reviewSession,
   sliceStepWindow,
@@ -313,6 +314,71 @@ describe("judgeStep — verdict basis", () => {
   });
 });
 
+describe("judgeCadence", () => {
+  it("reports a point cadence miss on a rep that is on target for power", () => {
+    const planned = step({
+      durationSeconds: 150,
+      target: { low: 390, high: 410 },
+      cadence: 100,
+    });
+    const rode = delivered({
+      durationSeconds: 150,
+      averageWatts: 396,
+      averageCadence: 85,
+    });
+    expect(judgeStep(planned, rode, DEFAULT_TOLERANCE).verdict).toBe(
+      "on-target"
+    );
+    expect(judgeCadence(planned, rode)).toEqual({
+      verdict: "under",
+      delta: -15,
+    });
+  });
+
+  it("allows 5 rpm either side of a point target", () => {
+    const planned = step({ cadence: 100 });
+    expect(
+      judgeCadence(planned, delivered({ averageCadence: 95 }))?.verdict
+    ).toBe("on-target");
+    expect(
+      judgeCadence(planned, delivered({ averageCadence: 105 }))?.verdict
+    ).toBe("on-target");
+    expect(judgeCadence(planned, delivered({ averageCadence: 106 }))).toEqual({
+      verdict: "over",
+      delta: 6,
+    });
+  });
+
+  it("judges a cadence range on its own band, measuring from the crossed edge", () => {
+    const planned = step({ cadenceRange: { low: 85, high: 95 } });
+    expect(judgeCadence(planned, delivered({ averageCadence: 86 }))).toEqual({
+      verdict: "on-target",
+      delta: 0,
+    });
+    expect(judgeCadence(planned, delivered({ averageCadence: 82 }))).toEqual({
+      verdict: "under",
+      delta: -3,
+    });
+    expect(judgeCadence(planned, delivered({ averageCadence: 98 }))).toEqual({
+      verdict: "over",
+      delta: 3,
+    });
+  });
+
+  it("returns nothing with no planned cadence, no recorded cadence, or a step not attempted", () => {
+    expect(judgeCadence(step(), delivered({ averageCadence: 85 }))).toBe(
+      undefined
+    );
+    expect(judgeCadence(step({ cadence: 100 }), delivered())).toBe(undefined);
+    expect(
+      judgeCadence(
+        step({ cadence: 100 }),
+        delivered({ durationSeconds: 60, averageCadence: 85 })
+      )
+    ).toBe(undefined);
+  });
+});
+
 describe("sliceStepWindow", () => {
   function stream(over: Partial<RawPowerStream> = {}): RawPowerStream {
     return {
@@ -388,6 +454,44 @@ describe("reviewSession", () => {
     ]);
     expect(work[0].deltas?.watts).toBe(-11);
     expect(work.map((s) => s.repIndex)).toEqual([1, 2, 3]);
+  });
+
+  it("reports cadence beside power on steps that prescribe it, and leaves other steps unchanged", () => {
+    const result = reviewSession({
+      planned: [
+        step({ index: 0, durationSeconds: 600, target: { watts: 180 } }),
+        step({
+          index: 1,
+          durationSeconds: 150,
+          target: { low: 390, high: 410 },
+          cadence: 100,
+        }),
+      ],
+      intervals: [
+        delivered({
+          index: 0,
+          durationSeconds: 600,
+          averageWatts: 180,
+          averageCadence: 80,
+        }),
+        delivered({
+          index: 1,
+          durationSeconds: 150,
+          averageWatts: 396,
+          averageCadence: 85,
+        }),
+      ],
+      tolerance: DEFAULT_TOLERANCE,
+    });
+
+    const [warmUp, rep] = result.steps;
+    expect(warmUp.verdict).toBe("on-target");
+    expect(warmUp.cadenceVerdict).toBeUndefined();
+    expect(warmUp.deltas?.cadence).toBeUndefined();
+    expect(rep.verdict).toBe("on-target");
+    expect(rep.planned.cadence).toBe(100);
+    expect(rep.cadenceVerdict).toBe("under");
+    expect(rep.deltas?.cadence).toBe(-15);
   });
 
   it("carries the roll-up including the platform's own compliance", () => {

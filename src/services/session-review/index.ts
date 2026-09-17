@@ -9,8 +9,10 @@ export type { PairDeps } from "./pair.js";
 export {
   reviewSession,
   judgeStep,
+  judgeCadence,
   toDeliveredIntervals,
   DEFAULT_TOLERANCE,
+  CADENCE_TOLERANCE_RPM,
   NOT_ATTEMPTED_DURATION_FRACTION,
 } from "./review.js";
 export {
@@ -39,6 +41,8 @@ export type {
   AlignmentBasis,
   ExecutionRecord,
   StepVerdict,
+  CadenceVerdict,
+  CadenceRange,
   ReviewReason,
   SessionRollup,
   UnplannedInterval,
