@@ -61,6 +61,23 @@ Lines starting with `- ` are steps. `Nx` introduces a repeat block whose followi
 - Cool 5m 50%
 ```
 
+## What a step label declares
+
+**Step labels declare the step's role.** The **first word** of a step's label says whether the step is the session's work, read against a closed vocabulary. A work step is judged by the execution review; anything else is judged by nothing. Use one of these as the first word of every step that carries the session's intent:
+
+| Group              | First words                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------- |
+| Generic            | `Work` `Effort` `Interval` `Rep` `Set` `Block`                                        |
+| Zone / physiology  | `Tempo` `Sweet spot` `SST` `Threshold` `MIET` `MAP` `VO2` `Anaerobic` `Neuromuscular` |
+| Race-specific      | `Sprint` `Start` `Standing` `Pursuit` `Race` `Kilo` `Run` `Lap`                       |
+| Rep-internal shape | `On` `Over` `Under` `Float` `Settle` `Hold` `Surge` `Preload`                         |
+| Priming            | `Opener` `Openers` `Activation` `Primer`                                              |
+| Test               | `Test` `Max` `Peak`                                                                   |
+
+Support steps take any other label — `Warm-up`, `Recovery`, `Easy`, `Off`, `Cool down` — and are never judged, so a recovery step ridden easier than prescribed can no longer read as a miss. `Endurance` and `Steady` are deliberately not work words: a volume block is judged on its share of the middle band, not rep by rep.
+
+**A work step whose label falls outside the vocabulary is invisible to the review**, which is the one way a real miss goes unreported. `create_workout` warns when a step prescribed at or above 88% FTP carries no work word. Leave a step unlabelled deliberately only where it is meant to go unjudged — a ramp test's steps, a warm-up's build.
+
 ## When to write a cadence
 
 A cadence on a step is a **condition of the rep**, not a suggestion: `compare_planned_vs_actual` judges every step that carries one (±5 rpm on a point, a range on its own band), and the execution review reports a miss. So:

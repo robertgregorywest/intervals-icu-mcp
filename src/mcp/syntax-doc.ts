@@ -22,6 +22,21 @@ Nx                                            # repeat block (blank lines around
 
 **Head-unit granularity**: a long/wide \`ramp\` (or wide-range) step collapses to a single average wattage on head units. Split ramps/progressions into steps of **≤ 2 min** and **≤ ~8% MAP (~25–30 W)** range each so the on-screen target steps upward. Steady-state target bands (e.g. a Z2 endurance block) are deliberate and stay as one step.
 
+**Step labels declare the step's role.** The **first word** of a step's label says whether the step is the session's work, read against a closed vocabulary. A work step is judged by the execution review; anything else is judged by nothing. Use one of these as the first word of every step that carries the session's intent:
+
+| Group              | First words                                                                 |
+| ------------------ | --------------------------------------------------------------------------- |
+| Generic            | \`Work\` \`Effort\` \`Interval\` \`Rep\` \`Set\` \`Block\`                              |
+| Zone / physiology  | \`Tempo\` \`Sweet spot\` \`SST\` \`Threshold\` \`MIET\` \`MAP\` \`VO2\` \`Anaerobic\` \`Neuromuscular\` |
+| Race-specific      | \`Sprint\` \`Start\` \`Standing\` \`Pursuit\` \`Race\` \`Kilo\` \`Run\` \`Lap\`             |
+| Rep-internal shape | \`On\` \`Over\` \`Under\` \`Float\` \`Settle\` \`Hold\` \`Surge\` \`Preload\`               |
+| Priming            | \`Opener\` \`Openers\` \`Activation\` \`Primer\`                                    |
+| Test               | \`Test\` \`Max\` \`Peak\`                                                         |
+
+Support steps take any other label — \`Warm-up\`, \`Recovery\`, \`Easy\`, \`Off\`, \`Cool down\` — and are never judged, so a recovery step ridden easier than prescribed can no longer read as a miss. \`Endurance\` and \`Steady\` are deliberately not work words: a volume block is judged on its share of the middle band, not rep by rep.
+
+**A work step whose label falls outside the vocabulary is invisible to the review**, which is the one way a real miss goes unreported. \`create_workout\` warns when a step prescribed at or above 88% FTP carries no work word. Leave a step unlabelled deliberately only where it is meant to go unjudged — a ramp test's steps, a warm-up's build.
+
 **Step labels are plain text only**: keep \`number+unit\` tokens (\`60s\`, \`1m\`, \`220w\`, \`90rpm\`, \`75%\`) out of a step's label. On the text round-trip the parser reads the first such token in the line as the step's duration/target, so a label like \`Ramp — MAP = best 60s\` silently turns a 1-min step into a 2-min one and truncates the label. Put numeric detail in the workout's prose notes, not the step label.
 `;
 

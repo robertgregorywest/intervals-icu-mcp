@@ -21,19 +21,19 @@ Standardised pre-race warm-up: a graded build through endurance to a minute at t
 
 - Recovery 2m 130w-160w
 
-- Active 10s 435w-580w
+- Activation 10s 435w-580w
 
 - Recovery 1m 130w-160w
 
-- Active 10s 435w-580w
+- Activation 10s 435w-580w
 
 - Recovery 2m 130w-160w
 
-- Active 10s 435w-580w
+- Activation 10s 435w-580w
 
 - Recovery 2m 130w-160w
 
-- Active 5s 435w-580w
+- Activation 5s 435w-580w
 
 - Cooldown 10m 115w-145w
 
@@ -52,23 +52,23 @@ Alternating 2- and 3-minute efforts well above threshold with long, genuine reco
 
 - Warm up 15m 115w-145w
 
-- Active 2m 350w-375w
+- Effort 2m 350w-375w
 
 - Recovery 5m 145w-175w
 
-- Active 3m 350w-375w
+- Effort 3m 350w-375w
 
 - Recovery 5m 145w-175w
 
-- Active 2m 365w-390w
+- Effort 2m 365w-390w
 
 - Recovery 5m 145w-175w
 
-- Active 3m 350w-375w
+- Effort 3m 350w-375w
 
 - Recovery 5m 145w-175w
 
-- Active 2m 375w-405w
+- Effort 2m 375w-405w
 
 - Cool Down 10m 115w-145w
 
@@ -101,7 +101,7 @@ Re-establish FTP when threshold targets need recalibrating. FTP = 95% of best 20
 
 - 5m 175w
 
-- 20min effort 20m 275w-305w
+- Threshold test 20m 275w-305w
 
 - Cooldown 10m 145w
 
@@ -237,19 +237,19 @@ Pre-race opener. Long steady base, one threshold block, then two short supra-thr
 
 - Warm up 20m 155w-190w
 
-- 10m 210w-255w
+- Tempo 10m 210w-255w
 
 - 10m 170w-205w
 
-- 5m 260w-320w
+- Threshold 5m 260w-320w
 
 - 10m 155w-190w
 
-- 1m 330w-400w
+- Opener 1m 330w-400w
 
 - 3m 155w-190w
 
-- 1m 330w-400w
+- Opener 1m 330w-400w
 
 - 3m 155w-190w
 

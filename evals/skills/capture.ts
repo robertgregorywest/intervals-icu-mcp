@@ -2,8 +2,8 @@
 // as they stood on the scenario date, a case.yaml skeleton to fill with
 // expectations, and — with --record — its cassette, recorded live once.
 //
-//   npm run eval:capture -- --skill execution-review --id er-rp-miss \
-//     --date 2026-08-09 --prompt "/execution-review window 2026-08-02 → 2026-08-09" --record
+//   npm run eval:capture -- --skill coaching-session --id cs-rp-miss \
+//     --date 2026-08-09 --prompt "/coaching-session" --record
 
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -107,7 +107,7 @@ const tags = (args.tags ?? "")
   .filter(Boolean);
 
 const GRADERS: Record<string, string> = {
-  "execution-review": `  - type: completed
+  "coaching-session": `  - type: completed
   - type: skillInvoked
   - type: readOnly
   - type: watermarkLine
@@ -129,15 +129,15 @@ const GRADERS: Record<string, string> = {
     name: reporting-rules
     target: skillReport
     criteria: |
-      The output is an execution review handed back to a coach.
+      The session opens on an execution review of the window before any planning.
       PASS if all of these hold:
       - It reports the window's middle-band (76–106% FTP) figure as planned vs delivered.
       - Each finding it raises names the session(s) evidencing it; a shortfall seen in only
         one session is not presented as a pattern.
       - Findings are framed as what to change, not as compliance or marking.
-      - It does not prescribe the next block or plan training.
-      FAIL if any of these is violated, or if it reports warm-up, cool-down or recovery-step
-      "under" verdicts as shortfalls.
+      - Any dose gap is stated before the next block is drafted.
+      FAIL if any of these is violated, or if it reports a step the digest did not flag
+      (a warm-up, cool-down or recovery step) as a shortfall.
 `,
   "plan-workout": `  - type: completed
   - type: skillInvoked

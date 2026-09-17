@@ -9,14 +9,14 @@ purpose: Alternating 2- and 3-min efforts at 120–140% FTP with full recoveries
 Alternating 2- and 3-minute efforts well above threshold with long, genuine recoveries. The last effort steps up to 130–140% — the session is about holding quality to the end, not accumulating time. If the final rep can't match the first, stop rather than dilute it.
 
 - Warm up 15m 40-50%
-- Active 2m 120-130%
+- Effort 2m 120-130%
 - Recovery 5m 50-60%
-- Active 3m 120-130%
+- Effort 3m 120-130%
 - Recovery 5m 50-60%
-- Active 2m 125-135%
+- Effort 2m 125-135%
 - Recovery 5m 50-60%
-- Active 3m 120-130%
+- Effort 3m 120-130%
 - Recovery 5m 50-60%
-- Active 2m 130-140%
+- Effort 2m 130-140%
 - Cool Down 10m 40-50%
 - Cooldown 10m Z1

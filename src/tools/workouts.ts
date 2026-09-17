@@ -1,5 +1,10 @@
 import { z } from "zod";
 import type { IIntervalsClient } from "../index.js";
+import {
+  unreviewableWorkSteps,
+  type UnreviewableStep,
+} from "../services/step-roles/index.js";
+import { KEY_SESSION_FLOOR_PCT_FTP } from "../services/execution-digest/index.js";
 import type { WorkoutPlan } from "../services/workout-builder/index.js";
 import { slugify } from "../services/workout-builder/index.js";
 import { dateString } from "./common.js";
@@ -78,6 +83,20 @@ export const createWorkoutSchema = z.object({
 export const createWorkoutOutputSchema = z.object({
   success: z.literal(true),
   created: z.number(),
+  unreviewableSteps: z
+    .array(
+      z.object({
+        index: z.number(),
+        label: z.string().optional(),
+        watts: z.number(),
+      })
+    )
+    .optional()
+    .describe(
+      "Steps prescribed at or above the key-session floor whose label declares " +
+        "no work role, so get_execution_digest will never judge them. A warning, " +
+        "not a refusal — a ramp test and a warm-up build are meant to go unjudged."
+    ),
   events: z.array(
     z.object({
       id: z.number().optional(),
@@ -104,7 +123,31 @@ export async function createWorkout(
   const event = client.buildWorkoutEvent(plan);
   const result = await client.createEvents([event]);
 
-  return formatResponse(result);
+  return {
+    ...formatResponse(result),
+    ...(await unreviewableWarning(client, event.description)),
+  };
+}
+
+/**
+ * Best-effort: a warning is worth one context lookup, and worth nothing if it
+ * can fail the write it is warning about. No FTP, or a lookup that throws, and
+ * the workout is created with no warning rather than not created.
+ */
+async function unreviewableWarning(
+  client: IIntervalsClient,
+  description: string
+): Promise<{ unreviewableSteps?: UnreviewableStep[] }> {
+  let ftp: number | null = null;
+  try {
+    ftp = (await client.getCoachingContext()).athlete.ftp;
+  } catch {
+    return {};
+  }
+
+  const floor = ftp ? (ftp * KEY_SESSION_FLOOR_PCT_FTP) / 100 : undefined;
+  const steps = unreviewableWorkSteps(description, floor, ftp);
+  return steps.length > 0 ? { unreviewableSteps: steps } : {};
 }
 
 export const createStrengthWorkoutSchema = z.object({

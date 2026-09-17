@@ -44,9 +44,16 @@ Read only the subfiles the session needs, from the project root:
   reason in %MAP/%FTP, convert before calling tools.
 - `.claude/skills/plan-workout/session-patterns.md` — structure norms by session type (Z2,
   threshold, VO2, sweet spot, recovery, race-prep).
-- `syntax-cheatsheet.md` (this skill's folder) — workout-text syntax Intervals.icu expects, and
+- `syntax-cheatsheet.md` (this skill's folder) — workout-text syntax Intervals.icu expects, what a
+  step label's first word declares (work steps are the only ones the execution review judges), and
   when a step should carry a cadence (it becomes a judged condition of the rep).
 - `.claude/skills/plan-workout/vo2-preloaded-shorts.md` as the session calls for.
+
+**Label every work step from the vocabulary** in `syntax-cheatsheet.md` — its first word is what
+declares the step as the session's intent, and a work step labelled outside the vocabulary is
+invisible to the execution review. `create_workout` warns when a step prescribed at or above 88% FTP
+carries no work word; if that warning comes back on a step that was meant to be judged, relabel and
+write again rather than leaving it.
 
 Where those files say to check `list_workout_library` first, the caller already has: the brief's
 library decision is that check's answer.

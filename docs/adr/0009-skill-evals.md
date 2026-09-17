@@ -1,6 +1,6 @@
 # Skill evals: a custom Agent SDK runner over recorded scenarios
 
-The coaching skills (`execution-review`, `plan-workout` → `compose-workout`, …) are prompts, and
+The coaching skills (`coaching-session`, `plan-workout` → `compose-workout`, …) are prompts, and
 nothing checked how they behave. We want to score them on realistic moments from the athlete's own
 history, sweep **models × effort levels**, and judge a new model against a stored baseline before
 switching to it. Issue #20 holds the full design; this records the decisions that shape the code.

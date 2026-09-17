@@ -15,5 +15,5 @@ purpose: Re-establish FTP when threshold targets need recalibrating. FTP = 95% o
 - 1m 60%
 - 1m 120%
 - 5m 60%
-- 20min effort 20m 95-105%
+- Threshold test 20m 95-105%
 - Cooldown 10m 50%

@@ -78,6 +78,11 @@ import {
   compareIntensityDistributionOutputSchema,
 } from "./tools/intensity-distribution.js";
 import {
+  getExecutionDigest,
+  getExecutionDigestSchema,
+  getExecutionDigestOutputSchema,
+} from "./tools/execution-digest.js";
+import {
   getTrainingWeekSummarySchema,
   getTrainingWeekSummary,
   getTrainingWeekSummaryOutputSchema,
@@ -534,6 +539,42 @@ export const TOOLS: ToolDef[] = [
       compareIntensityDistribution(
         client,
         args as z.infer<typeof compareIntensityDistributionSchema>
+      ),
+  },
+
+  {
+    name: "get_execution_digest",
+    description:
+      "The execution review for a coaching window, computed in one call: which " +
+      "key sessions the window held, how much of the prescribed dose landed, and " +
+      "the work steps that missed their prescription. Runs both lenses — " +
+      "compare_intensity_distribution over the window and compare_planned_vs_actual " +
+      "per key session — and returns only what a coach reads. " +
+      "Key sessions are selected on the planned side (a declared work step " +
+      "prescribed at or above 88% FTP, the sweet-spot floor), so a key session " +
+      "that was abandoned or never started is reported rather than silently missed; " +
+      "a window holding none returns status 'skipped' and the watermark stays put. " +
+      "Work steps are read from the step label's first word against a closed " +
+      "vocabulary (see the workout syntax instructions) — not inferred from " +
+      "intensity. A step whose label declares no work role is never judged, and " +
+      "unclassifiedSteps counts them so a work step with an unrecognised label is " +
+      "visible rather than silently dropped. " +
+      "Mechanically filtered out: steps meeting both their power and cadence, and " +
+      "band steps outside their own band by under 3% (directional noise, since a " +
+      "range target carries no tolerance). What survives is a rep that did not do " +
+      "what it was asked to. Interpreting it — recurrence across sessions, whether " +
+      "a test's overshoot is the test working, what to change — is the caller's, " +
+      "with the coaching context loaded. " +
+      "Returns: { status, reviewedThrough?, middleBand, zones, sessions: [{ date, " +
+      "name, executionRecord, alignmentBasis, workSteps, unclassifiedSteps, " +
+      "flagged: [...], cadence?, middleBand*, reason? }], excluded, nonKeySessions }.",
+    schema: getExecutionDigestSchema,
+    annotations: READ_ONLY,
+    outputSchema: getExecutionDigestOutputSchema,
+    handler: (client, args) =>
+      getExecutionDigest(
+        client,
+        args as z.infer<typeof getExecutionDigestSchema>
       ),
   },
 

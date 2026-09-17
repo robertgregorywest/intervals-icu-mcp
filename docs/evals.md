@@ -75,7 +75,7 @@ For each trial the runner:
    guide, ADR 0009, the `eval-case` skill and your real `docs/personal` are left out, so the agent
    can't see the cases or how they're graded. The
    case's `personal/` files go into the workspace's `docs/personal/`.
-2. **Makes forked skills use the model under test.** The `execution-analyst` and
+2. **Makes forked skills use the model under test.** The `ride-analyst` and
    `workout-composer` agent definitions pin `model: sonnet`. The workspace copy switches them to
    `inherit`. Pass `--subagent-model pinned` to keep sonnet.
 3. **Replays Intervals.icu.** `./bin/icu` answers from the cassette and captures writes instead of
@@ -367,12 +367,12 @@ loads, so a misspelt or missing option stops the run before anything is spent.
 | `llmRubric`      | A majority of three judge votes say PASS against `criteria:`                                                                                                                                                                                                | `criteria:`, `judgeModel:`, `target:`                        |
 | `noReplayMisses` | Every request was in the cassette. **Reported only, never scored**                                                                                                                                                                                          | —                                                            |
 
-**execution-review**
+**execution review** (on the `coaching-session` thread, which now runs the review itself)
 
 | Grader                  | Passes when                                                                                                                                                                                                    | Options                                                                                                                      |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `watermarkLine`         | The report ends on `reviewed through: <date>` or `skipped: no key session in …`                                                                                                                                | `expect:` (a specific line)                                                                                                  |
-| `noRawDump`             | The report holds findings only: no raw JSON (fenced or inline, nested or not) and no long tables                                                                                                               | `maxTableRows:` (default 8)                                                                                                  |
+| `watermarkLine`         | The review ends on `reviewed through: <date>` or `skipped: no key session in …`                                                                                                                                | `expect:` (a specific line)                                                                                                  |
+| `noRawDump`             | The review holds findings only: no raw JSON (fenced or inline, nested or not) and no long tables                                                                                                               | `maxTableRows:` (default 8)                                                                                                  |
 | `sessionsDispositioned` | Each key session lands where the ground truth says. `reported`: a line names it without marking it held. `held`: it isn't raised, so every line naming it (if any) says held, not raised, one-off or seen once | `sessions: [{match, as}]`, where `match` is a regex for how the report may name the session and `as` is `reported` or `held` |
 
 **plan-workout**

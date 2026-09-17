@@ -44,6 +44,12 @@ import type {
   IntervalFilterOptions,
 } from "./services/analysis/index.js";
 import { createSessionReview } from "./services/session-review/index.js";
+import { createExecutionDigest } from "./services/execution-digest/index.js";
+import type {
+  IExecutionDigest,
+  ExecutionDigestResult,
+  GetExecutionDigestOptions,
+} from "./services/execution-digest/index.js";
 import { createIntensityDistribution } from "./services/intensity-distribution/index.js";
 import type {
   IIntensityDistribution,
@@ -156,6 +162,9 @@ export interface IIntervalsClient {
   compareIntensityDistributionRange(
     options: CompareIntensityDistributionRangeOptions
   ): Promise<IntensityDistributionRangeResult>;
+  getExecutionDigest(
+    options: GetExecutionDigestOptions
+  ): Promise<ExecutionDigestResult>;
 
   // Track lap alignment
   computeTrackLapPower(
@@ -211,6 +220,7 @@ export class IntervalsClient implements IIntervalsClient {
   private workoutLibrary: IWorkoutLibrary;
   private sessionReview: ISessionReview;
   private intensityDistribution: IIntensityDistribution;
+  private executionDigest: IExecutionDigest;
   private trackLapAlignment: ITrackLapAlignment;
   private trackLapWriteback: ITrackLapWriteback;
   private trackSessions: ITrackSessions;
@@ -251,6 +261,15 @@ export class IntervalsClient implements IIntervalsClient {
         const ctx = await this.getCoachingContext();
         return { zones: ctx.mapZones, ftp: ctx.athlete.ftp };
       },
+    });
+    this.executionDigest = createExecutionDigest({
+      eventsApi: this.events,
+      sessionReview: this.sessionReview,
+      intensityDistribution: this.intensityDistribution,
+      // Same source as the distribution's frame: the coaching context is the
+      // one place FTP is resolved, and a second derivation here could disagree
+      // with the band the dose is judged in.
+      getFtp: async () => (await this.getCoachingContext()).athlete.ftp,
     });
     this.trackLapAlignment = createTrackLapAlignment({
       activitiesApi: this.activities,
@@ -405,6 +424,13 @@ export class IntervalsClient implements IIntervalsClient {
     );
   }
 
+  // Execution digest
+  async getExecutionDigest(
+    options: GetExecutionDigestOptions
+  ): Promise<ExecutionDigestResult> {
+    return this.executionDigest.getExecutionDigest(options);
+  }
+
   // Track lap alignment
   async computeTrackLapPower(
     options: TrackLapPowerOptions
@@ -546,6 +572,13 @@ export type {
   DeliveredInterval,
   PowerTarget,
 } from "./services/session-review/index.js";
+export type {
+  IExecutionDigest,
+  ExecutionDigestResult,
+  GetExecutionDigestOptions,
+  DigestSession,
+  FlaggedStep,
+} from "./services/execution-digest/index.js";
 export type {
   IIntensityDistribution,
   CompareIntensityDistributionOptions,
