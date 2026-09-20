@@ -34,3 +34,68 @@ describe("getPowerCurve tool handler", () => {
     });
   });
 });
+
+describe("getPowerCurve thinning", () => {
+  const curve = {
+    list: [
+      {
+        id: "1y",
+        secs: [1, 5, 60, 300],
+        watts: [1000, 900, 400, 320],
+        values: [1000, 900, 400, 320],
+        activity_id: ["a", "b", "c", "b"],
+        watts_per_kg: [14, 13, 6, 5],
+        wkg_activity_id: ["a", "b", "c", "b"],
+        ranks: {},
+        mapPlot: { startIndex: 1 },
+        powerModels: [{ type: "MS_2P", criticalPower: 288 }],
+      },
+    ],
+    activities: {
+      a: { id: "a" },
+      b: { id: "b" },
+      c: { id: "c" },
+      z: { id: "z" },
+    },
+  };
+  const client = () =>
+    ({
+      getPowerCurve: vi.fn().mockResolvedValue(curve),
+    }) as unknown as IIntervalsClient;
+
+  type Out = {
+    points: { list: Array<Record<string, unknown>>; activities: object };
+  };
+
+  it("drops heavy fields by default and keeps powerModels", async () => {
+    const c = client();
+    const { points } = (await getPowerCurve(c, { type: "Ride" })) as Out;
+    const l = points.list[0];
+    expect(l).not.toHaveProperty("values");
+    expect(l).not.toHaveProperty("watts_per_kg");
+    expect(l).not.toHaveProperty("wkg_activity_id");
+    expect(l).not.toHaveProperty("ranks");
+    expect(l).not.toHaveProperty("mapPlot");
+    expect(l.watts).toEqual([1000, 900, 400, 320]);
+    expect(l.powerModels).toHaveLength(1);
+    expect(Object.keys(points.activities)).toEqual(["a", "b", "c"]);
+    expect(c.getPowerCurve).toHaveBeenCalledWith({ type: "Ride" });
+  });
+
+  it("secs filter picks nearest points and reports the request", async () => {
+    const { points } = (await getPowerCurve(client(), {
+      secs: [60, 240],
+    })) as Out;
+    const l = points.list[0];
+    expect(l.secs).toEqual([60, 300]);
+    expect(l.watts).toEqual([400, 320]);
+    expect(l.activity_id).toEqual(["c", "b"]);
+    expect(l.requested_secs).toEqual([60, 240]);
+    expect(Object.keys(points.activities)).toEqual(["b", "c"]);
+  });
+
+  it("full returns the raw curve", async () => {
+    const { points } = (await getPowerCurve(client(), { full: true })) as Out;
+    expect(points).toEqual(curve);
+  });
+});

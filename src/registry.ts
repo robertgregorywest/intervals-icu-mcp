@@ -415,8 +415,10 @@ export const TOOLS: ToolDef[] = [
       "Shows best power at each duration (5s through 3+ hours). " +
       'Use range parameter: "90d", "1y", "all", or "r.YYYY-MM-DD.YYYY-MM-DD" for custom. ' +
       'Example: range="r.2026-01-01.2026-03-31" for Q1 2026. ' +
+      "Pass secs (e.g. [60, 120, 180, 300, 1200]) to get just those durations, matched to the nearest curve point. " +
+      "By default the response is thinned to secs/watts/activity_id + powerModels; full=true returns the raw ~24 kB curve. " +
       "Essential for identifying strengths/weaknesses and setting training targets. " +
-      "Returns: { points: [...] } (or a truncation envelope if too large).",
+      "Returns: { points: { list: [{ secs[], watts[], activity_id[], powerModels, ... }], activities } } (or a truncation envelope if too large).",
     schema: getPowerCurveSchema,
     annotations: READ_ONLY,
     outputSchema: null,
