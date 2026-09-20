@@ -24,6 +24,15 @@ describe("getPowerCurve tool handler", () => {
     expect(result.points[0].value).toBe(900);
   });
 
+  it("defaults type to Ride when omitted", async () => {
+    const client = createMockClient();
+    await getPowerCurve(client, { range: "90d" });
+    expect(client.getPowerCurve).toHaveBeenCalledWith({
+      type: "Ride",
+      range: "90d",
+    });
+  });
+
   it("passes type and range options", async () => {
     const client = createMockClient();
     await getPowerCurve(client, { type: "Ride", range: "90d" });

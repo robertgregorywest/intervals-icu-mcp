@@ -6,7 +6,9 @@ export const getPowerCurveSchema = z.object({
   type: z
     .string()
     .optional()
-    .describe('Sport type filter, e.g. "Ride", "Run". Defaults to all types.'),
+    .describe(
+      'Activity type, e.g. "Ride", "Run". Required by the endpoint (no "all types" mode); defaults to "Ride".'
+    ),
   range: z
     .string()
     .optional()
@@ -110,8 +112,8 @@ export async function getPowerCurve(
   client: IIntervalsClient,
   args: Args
 ): Promise<unknown> {
-  const { secs, full, ...options } = args;
-  const raw = await client.getPowerCurve(options);
+  const { secs, full, type = "Ride", ...options } = args;
+  const raw = await client.getPowerCurve({ ...options, type });
   const payload = full ? raw : thinPayload(raw, secs);
   return withCharacterLimit(
     { points: payload },

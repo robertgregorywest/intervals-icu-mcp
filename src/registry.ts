@@ -412,6 +412,7 @@ export const TOOLS: ToolDef[] = [
     name: "get_power_curve",
     description:
       "Get the athlete's power-duration curve from Intervals.icu. " +
+      'type defaults to "Ride" (the endpoint has no all-types mode). ' +
       "Shows best power at each duration (5s through 3+ hours). " +
       'Use range parameter: "90d", "1y", "all", or "r.YYYY-MM-DD.YYYY-MM-DD" for custom. ' +
       'Example: range="r.2026-01-01.2026-03-31" for Q1 2026. ' +
