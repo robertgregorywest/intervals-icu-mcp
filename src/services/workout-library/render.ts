@@ -1,6 +1,7 @@
 import type { AnchorBasis } from "./types.js";
 import type {
   Pct,
+  TemplateLadder,
   TemplateNode,
   TemplateRepeat,
   TemplateStep,
@@ -70,6 +71,35 @@ function formatStep(step: TemplateStep, anchorWatts: number | null): string {
   return `- ${parts.join(" ")}`;
 }
 
+/**
+ * Expand a ladder into one step per rung. Rungs sit at start + k*step and the
+ * ladder ends `headroomSteps` rungs above the first rung that exceeds MAP, so
+ * the protocol is identical at any MAP — only its length differs.
+ */
+function ladderRungs(ladder: TemplateLadder, mapWatts: number): number[] {
+  const { startWatts, stepWatts, headroomSteps } = ladder;
+  const firstAbove =
+    mapWatts < startWatts
+      ? 0
+      : Math.floor((mapWatts - startWatts) / stepWatts) + 1;
+  const top = firstAbove + headroomSteps;
+  return Array.from({ length: top + 1 }, (_, k) => startWatts + k * stepWatts);
+}
+
+function formatLadder(ladder: TemplateLadder, mapWatts: number): string[] {
+  return ladderRungs(ladder, mapWatts).map((watts, k) =>
+    formatStep(
+      {
+        kind: "step",
+        ...(k === 0 && ladder.label ? { label: ladder.label } : {}),
+        duration: ladder.duration,
+        target: `${watts}w`,
+      },
+      null
+    )
+  );
+}
+
 function containsRepeat(nodes: TemplateNode[]): boolean {
   return nodes.some((n) => n.kind === "repeat");
 }
@@ -99,6 +129,11 @@ function renderNodes(
   for (const node of nodes) {
     if (node.kind === "step") {
       sections.push(formatStep(node, anchorWatts));
+      continue;
+    }
+    if (node.kind === "ladder") {
+      // assertBasis guarantees basis MAP, so resolveAnchor supplied MAP.
+      sections.push(...formatLadder(node, anchorWatts as number));
       continue;
     }
     if (!containsRepeat(node.children)) {

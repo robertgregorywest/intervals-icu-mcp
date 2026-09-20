@@ -30,6 +30,11 @@ import type { AnchorBasis } from "./types.js";
  * and does not move when MAP/FTP moves. A template with no bare percentage
  * needs no `basis` and always syncs.
  *
+ * A ladder line — `- Ramp 1m 140w +25w until MAP+2` — is a fixed rung sequence
+ * (start watts, fixed increment) whose only MAP-dependent part is where it
+ * stops: the first rung above MAP, plus N more. Start and step never move, so
+ * a longer ladder is the same protocol run further up (ADR 0011).
+ *
  * Repeat blocks nest by indentation. At render, a block containing another
  * block is unrolled (its label discarded) and a block of plain steps is emitted
  * as a native `Nx` — Intervals.icu supports only a single level.
@@ -55,7 +60,17 @@ export interface TemplateRepeat {
   children: TemplateNode[];
 }
 
-export type TemplateNode = TemplateStep | TemplateRepeat;
+export interface TemplateLadder {
+  kind: "ladder";
+  label?: string;
+  duration: string;
+  startWatts: number;
+  stepWatts: number;
+  /** Rungs to add above the first rung that exceeds MAP. */
+  headroomSteps: number;
+}
+
+export type TemplateNode = TemplateStep | TemplateRepeat | TemplateLadder;
 
 export interface WorkoutTemplate {
   seedId: string;
@@ -95,6 +110,7 @@ const DURATION_TOKEN_RE = /^(?:\d+(?:km|mtr|h|m|s))+$/i;
 /** A bare percentage — no trailing modifier — is anchored to the basis. */
 const BARE_PCT_RE = /^(\d+(?:\.\d+)?)(?:-(\d+(?:\.\d+)?))?%$/;
 const CADENCE_RE = /^\d+rpm$/i;
+const LADDER_RE = /^(\d+)w\s+\+(\d+)w\s+until\s+MAP\+(\d+)$/i;
 const REPEAT_RE = /^(?:(.*?)\s+)?(\d+)x$/;
 const STEP_RE = /^-\s*(.*)$/;
 
@@ -231,7 +247,7 @@ function parseStepLine(
   body: string,
   file: string,
   lineNo: number
-): TemplateStep {
+): TemplateStep | TemplateLadder {
   const tokens = body.split(/\s+/).filter(Boolean);
   const durationIdx = tokens.findIndex((t) => DURATION_TOKEN_RE.test(t));
   if (durationIdx === -1) {
@@ -254,6 +270,27 @@ function parseStepLine(
       "`ramp` steps collapse to a single averaged target on head units and cannot be executed. " +
         "Write explicit steps instead (see ADR 0005)."
     );
+  }
+
+  const ladder = rest.join(" ").match(LADDER_RE);
+  if (ladder) {
+    const stepWatts = Number(ladder[2]);
+    if (stepWatts < 1) {
+      throw new TemplateParseError(
+        file,
+        lineNo,
+        "ladder increment must be at least 1 W"
+      );
+    }
+    const node: TemplateLadder = {
+      kind: "ladder",
+      duration,
+      startWatts: Number(ladder[1]),
+      stepWatts,
+      headroomSteps: Number(ladder[3]),
+    };
+    if (label) node.label = label;
+    return node;
   }
 
   let cadence: string | undefined;
@@ -329,7 +366,15 @@ function parseNodes(
 
     const step = line.text.match(STEP_RE);
     if (step) {
-      nodes.push(parseStepLine(step[1], file, line.lineNo));
+      const node = parseStepLine(step[1], file, line.lineNo);
+      if (node.kind === "ladder" && minIndent > 0) {
+        throw new TemplateParseError(
+          file,
+          line.lineNo,
+          "a ladder cannot sit inside a repeat block"
+        );
+      }
+      nodes.push(node);
       i++;
       continue;
     }
@@ -425,6 +470,15 @@ function assertBasis(template: WorkoutTemplate, file: string): void {
   walk(template.steps, (s) => {
     if (s.anchored !== undefined) anchored++;
   });
+  const ladders = template.steps.filter((n) => n.kind === "ladder").length;
+  if (ladders > 0 && template.basis !== "MAP") {
+    throw new TemplateParseError(
+      file,
+      null,
+      "a ladder stops relative to MAP, so the template must declare `basis: MAP`."
+    );
+  }
+  anchored += ladders;
   if (anchored > 0 && !template.basis) {
     throw new TemplateParseError(
       file,
@@ -448,6 +502,6 @@ export function walk(
 ): void {
   for (const node of nodes) {
     if (node.kind === "repeat") walk(node.children, fn);
-    else fn(node);
+    else if (node.kind === "step") fn(node);
   }
 }

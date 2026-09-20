@@ -131,3 +131,49 @@ describe("extractSeedId", () => {
     expect(extractSeedId('x\n<!-- rationale {"basis":"MAP"} -->')).toBeNull();
   });
 });
+
+describe("ladder rendering", () => {
+  const LADDER = "- Ramp 1m 140w +25w until MAP+2";
+  const t = () => parse(`${META}\nbasis: MAP`, LADDER);
+  const watts = (map: number) =>
+    renderBody(t(), { mapWatts: map })
+      .split("\n\n")
+      .map((l) => Number(l.match(/(\d+)w$/)?.[1]));
+
+  it("keeps start and step fixed and stops two rungs above the first rung over MAP", () => {
+    // 415 sits on rung 440-25; first rung above is 440, +2 rungs → 490
+    expect(watts(415)).toEqual([
+      140, 165, 190, 215, 240, 265, 290, 315, 340, 365, 390, 415, 440, 465, 490,
+    ]);
+  });
+
+  it("is a prefix of the same rungs at any MAP", () => {
+    const low = watts(380);
+    const high = watts(460);
+    expect(low.length).toBeLessThan(high.length);
+    expect(high.slice(0, low.length)).toEqual(low);
+  });
+
+  it("goes one rung past MAP when MAP is between rungs", () => {
+    expect(Math.max(...watts(420))).toBe(490);
+    expect(Math.max(...watts(439))).toBe(490);
+    expect(Math.max(...watts(440))).toBe(515);
+  });
+
+  it("starts at the first rung when MAP is below the start", () => {
+    expect(watts(100)).toEqual([140, 165, 190]);
+  });
+
+  it("labels only the first rung", () => {
+    expect(
+      renderBody(t(), { mapWatts: 200 }).startsWith("- Ramp 1m 140w")
+    ).toBe(true);
+    expect(renderBody(t(), { mapWatts: 200 })).not.toMatch(/Ramp 1m 165w/);
+  });
+
+  it("requires a MAP anchor", () => {
+    expect(() => renderBody(t(), { ftpWatts: 290 })).toThrow(
+      MissingAnchorError
+    );
+  });
+});

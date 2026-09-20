@@ -2,30 +2,17 @@
 seedId: map-ramp-test
 name: MAP ramp test
 folder: "Coach: Tests"
-purpose: Re-establish MAP every 6–8 weeks or at a mesocycle start. Fixed protocol — never rescale it or retests stop being comparable.
+basis: MAP
+purpose: Re-establish MAP every 6–8 weeks or at a mesocycle start. Fixed rungs (140 W, +25 W/min) — only the ladder's length follows MAP, so retests stay comparable.
 ---
 
 Ramp test to exhaustion. MAP = highest 60-second power. Watts are guidance — the test is open-ended, ride to failure. Standardise the warm-up across retests. Test every 6–8 weeks or at mesocycle starts.
 
-Stepped 1-min protocol (+25 W/min after a graded warm-up) so each target renders on the head unit — a single continuous ramp collapses to one average wattage and can't be executed. Fixed protocol, deliberately in absolute watts and never re-anchored: MAP gains show up as reaching higher steps and lasting longer, not as rescaled targets.
+Stepped 1-min protocol (+25 W/min after a graded warm-up) so each target renders on the head unit — a single continuous ramp collapses to one average wattage and can't be executed. Fixed rungs in absolute watts, never re-anchored: MAP gains show up as reaching higher steps and lasting longer, not as rescaled targets. Only the top of the ladder is generated from current MAP (the first rung above it plus two more), so the athlete cannot run out of steps; the rungs themselves are the same at any MAP.
 
 - Warm-up (graded, standardised) 3m 150w
 - 3m 180w
 - 3m 210w
 - 3m 240w
-- Ramp to failure 1m 140w
-- 1m 165w
-- 1m 190w
-- 1m 215w
-- 1m 240w
-- 1m 265w
-- 1m 290w
-- 1m 315w
-- 1m 340w
-- 1m 365w
-- 1m 390w
-- 1m 415w
-- 1m 440w
-- 1m 465w
-- 1m 490w
+- Ramp to failure 1m 140w +25w until MAP+2
 - Cooldown 10m 160w

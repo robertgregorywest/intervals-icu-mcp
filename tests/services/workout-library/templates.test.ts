@@ -29,7 +29,9 @@ describe("shipped templates", () => {
 
   it("every anchored template declares a basis", () => {
     for (const t of templates) {
-      const anchored = JSON.stringify(t.steps).includes('"anchored"');
+      const steps = JSON.stringify(t.steps);
+      const anchored =
+        steps.includes('"anchored"') || steps.includes('"ladder"');
       expect(Boolean(t.basis), `${t.seedId} basis`).toBe(anchored);
     }
   });

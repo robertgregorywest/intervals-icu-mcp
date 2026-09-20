@@ -23,6 +23,7 @@ export {
 } from "./parser.js";
 export type {
   WorkoutTemplate,
+  TemplateLadder,
   TemplateNode,
   TemplateStep,
   TemplateRepeat,

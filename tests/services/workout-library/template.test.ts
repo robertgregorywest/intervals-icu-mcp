@@ -214,3 +214,24 @@ describe("prose", () => {
     ).toThrow(/prose is not allowed between steps/);
   });
 });
+
+describe("ladder parsing", () => {
+  const META = "seedId: t\nname: T\nfolder: Coach\npurpose: P.";
+  const p = (fm: string, body: string) =>
+    parseTemplate(`---\n${fm}\n---\n\n${body}\n`, "x.md");
+
+  it("requires basis: MAP", () => {
+    expect(() => p(META, "- Ramp 1m 140w +25w until MAP+2")).toThrow(
+      /basis: MAP/
+    );
+    expect(() =>
+      p(`${META}\nbasis: FTP`, "- Ramp 1m 140w +25w until MAP+2")
+    ).toThrow(/basis: MAP/);
+  });
+
+  it("rejects a ladder inside a repeat", () => {
+    expect(() =>
+      p(`${META}\nbasis: MAP`, "2x\n  - Ramp 1m 140w +25w until MAP+2")
+    ).toThrow(/inside a repeat/);
+  });
+});
