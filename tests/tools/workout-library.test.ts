@@ -3,6 +3,7 @@ import {
   listWorkoutLibrary,
   getWorkoutLibraryItem,
   syncWorkoutLibrary,
+  deleteWorkoutLibraryItem,
 } from "../../src/tools/workout-library.js";
 import type { IIntervalsClient } from "../../src/index.js";
 
@@ -36,6 +37,7 @@ function createMockClient(): IIntervalsClient {
         oneLine: "8 steps, 32m",
       },
     }),
+    deleteWorkoutLibraryItem: vi.fn().mockResolvedValue(undefined),
     syncWorkoutLibrary: vi.fn().mockResolvedValue({
       dryRun: true,
       created: [{ seedId: "openers", name: "Openers", folder: "Coach: Race" }],
@@ -105,5 +107,14 @@ describe("syncWorkoutLibrary handler", () => {
       ftpWatts: 290,
       dryRun: true,
     });
+  });
+});
+
+describe("deleteWorkoutLibraryItem handler", () => {
+  it("deletes by id and reports it", async () => {
+    const client = createMockClient();
+    const result = await deleteWorkoutLibraryItem(client, { id: 10 });
+    expect(client.deleteWorkoutLibraryItem).toHaveBeenCalledWith(10);
+    expect(result).toEqual({ success: true, deleted: 10 });
   });
 });

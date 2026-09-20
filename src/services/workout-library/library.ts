@@ -33,6 +33,7 @@ export interface IWorkoutLibrary {
   list(folderName?: string): Promise<LibraryListing>;
   get(workoutId: number): Promise<LibraryItem>;
   sync(opts?: SyncOptions): Promise<SyncReport>;
+  delete(workoutId: number): Promise<void>;
 }
 
 export class WorkoutLibrary implements IWorkoutLibrary {
@@ -44,6 +45,10 @@ export class WorkoutLibrary implements IWorkoutLibrary {
 
   async sync(opts: SyncOptions = {}): Promise<SyncReport> {
     return runSync(this.api, opts);
+  }
+
+  async delete(workoutId: number): Promise<void> {
+    await this.api.deleteWorkout(workoutId);
   }
 
   async list(folderName?: string): Promise<LibraryListing> {

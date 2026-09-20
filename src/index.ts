@@ -152,6 +152,7 @@ export interface IIntervalsClient {
   listWorkoutLibrary(folderName?: string): Promise<LibraryListing>;
   getWorkoutLibraryItem(workoutId: number): Promise<LibraryItem>;
   syncWorkoutLibrary(opts?: SyncOptions): Promise<SyncReport>;
+  deleteWorkoutLibraryItem(workoutId: number): Promise<void>;
 
   // Analysis
   getAerobicDecoupling(activityId: string): Promise<DecouplingResult>;
@@ -392,6 +393,10 @@ export class IntervalsClient implements IIntervalsClient {
 
   async syncWorkoutLibrary(opts?: SyncOptions): Promise<SyncReport> {
     return this.workoutLibrary.sync(opts);
+  }
+
+  async deleteWorkoutLibraryItem(workoutId: number): Promise<void> {
+    await this.workoutLibrary.delete(workoutId);
   }
 
   // Analysis

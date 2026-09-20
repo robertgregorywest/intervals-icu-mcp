@@ -116,6 +116,9 @@ import {
   syncWorkoutLibrarySchema,
   syncWorkoutLibrary,
   syncWorkoutLibraryOutputSchema,
+  deleteWorkoutLibraryItemSchema,
+  deleteWorkoutLibraryItem,
+  deleteWorkoutLibraryItemOutputSchema,
 } from "./tools/workout-library.js";
 
 export const READ_ONLY: ToolAnnotations = {
@@ -400,6 +403,24 @@ export const TOOLS: ToolDef[] = [
       syncWorkoutLibrary(
         client,
         args as z.infer<typeof syncWorkoutLibrarySchema>
+      ),
+  },
+  {
+    name: "delete_workout_library_item",
+    description:
+      "Delete a saved library workout by id (from list_workout_library). Cannot be undone. " +
+      "Use it to clear an orphan reported by sync_workout_library, or a workout whose template " +
+      "you have removed. Does not touch calendar events (use delete_events). " +
+      "A workout that still has a template file is recreated by the next sync_workout_library. " +
+      "To change a template-backed workout, edit its template file and sync — do not delete and recreate. " +
+      "Returns: { success: true, deleted: id }.",
+    schema: deleteWorkoutLibraryItemSchema,
+    annotations: MUTATING,
+    outputSchema: deleteWorkoutLibraryItemOutputSchema,
+    handler: (client, args) =>
+      deleteWorkoutLibraryItem(
+        client,
+        args as z.infer<typeof deleteWorkoutLibraryItemSchema>
       ),
   },
 

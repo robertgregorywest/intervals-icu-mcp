@@ -118,3 +118,22 @@ export async function syncWorkoutLibrary(
 ): Promise<z.infer<typeof syncWorkoutLibraryOutputSchema>> {
   return client.syncWorkoutLibrary(args);
 }
+
+export const deleteWorkoutLibraryItemSchema = z.object({
+  id: z
+    .number()
+    .describe("Library workout ID (from list_workout_library) to delete"),
+});
+
+export const deleteWorkoutLibraryItemOutputSchema = z.object({
+  success: z.literal(true),
+  deleted: z.number().describe("ID of the deleted library workout"),
+});
+
+export async function deleteWorkoutLibraryItem(
+  client: IIntervalsClient,
+  args: z.infer<typeof deleteWorkoutLibraryItemSchema>
+): Promise<z.infer<typeof deleteWorkoutLibraryItemOutputSchema>> {
+  await client.deleteWorkoutLibraryItem(args.id);
+  return { success: true, deleted: args.id };
+}
