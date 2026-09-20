@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import {
   createWorkout,
   createStrengthWorkout,
+  scheduleLibraryWorkout,
 } from "../../src/tools/workouts.js";
 import type { IIntervalsClient } from "../../src/index.js";
 import { WorkoutBuilder } from "../../src/services/workout-builder/index.js";
@@ -156,6 +157,50 @@ describe("createStrengthWorkout tool handler", () => {
         external_id: "gym-123",
         color: "red",
       }),
+    ]);
+  });
+});
+
+describe("createWorkout notes", () => {
+  it("emits notes above the step lines", async () => {
+    const client = createMockClient();
+    await createWorkout(client, {
+      name: "Recovery",
+      date: "2026-09-20",
+      sportType: "Ride",
+      notes: "Circulation, not stimulus.",
+      steps: [{ label: "Easy", duration: "40m", target: "125w-165w" }],
+    });
+    expect(client.createEvents).toHaveBeenCalledWith([
+      expect.objectContaining({
+        description: "Circulation, not stimulus.\n\n- Easy 40m 125w-165w",
+      }),
+    ]);
+  });
+});
+
+describe("scheduleLibraryWorkout", () => {
+  it("copies the library description verbatim, prose and trailer included", async () => {
+    const description =
+      "Circulation, not stimulus.\n\n- Easy 40m 125w-165w 95rpm\n\n<!-- template: recovery-spin -->";
+    const client = {
+      getWorkoutLibraryItem: vi.fn().mockResolvedValue({
+        workout: { id: 15, name: "Recovery spin", type: "Ride", description },
+      }),
+      createEvents: vi.fn().mockResolvedValue([]),
+    } as unknown as IIntervalsClient;
+
+    await scheduleLibraryWorkout(client, { id: 15, date: "2026-09-20" });
+
+    expect(client.createEvents).toHaveBeenCalledWith([
+      {
+        category: "WORKOUT",
+        start_date_local: "2026-09-20T00:00:00",
+        type: "Ride",
+        name: "Recovery spin",
+        description,
+        external_id: "mcp-2026-09-20-recovery-spin",
+      },
     ]);
   });
 });

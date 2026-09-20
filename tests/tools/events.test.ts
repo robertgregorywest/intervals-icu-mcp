@@ -97,10 +97,13 @@ describe("updateEvent tool handler", () => {
       ],
     });
 
-    expect(client.buildWorkoutDescription).toHaveBeenCalledWith([
-      { label: "Warmup", duration: "10m", target: "150w" },
-      { label: "Main", duration: "5m", target: "240w" },
-    ]);
+    expect(client.buildWorkoutDescription).toHaveBeenCalledWith(
+      [
+        { label: "Warmup", duration: "10m", target: "150w" },
+        { label: "Main", duration: "5m", target: "240w" },
+      ],
+      undefined
+    );
     expect(client.updateEvent).toHaveBeenCalledWith(1, {
       name: "Long Z2 2.5h",
       description: "- Warmup 10m 150w\n\n- Main 5m 240w",
@@ -128,16 +131,52 @@ describe("updateEvent tool handler", () => {
         category: "WORKOUT",
         name: "Original",
         description: "- 10m 60%",
+        workout_doc: { steps: [{ duration: 600 }] },
       }),
     });
     await expect(
       updateEvent(client, {
         id: 1,
         name: "Renamed",
-        description: "- some notes",
+        description: "some notes with no step lines",
       })
     ).rejects.toThrow(/refusing to update 'description' on a WORKOUT event/);
     expect(client.updateEvent).not.toHaveBeenCalled();
+  });
+
+  it("allows prose plus step lines on a WORKOUT event", async () => {
+    const client = createMockClient({
+      getEvent: vi.fn().mockResolvedValue({
+        id: 1,
+        category: "WORKOUT",
+        name: "Original",
+        description: "- 40m 125w",
+        workout_doc: { steps: [{ duration: 2400 }] },
+      }),
+    });
+    const description = "Circulation, not stimulus.\n\n- Easy 40m 125w-165w";
+    await updateEvent(client, { id: 1, description });
+    expect(client.updateEvent).toHaveBeenCalledWith(1, { description });
+  });
+
+  it("passes notes through to the description rebuild", async () => {
+    const client = createMockClient();
+    await updateEvent(client, {
+      id: 1,
+      steps: [{ duration: "10m", target: "150w" }],
+      notes: "Easy day.",
+    });
+    expect(client.buildWorkoutDescription).toHaveBeenCalledWith(
+      [{ duration: "10m", target: "150w" }],
+      "Easy day."
+    );
+  });
+
+  it("rejects notes without steps", async () => {
+    const client = createMockClient();
+    await expect(
+      updateEvent(client, { id: 1, notes: "Easy day." })
+    ).rejects.toThrow(/'notes' requires 'steps'/);
   });
 
   it("allows description-only update on a non-WORKOUT event (NOTE)", async () => {

@@ -3,7 +3,10 @@ import type { WorkoutPlan, WorkoutStep, RepeatBlock } from "./types.js";
 import { isRepeatBlock } from "./types.js";
 
 export interface IWorkoutBuilder {
-  toDescription(steps: Array<WorkoutStep | RepeatBlock>): string;
+  toDescription(
+    steps: Array<WorkoutStep | RepeatBlock>,
+    notes?: string
+  ): string;
   buildEvent(plan: WorkoutPlan): IntervalsEvent;
 }
 
@@ -40,8 +43,13 @@ function formatRepeatBlock(block: RepeatBlock): string {
 }
 
 export class WorkoutBuilder implements IWorkoutBuilder {
-  toDescription(steps: Array<WorkoutStep | RepeatBlock>): string {
+  toDescription(
+    steps: Array<WorkoutStep | RepeatBlock>,
+    notes?: string
+  ): string {
     const sections: string[] = [];
+    const prose = notes?.trim();
+    if (prose) sections.push(prose);
 
     for (const step of steps) {
       if (isRepeatBlock(step)) {
@@ -55,7 +63,7 @@ export class WorkoutBuilder implements IWorkoutBuilder {
   }
 
   buildEvent(plan: WorkoutPlan): IntervalsEvent {
-    const description = this.toDescription(plan.steps);
+    const description = this.toDescription(plan.steps, plan.notes);
     const externalId =
       plan.externalId || `mcp-${plan.date}-${slugify(plan.name)}`;
 

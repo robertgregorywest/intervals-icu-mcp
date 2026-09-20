@@ -138,7 +138,10 @@ export interface IIntervalsClient {
 
   // Workouts
   buildWorkoutEvent(plan: WorkoutPlan): IntervalsEvent;
-  buildWorkoutDescription(steps: Array<WorkoutStep | RepeatBlock>): string;
+  buildWorkoutDescription(
+    steps: Array<WorkoutStep | RepeatBlock>,
+    notes?: string
+  ): string;
 
   // Workout library
   listWorkoutLibrary(folderName?: string): Promise<LibraryListing>;
@@ -360,8 +363,11 @@ export class IntervalsClient implements IIntervalsClient {
     return this.workoutBuilder.buildEvent(plan);
   }
 
-  buildWorkoutDescription(steps: Array<WorkoutStep | RepeatBlock>): string {
-    return this.workoutBuilder.toDescription(steps);
+  buildWorkoutDescription(
+    steps: Array<WorkoutStep | RepeatBlock>,
+    notes?: string
+  ): string {
+    return this.workoutBuilder.toDescription(steps, notes);
   }
 
   // Workout library

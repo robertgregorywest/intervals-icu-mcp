@@ -7,6 +7,7 @@ import {
 import { KEY_SESSION_FLOOR_PCT_FTP } from "../services/execution-digest/index.js";
 import type { WorkoutPlan } from "../services/workout-builder/index.js";
 import { slugify } from "../services/workout-builder/index.js";
+import type { IntervalsEvent, SportType } from "../types.js";
 import { dateString } from "./common.js";
 
 const sportTypeEnum = z.enum([
@@ -73,6 +74,15 @@ export const createWorkoutSchema = z.object({
         'Example: [{ label: "Warmup", duration: "10m", target: "160w-200w" }, ' +
         '{ iterations: 4, steps: [{ duration: "5m", target: "240w" }, { duration: "3m", target: "150w" }] }]'
     ),
+  notes: z
+    .string()
+    .optional()
+    .describe(
+      "Session-level prose (framing, cues, rationale) emitted above the step lines, " +
+        "separated by a blank line. Prefer this to stuffing prose into step labels, " +
+        "which Intervals.icu silently truncates. Avoid lines starting with '-' or " +
+        "a repeat header such as '3x' — they would parse as steps."
+    ),
   externalId: z
     .string()
     .optional()
@@ -116,6 +126,7 @@ export async function createWorkout(
     date: args.date,
     sportType: args.sportType,
     steps: args.steps,
+    notes: args.notes,
     externalId: args.externalId,
     color: args.color,
   };
@@ -148,6 +159,41 @@ async function unreviewableWarning(
   const floor = ftp ? (ftp * KEY_SESSION_FLOOR_PCT_FTP) / 100 : undefined;
   const steps = unreviewableWorkSteps(description, floor, ftp);
   return steps.length > 0 ? { unreviewableSteps: steps } : {};
+}
+
+export const scheduleLibraryWorkoutSchema = z.object({
+  id: z.number().describe("Library workout ID (from list_workout_library)"),
+  date: dateString.describe("Date in YYYY-MM-DD format"),
+  externalId: z
+    .string()
+    .optional()
+    .describe("Optional external ID for upsert matching"),
+  color: z.string().optional().describe("Optional event color"),
+});
+
+export async function scheduleLibraryWorkout(
+  client: IIntervalsClient,
+  args: z.infer<typeof scheduleLibraryWorkoutSchema>
+): Promise<z.infer<typeof createWorkoutOutputSchema>> {
+  const { workout } = await client.getWorkoutLibraryItem(args.id);
+  const description = workout.description ?? "";
+
+  const event: IntervalsEvent = {
+    category: "WORKOUT",
+    start_date_local: `${args.date}T00:00:00`,
+    type: workout.type as SportType,
+    name: workout.name,
+    description,
+    external_id: args.externalId || `mcp-${args.date}-${slugify(workout.name)}`,
+    ...(args.color ? { color: args.color } : {}),
+  };
+
+  const result = await client.createEvents([event]);
+
+  return {
+    ...formatResponse(result),
+    ...(await unreviewableWarning(client, description)),
+  };
 }
 
 export const createStrengthWorkoutSchema = z.object({

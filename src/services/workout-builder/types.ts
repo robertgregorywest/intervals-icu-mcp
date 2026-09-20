@@ -19,6 +19,7 @@ export interface WorkoutPlan {
   date: string;
   sportType: SportType;
   steps: Array<WorkoutStep | RepeatBlock>;
+  notes?: string;
   externalId?: string;
   color?: string;
 }

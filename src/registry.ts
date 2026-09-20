@@ -7,6 +7,8 @@ import {
   createStrengthWorkoutSchema,
   createStrengthWorkout,
   createWorkoutOutputSchema,
+  scheduleLibraryWorkoutSchema,
+  scheduleLibraryWorkout,
 } from "./tools/workouts.js";
 import { getAthleteSchema, getAthlete } from "./tools/athlete.js";
 import {
@@ -277,6 +279,8 @@ export const TOOLS: ToolDef[] = [
       '(e.g. "200w", "160w-256w") — do NOT convert to percentages. ' +
       'Percentage targets like "75%" are relative to FTP which may not match the user\'s intent. ' +
       "Supports simple steps, ramps, and repeat blocks. " +
+      "Optional 'notes' carries session-level prose above the steps. " +
+      "To schedule a saved library workout use schedule_library_workout instead. " +
       "Idempotent on externalId — same externalId upserts the existing event. " +
       "Returns: { success: true, created: N, events: [...] }.",
     schema: createWorkoutSchema,
@@ -284,6 +288,23 @@ export const TOOLS: ToolDef[] = [
     outputSchema: createWorkoutOutputSchema,
     handler: (client, args) =>
       createWorkout(client, args as z.infer<typeof createWorkoutSchema>),
+  },
+  {
+    name: "schedule_library_workout",
+    description:
+      "Schedule a saved library workout onto the calendar, copying its description " +
+      "verbatim — prose, steps and template trailer — so nothing is lost. " +
+      "Prefer this to re-expressing a library item as create_workout steps. " +
+      "Idempotent on externalId — same externalId upserts the existing event. " +
+      "Returns: { success: true, created: N, events: [...] }.",
+    schema: scheduleLibraryWorkoutSchema,
+    annotations: UPSERT,
+    outputSchema: createWorkoutOutputSchema,
+    handler: (client, args) =>
+      scheduleLibraryWorkout(
+        client,
+        args as z.infer<typeof scheduleLibraryWorkoutSchema>
+      ),
   },
   {
     name: "create_strength_workout",
