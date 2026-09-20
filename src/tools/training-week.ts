@@ -39,6 +39,17 @@ export const getTrainingWeekSummaryOutputSchema = z.object({
     durationSeconds: z.number(),
     durationHours: z.number(),
   }),
+  middleBand: z
+    .object({
+      lowPctFtp: z.number(),
+      highPctFtp: z.number(),
+      lowW: z.number(),
+      highW: z.number(),
+      seconds: z.number(),
+      hours: z.number(),
+      fractionOfPowerTime: z.number().nullable(),
+    })
+    .nullable(),
   bySport: z.record(
     z.object({
       count: z.number(),
@@ -59,6 +70,7 @@ export const getTrainingWeekSummaryOutputSchema = z.object({
       distanceKm: z.number().nullable(),
       avgWatts: z.number().nullable(),
       avgHr: z.number().nullable(),
+      middleBandSeconds: z.number().nullable(),
     })
   ),
   events: z.array(

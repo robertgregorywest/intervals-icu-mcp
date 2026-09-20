@@ -133,4 +133,47 @@ describe("TrainingWeek.getTrainingWeekSummary", () => {
 
     expect(result.fitness).toBeNull();
   });
+  describe("middle band", () => {
+    // FTP 200 => 152..212 W. Three in-band samples of five power samples.
+    const watts = [100, 152, 180, 212, 213];
+
+    it("sums delivered seconds in 76-106% FTP from the power stream", async () => {
+      const deps = createDeps();
+      deps.getFtp = vi.fn().mockResolvedValue(200);
+      deps.activitiesApi.getActivityStreams = vi
+        .fn()
+        .mockResolvedValue({ watts });
+
+      const result =
+        await createTrainingWeek(deps).getTrainingWeekSummary("2026-04-27");
+
+      expect(result.middleBand).toMatchObject({
+        lowPctFtp: 76,
+        highPctFtp: 106,
+        lowW: 152,
+        highW: 212,
+        seconds: 3,
+        fractionOfPowerTime: 0.6,
+      });
+      // Only the ride carries power; the run is not fetched.
+      expect(deps.activitiesApi.getActivityStreams).toHaveBeenCalledTimes(1);
+      expect(result.completedActivities[0].middleBandSeconds).toBe(3);
+      expect(result.completedActivities[1].middleBandSeconds).toBeNull();
+    });
+
+    it("reports no middle band when FTP is unavailable", async () => {
+      const deps = createDeps();
+      deps.getFtp = vi.fn().mockResolvedValue(null);
+      deps.activitiesApi.getActivityStreams = vi.fn();
+
+      const result =
+        await createTrainingWeek(deps).getTrainingWeekSummary("2026-04-27");
+
+      expect(result.middleBand).toBeNull();
+      expect(deps.activitiesApi.getActivityStreams).not.toHaveBeenCalled();
+      expect(
+        result.completedActivities.every((a) => a.middleBandSeconds === null)
+      ).toBe(true);
+    });
+  });
 });

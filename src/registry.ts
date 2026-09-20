@@ -749,7 +749,11 @@ export const TOOLS: ToolDef[] = [
       "Provide weekStart (Monday) in YYYY-MM-DD; defaults to current week. " +
       "Use this for weekly review or planning the next week. " +
       "Saves the multi-call dance of get_activities + get_wellness + get_events. " +
-      "Returns: { week, totals, bySport, fitness: { ctl, atl, tsb }, " +
+      "middleBand is the week's delivered time at 76-106% FTP (tempo through " +
+      "threshold), from recorded power streams, with the watt bounds it used; " +
+      "null when FTP is unavailable. Each completed activity carries its own " +
+      "middleBandSeconds (null without power). " +
+      "Returns: { week, totals, middleBand, bySport, fitness: { ctl, atl, tsb }, " +
       "completedActivities: [...], events: [...] }.",
     schema: getTrainingWeekSummarySchema,
     annotations: READ_ONLY,

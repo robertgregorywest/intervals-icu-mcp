@@ -6,6 +6,11 @@ export interface TrainingWeekDeps {
   activitiesApi: IActivitiesApi;
   wellnessApi: IWellnessApi;
   eventsApi: IEventsApi;
+  /**
+   * The athlete's FTP, which anchors the middle band. Optional: without it the
+   * week summary reports no middle-band figures rather than guessing a frame.
+   */
+  getFtp?: () => Promise<number | null | undefined>;
   /** "Today" as YYYY-MM-DD; defaults to the system clock (UTC). */
   today?: () => string;
 }
@@ -35,6 +40,23 @@ export interface ActivitySummary {
   distanceKm: number | null;
   avgWatts: number | null;
   avgHr: number | null;
+  /**
+   * Seconds ridden inside the middle band, from the recorded power stream.
+   * Null when the activity has no power or the band could not be framed.
+   */
+  middleBandSeconds: number | null;
+}
+
+/** The tempo-through-threshold window, as bounds and the week's delivered time in it. */
+export interface WeekMiddleBand {
+  lowPctFtp: number;
+  highPctFtp: number;
+  lowW: number;
+  highW: number;
+  seconds: number;
+  hours: number;
+  /** Fraction of the power-recorded riding time spent in the band. */
+  fractionOfPowerTime: number | null;
 }
 
 export interface EventSummary {
@@ -53,6 +75,8 @@ export interface TrainingWeekSummary {
     durationSeconds: number;
     durationHours: number;
   };
+  /** Delivered time in the middle band; null when FTP is unavailable. */
+  middleBand: WeekMiddleBand | null;
   bySport: Record<string, SportTotals>;
   fitness: FitnessDelta | null;
   completedActivities: ActivitySummary[];

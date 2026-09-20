@@ -2,6 +2,12 @@ import { isoToday } from "../../clock.js";
 import type { Activity } from "../activities/index.js";
 import type { WellnessRecord } from "../wellness/index.js";
 import type { IntervalsEvent } from "../../types.js";
+import {
+  MIDDLE_BAND_HIGH_PCT_FTP,
+  MIDDLE_BAND_LOW_PCT_FTP,
+  bucketDelivered,
+  middleBandBounds,
+} from "../intensity-distribution/index.js";
 import type {
   ActivitySummary,
   EventSummary,
@@ -10,6 +16,7 @@ import type {
   SportTotals,
   TrainingWeekDeps,
   TrainingWeekSummary,
+  WeekMiddleBand,
 } from "./types.js";
 
 export class TrainingWeek implements ITrainingWeek {
@@ -27,13 +34,63 @@ export class TrainingWeek implements ITrainingWeek {
       this.deps.eventsApi.getEvents(start, end),
     ]);
 
+    const { perActivity, middleBand } =
+      await this.measureMiddleBand(activities);
+
     return {
       week: { start, end },
       totals: computeTotals(activities),
+      middleBand,
       bySport: groupBySport(activities),
       fitness: computeFitnessDelta(wellness),
-      completedActivities: activities.map(summarizeActivity),
+      completedActivities: activities.map((a, i) => ({
+        ...summarizeActivity(a),
+        middleBandSeconds: perActivity[i],
+      })),
       events: events.map(summarizeEvent),
+    };
+  }
+
+  /** One stream fetch per power-recorded activity; none when FTP is unknown. */
+  private async measureMiddleBand(activities: Activity[]): Promise<{
+    perActivity: (number | null)[];
+    middleBand: WeekMiddleBand | null;
+  }> {
+    const ftp = await this.deps.getFtp?.();
+    if (!ftp || ftp <= 0) {
+      return { perActivity: activities.map(() => null), middleBand: null };
+    }
+    const bounds = middleBandBounds(ftp);
+
+    let bandSeconds = 0;
+    let powerSeconds = 0;
+    const perActivity = await Promise.all(
+      activities.map(async (a) => {
+        if (!numericField(a, "icu_average_watts")) return null;
+        const streams = (await this.deps.activitiesApi.getActivityStreams(
+          a.id,
+          ["watts"]
+        )) as { watts?: (number | null)[] };
+        if (!streams.watts?.length) return null;
+        const bucketed = bucketDelivered(streams.watts, [], bounds);
+        bandSeconds += bucketed.middleBandSeconds;
+        powerSeconds += bucketed.totalSeconds;
+        return bucketed.middleBandSeconds;
+      })
+    );
+
+    return {
+      perActivity,
+      middleBand: {
+        lowPctFtp: MIDDLE_BAND_LOW_PCT_FTP,
+        highPctFtp: MIDDLE_BAND_HIGH_PCT_FTP,
+        ...bounds,
+        seconds: bandSeconds,
+        hours: round1(bandSeconds / 3600),
+        fractionOfPowerTime: powerSeconds
+          ? Math.round((bandSeconds / powerSeconds) * 1000) / 1000
+          : null,
+      },
     };
   }
 }
@@ -97,7 +154,9 @@ function computeFitnessDelta(wellness: WellnessRecord[]): FitnessDelta | null {
   };
 }
 
-function summarizeActivity(a: Activity): ActivitySummary {
+function summarizeActivity(
+  a: Activity
+): Omit<ActivitySummary, "middleBandSeconds"> {
   const seconds = numericField(a, "moving_time");
   const meters = numericField(a, "distance");
   const source = typeof a.source === "string" ? a.source : null;

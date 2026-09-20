@@ -298,6 +298,8 @@ export class IntervalsClient implements IIntervalsClient {
       activitiesApi: this.activities,
       wellnessApi: this.wellness,
       eventsApi: this.events,
+      // Same FTP source as the distribution frame, so the band means the same thing.
+      getFtp: async () => (await this.getCoachingContext()).athlete.ftp,
       today: this.today,
     });
   }
