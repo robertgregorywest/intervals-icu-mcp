@@ -43,6 +43,9 @@
       "name": "get_activity"
     },
     {
+      "name": "get_activity_laps"
+    },
+    {
       "name": "get_activity_streams"
     },
     {

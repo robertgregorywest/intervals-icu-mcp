@@ -71,6 +71,13 @@ describe("decodeFitLaps", () => {
     expect(laps[8].maxWatts).toBe(446);
   });
 
+  it("carries normalized power and distance, scaling distance to metres", () => {
+    const laps = decodeFitLaps(realFitFile())!;
+
+    expect(laps[0].normalizedWatts).toBe(177);
+    expect(laps[0].distanceMeters).toBe(7451.27);
+  });
+
   it("distinguishes elapsed from timer time on a paused lap", () => {
     const laps = decodeFitLaps(realFitFile())!;
 

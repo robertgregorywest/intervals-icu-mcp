@@ -3,6 +3,7 @@ import {
   getActivities,
   getActivity,
   getActivityStreams,
+  getActivityLaps,
 } from "../../src/tools/activities.js";
 import type { IIntervalsClient } from "../../src/index.js";
 
@@ -243,5 +244,75 @@ describe("getActivityStreams tool handler", () => {
     await getActivityStreams(client, { id: "i1", types: ["watts"] });
 
     expect(client.getActivityStreams).toHaveBeenCalledWith("i1", ["watts"]);
+  });
+});
+
+describe("getActivityLaps tool handler", () => {
+  it("returns the recorded laps and names the record", async () => {
+    const client = createMockClient({
+      getActivityLaps: vi.fn().mockResolvedValue([
+        {
+          index: 0,
+          startTimeSeconds: 0,
+          durationSeconds: 600,
+          averageWatts: 150,
+        },
+        {
+          index: 1,
+          startTimeSeconds: 600,
+          durationSeconds: 1245,
+          timerSeconds: 1245,
+          distanceMeters: 12000.5,
+          averageWatts: 285,
+          normalizedWatts: 288,
+          averageHeartrate: 170,
+          averageCadence: 92,
+        },
+      ]),
+    });
+    const result = await getActivityLaps(client, { id: "i176326434" });
+
+    expect(result.record).toBe("device-laps");
+    expect(result.count).toBe(2);
+    expect(result.laps[1]).toMatchObject({
+      startSeconds: 600,
+      elapsedSeconds: 1245,
+      avgWatts: 285,
+      npWatts: 288,
+      distanceMeters: 12000.5,
+    });
+  });
+
+  it("reports absent with a reason when no FIT file can be read", async () => {
+    const client = createMockClient({
+      getActivityLaps: vi.fn().mockResolvedValue(null),
+    });
+    const result = await getActivityLaps(client, { id: "i1" });
+
+    expect(result.record).toBe("absent");
+    expect(result.laps).toEqual([]);
+    expect(result.note).toMatch(/no original FIT upload/);
+  });
+
+  it("notes that a single lap records no structure", async () => {
+    const client = createMockClient({
+      getActivityLaps: vi
+        .fn()
+        .mockResolvedValue([
+          { index: 0, startTimeSeconds: 0, durationSeconds: 3600 },
+        ]),
+    });
+    const result = await getActivityLaps(client, { id: "i1" });
+
+    expect(result.record).toBe("device-laps");
+    expect(result.note).toMatch(/single lap/);
+  });
+
+  it("normalizes a bare numeric id", async () => {
+    const getLaps = vi.fn().mockResolvedValue(null);
+    await getActivityLaps(createMockClient({ getActivityLaps: getLaps }), {
+      id: 176326434,
+    });
+    expect(getLaps).toHaveBeenCalledWith("i176326434");
   });
 });

@@ -19,6 +19,9 @@ import {
   getActivity,
   getActivityStreamsSchema,
   getActivityStreams,
+  getActivityLapsSchema,
+  getActivityLapsOutputSchema,
+  getActivityLaps,
 } from "./tools/activities.js";
 import {
   getEventsSchema,
@@ -194,13 +197,30 @@ export const TOOLS: ToolDef[] = [
       "`intervals[]` (one slim entry per lap: i, type, label, start, dur, avgW, maxW, hr, cadence, grp), " +
       "`groups[]` (laps with the same signature collapsed into one entry — `count` is how many, " +
       "so a 4x2min block appears as one group with count:4; `sig` matches each lap's `grp`), and " +
-      '`interval_summary[]` (human strings like "4x 2m 369w"). To find a structured workout\'s ' +
+      '`interval_summary[]` (human strings like "4x 2m 369w" — lossy: average watts and duration only, not an analysis input). ' +
+      "These intervals are Intervals.icu's derived, editable segmentation, not the recording; for a race or benchmark effort read get_activity_laps. To find a structured workout's " +
       "efforts, read `groups`/`interval_summary` for the structure, then `intervals` for per-rep detail.",
     schema: getActivitySchema,
     annotations: READ_ONLY,
     outputSchema: null,
     handler: (client, args) =>
       getActivity(client, args as z.infer<typeof getActivitySchema>),
+  },
+  {
+    name: "get_activity_laps",
+    description:
+      "Get the laps the recording device wrote (decoded from the original FIT upload) — the recorded execution, " +
+      "not Intervals.icu's derived icu_intervals. Use this to read a race, time trial or benchmark effort, " +
+      "where no planned event exists for compare_planned_vs_actual. " +
+      "Per lap: startSeconds (offset from first lap), elapsedSeconds, timerSeconds, distanceMeters, " +
+      "avgWatts, npWatts, maxWatts, avgHr, avgCadence. " +
+      "Returns: { record: 'device-laps' | 'absent', note?, count, laps: [...] }. " +
+      "record 'absent' (e.g. Strava-synced, no FIT file) returns no laps and a reason; nothing derived is substituted.",
+    schema: getActivityLapsSchema,
+    annotations: READ_ONLY,
+    outputSchema: getActivityLapsOutputSchema,
+    handler: (client, args) =>
+      getActivityLaps(client, args as z.infer<typeof getActivityLapsSchema>),
   },
   {
     name: "get_activity_streams",
@@ -210,7 +230,10 @@ export const TOOLS: ToolDef[] = [
       'Example: types=["watts", "heartrate"] for a power+HR analysis. ' +
       "Long activities are downsampled by an index stride to fit a size budget, preserving " +
       "whole-ride coverage at lower resolution. " +
-      "Returns: { samples, original_samples, downsampled, stride, streams: { watts: number[], ... } }.",
+      "Returns: { samples, original_samples, downsampled, stride, streams: { watts: number[], ... } }. " +
+      "Do NOT derive an effort's window from these streams by power threshold when the athlete lapped it: " +
+      "the recorded lap (get_activity_laps) is the effort, a threshold window clips or pads its ends. " +
+      "Use the lap's startSeconds/elapsedSeconds to slice these streams on true boundaries.",
     schema: getActivityStreamsSchema,
     annotations: READ_ONLY,
     outputSchema: null,

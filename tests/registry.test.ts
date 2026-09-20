@@ -3,7 +3,7 @@ import { TOOLS, READ_ONLY, MUTATING, UPSERT } from "../src/registry.js";
 
 describe("TOOLS registry", () => {
   it("has 31 tools", () => {
-    expect(TOOLS).toHaveLength(31);
+    expect(TOOLS).toHaveLength(32);
   });
 
   it("every tool has required fields", () => {

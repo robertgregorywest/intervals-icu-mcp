@@ -15,7 +15,11 @@ import { createAthleteApi } from "./services/athlete/index.js";
 import type { IAthleteApi, AthleteProfile } from "./services/athlete/index.js";
 import { createActivitiesApi } from "./services/activities/index.js";
 import type { IActivitiesApi } from "./services/activities/index.js";
-import type { Activity, ActivityStreams } from "./services/activities/index.js";
+import type {
+  Activity,
+  ActivityStreams,
+  FitLap,
+} from "./services/activities/index.js";
 import { createWellnessApi } from "./services/wellness/index.js";
 import type { IWellnessApi } from "./services/wellness/index.js";
 import type { WellnessRecord } from "./services/wellness/index.js";
@@ -128,6 +132,7 @@ export interface IIntervalsClient {
   getActivities(oldest: string, newest: string): Promise<Activity[]>;
   getActivity(id: string, includeIntervals?: boolean): Promise<Activity>;
   getActivityStreams(id: string, types?: string[]): Promise<ActivityStreams>;
+  getActivityLaps(id: string): Promise<FitLap[] | null>;
 
   // Wellness
   getWellness(oldest: string, newest: string): Promise<WellnessRecord[]>;
@@ -342,6 +347,10 @@ export class IntervalsClient implements IIntervalsClient {
     types?: string[]
   ): Promise<ActivityStreams> {
     return this.activities.getActivityStreams(id, types);
+  }
+
+  async getActivityLaps(id: string): Promise<FitLap[] | null> {
+    return this.activities.getActivityLaps(id);
   }
 
   // Wellness

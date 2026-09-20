@@ -189,6 +189,75 @@ export async function getActivityStreams(
   );
 }
 
+export const getActivityLapsSchema = z.object({
+  id: getActivityStreamsSchema.shape.id,
+});
+
+export const getActivityLapsOutputSchema = z.object({
+  record: z
+    .enum(["device-laps", "absent"])
+    .describe(
+      "Which record was read: device-laps is the recording; absent means none could be read (nothing is substituted)"
+    ),
+  note: z.string().optional(),
+  count: z.number(),
+  laps: z.array(
+    z.object({
+      index: z.number(),
+      startSeconds: z.number().describe("Offset from the first lap's start"),
+      elapsedSeconds: z.number(),
+      timerSeconds: z.number().optional(),
+      distanceMeters: z.number().optional(),
+      avgWatts: z.number().optional(),
+      npWatts: z.number().optional(),
+      maxWatts: z.number().optional(),
+      avgHr: z.number().optional(),
+      avgCadence: z.number().optional(),
+    })
+  ),
+});
+
+export async function getActivityLaps(
+  client: IIntervalsClient,
+  args: z.infer<typeof getActivityLapsSchema>
+): Promise<z.infer<typeof getActivityLapsOutputSchema>> {
+  const id = normalizeActivityId(args.id);
+  const laps = await client.getActivityLaps(id);
+  if (!laps || laps.length === 0) {
+    return {
+      record: "absent",
+      note:
+        laps === null
+          ? "No device laps could be read: the activity has no original FIT upload (e.g. Strava-synced) or the file is not a readable FIT. " +
+            "get_activity with includeIntervals=true gives Intervals.icu's detected intervals, which are derived, not the recording."
+          : "The FIT file carries no laps.",
+      count: 0,
+      laps: [],
+    };
+  }
+  return {
+    record: "device-laps",
+    ...(laps.length === 1
+      ? {
+          note: "A single lap: the athlete did not lap this activity, so it records no effort structure.",
+        }
+      : {}),
+    count: laps.length,
+    laps: laps.map((lap) => ({
+      index: lap.index,
+      startSeconds: lap.startTimeSeconds,
+      elapsedSeconds: lap.durationSeconds,
+      timerSeconds: lap.timerSeconds,
+      distanceMeters: lap.distanceMeters,
+      avgWatts: lap.averageWatts,
+      npWatts: lap.normalizedWatts,
+      maxWatts: lap.maxWatts,
+      avgHr: lap.averageHeartrate,
+      avgCadence: lap.averageCadence,
+    })),
+  };
+}
+
 type PackedStreams = {
   samples: number;
   original_samples: number;

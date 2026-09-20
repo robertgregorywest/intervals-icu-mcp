@@ -25,7 +25,10 @@ export interface FitLap {
   durationSeconds: number;
   /** `total_timer_time` — excludes paused time. */
   timerSeconds?: number;
+  /** `total_distance`, metres. */
+  distanceMeters?: number;
   averageWatts?: number;
+  normalizedWatts?: number;
   maxWatts?: number;
   averageHeartrate?: number;
   averageCadence?: number;
@@ -37,10 +40,12 @@ const LAP_GLOBAL_MESSAGE = 19;
 const FIELD_START_TIME = 2;
 const FIELD_TOTAL_ELAPSED_TIME = 7;
 const FIELD_TOTAL_TIMER_TIME = 8;
+const FIELD_TOTAL_DISTANCE = 9;
 const FIELD_AVG_HEART_RATE = 15;
 const FIELD_AVG_CADENCE = 17;
 const FIELD_AVG_POWER = 19;
 const FIELD_MAX_POWER = 20;
+const FIELD_NORMALIZED_POWER = 33;
 
 /** Size in bytes of each FIT base type, indexed by the base type's low 5 bits. */
 const BASE_TYPE_SIZES = [1, 1, 1, 2, 2, 4, 4, 1, 4, 8, 1, 2, 4, 1, 8, 8, 8];
@@ -299,6 +304,12 @@ function toLaps(raw: Array<Map<number, number>>): FitLap[] {
 
     const timer = m.get(FIELD_TOTAL_TIMER_TIME);
     if (timer !== undefined) lap.timerSeconds = round(timer / 1000);
+
+    const distance = m.get(FIELD_TOTAL_DISTANCE);
+    if (distance !== undefined) lap.distanceMeters = distance / 100;
+
+    const np = m.get(FIELD_NORMALIZED_POWER);
+    if (np !== undefined) lap.normalizedWatts = np;
 
     const avgPower = m.get(FIELD_AVG_POWER);
     if (avgPower !== undefined) lap.averageWatts = avgPower;
