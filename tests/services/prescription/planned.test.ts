@@ -5,7 +5,7 @@ import {
   flattenPlannedSteps,
   normalisePowerTarget,
   plannedDuration,
-} from "../../../src/services/session-review/planned.js";
+} from "../../../src/services/prescription/index.js";
 import type { WorkoutDoc } from "../../../src/types.js";
 
 function fixture(name: string) {

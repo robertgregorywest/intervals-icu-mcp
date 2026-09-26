@@ -1,5 +1,12 @@
 import type { Activity, ActivityInterval } from "../activities/types.js";
 import type { IntervalsEvent } from "../../types.js";
+import type {
+  CadenceRange,
+  FlatPlannedStep,
+  PowerTarget,
+} from "../prescription/types.js";
+
+export type { CadenceRange, FlatPlannedStep, PowerTarget };
 
 /**
  * How the planned steps were paired to the recorded intervals.
@@ -44,12 +51,6 @@ export type StepVerdict =
  */
 export type CadenceVerdict = "on-target" | "over" | "under";
 
-/** A prescribed cadence band, e.g. `85-95rpm`. Both ends inclusive. */
-export interface CadenceRange {
-  low: number;
-  high: number;
-}
-
 /**
  * Which power figure a step's verdict was judged against.
  *
@@ -65,47 +66,6 @@ export interface CadenceRange {
  */
 export type VerdictBasis =
   "average-watts" | "normalized-power" | "normalized-power-fallback";
-
-/** A prescribed power target, normalised to watts. */
-export interface PowerTarget {
-  /** Point target, when the step prescribes a single wattage. */
-  watts?: number;
-  /** Band target, when the step prescribes a range. Both ends inclusive. */
-  low?: number;
-  high?: number;
-  /**
-   * True when `low`/`high` are the ends of a ramp rather than an acceptable
-   * band. A ramp is judged against its midpoint: sitting at the bottom of a
-   * 130→220 W ramp for the whole step is not on target, though it is "in range".
-   */
-  ramp?: boolean;
-}
-
-/**
- * One prescribed step after repeat blocks have been expanded — the unit of
- * comparison. A 3×(12min/4min) block yields six of these.
- */
-export interface FlatPlannedStep {
-  /** Position in the flattened list. */
-  index: number;
-  /** Index of the originating entry in `workout_doc.steps`. */
-  sourceIndex: number;
-  label?: string;
-  durationSeconds?: number;
-  target?: PowerTarget;
-  /** Point cadence target, rpm. */
-  cadence?: number;
-  /** Band cadence target, when the step prescribes a range. */
-  cadenceRange?: CadenceRange;
-  /** 1-based repetition number, when this step came from a repeat block. */
-  repIndex?: number;
-  /** Total repetitions in that block. */
-  repCount?: number;
-  /** 1-based position within one repetition. */
-  stepInRep?: number;
-  /** Set when the target could not be normalised (e.g. percent with no FTP). */
-  targetUnresolved?: string;
-}
 
 /** A recorded interval reduced to the fields the comparison uses. */
 export interface DeliveredInterval {

@@ -61,8 +61,12 @@ The HTML comment carrying a Workout template's identity on its Library workout, 
 A marker-bearing Library workout whose Workout template no longer exists. Reported by Sync as a warning; never deleted automatically.
 
 **Planned step**:
-One prescribed step of a workout after repeat blocks have been expanded — the unit of verification. A 3×(12min/4min) block is six Planned steps, each carrying its rep number, so decay across reps is visible. Read from the event's `workout_doc` (Intervals.icu's own parse), never re-parsed from the description text.
+One prescribed step of a workout after repeat blocks have been expanded — the unit of verification. A 3×(12min/4min) block is six Planned steps, each carrying its rep number, so decay across reps is visible. For a written event, read from its `workout_doc` (Intervals.icu's own parse), never re-parsed from the description text; only text that has not been written is parsed locally. Every Planned step comes out of the **Prescription module**.
 _Avoid_: "interval" for the planned side — that is the recorded half (see **Delivered interval**)
+
+**Prescription module**:
+`src/services/prescription/` — the one pipeline from workout text or a `workout_doc`, plus anchors, to resolved **Planned steps**: parse, zone resolution, flattening, **Work step** role and the single midpoint a band is taken at, each carrying its **Parse basis**. Every planned-side lens, the `create_workout` warning, the library summary and the `update_event` guard read prescriptions through it.
+_Avoid_: re-running any stage of that pipeline outside it, or writing another midpoint.
 
 **Delivered interval**:
 One segment of a completed activity, reduced to duration and average power/cadence/HR. What was actually ridden, as against what a **Planned step** asked for. Where the segment boundaries come from is the **Execution record**.
@@ -105,7 +109,7 @@ A **Planned step** that carries the session's prescribed intent, as against one 
 _Avoid_: re-deriving the role from prescribed intensity and structural position, which is what the vocabulary replaced; reading an unclassified step as a support step — it may be work whose label fell outside the vocabulary, which is what `unclassifiedSteps` exists to surface.
 
 **Work-word vocabulary**:
-The closed list of first words that declare a **Work step**, held in `src/services/step-roles/`. Every entry earns its place from a label the athlete's templates or calendar already use, so a step stays human-readable on the head unit while being deterministic to classify. Adding a word is a deliberate edit; an unrecognised word costs a step's **Verdict** rather than inventing one. `endurance` and `steady` are deliberately absent — a volume block is read by the **Intensity distribution**, not rep by rep.
+The closed list of first words that declare a **Work step**, held in the **Prescription module** (`src/services/prescription/roles.ts`). Every entry earns its place from a label the athlete's templates or calendar already use, so a step stays human-readable on the head unit while being deterministic to classify. Adding a word is a deliberate edit; an unrecognised word costs a step's **Verdict** rather than inventing one. `endurance` and `steady` are deliberately absent — a volume block is read by the **Intensity distribution**, not rep by rep.
 _Avoid_: matching anywhere but the label's first word; treating an unlisted word as a failure, rather than as a step nothing will judge.
 
 **Execution digest**:

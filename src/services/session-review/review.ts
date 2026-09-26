@@ -1,4 +1,5 @@
 import { alignSteps } from "./align.js";
+import { targetMidpoint } from "../prescription/index.js";
 import { ROLLING_WINDOW_SECONDS, normalizedPower } from "../analysis/index.js";
 import type {
   ActivityInterval,
@@ -266,7 +267,7 @@ function compareToTarget(
     // bottom of a 130->220 W ramp is "in range" but is not what was asked for.
     // Judge it against the midpoint, which is the average the ramp prescribes.
     if (target.ramp) {
-      return comparePoint((target.low + target.high) / 2, actual, tolerance);
+      return comparePoint(targetMidpoint(target)!, actual, tolerance);
     }
     if (actual >= target.low && actual <= target.high) {
       return { verdict: "on-target", delta: 0, reference: target.high };

@@ -1,4 +1,4 @@
-import type { FlatPlannedStep } from "../session-review/index.js";
+import { targetMidpoint, type FlatPlannedStep } from "../prescription/index.js";
 import { normalizedPower } from "../analysis/index.js";
 
 /**
@@ -82,7 +82,7 @@ export function buildPowerStream(steps: FlatPlannedStep[]): PowerStream {
       }
       return;
     }
-    const midpoint = (target.low + target.high) / 2;
+    const midpoint = targetMidpoint(target)!;
     for (let i = 0; i < seconds; i++) watts.push(midpoint);
   });
 

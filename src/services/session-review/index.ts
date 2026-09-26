@@ -23,11 +23,6 @@ export {
   AMBIGUITY_MARGIN,
 } from "./align.js";
 export {
-  flattenPlannedSteps,
-  normalisePowerTarget,
-  plannedDuration,
-} from "./planned.js";
-export {
   executionCandidates,
   lapsToDeliveredIntervals,
   MIN_LAPS_FOR_STRUCTURE,

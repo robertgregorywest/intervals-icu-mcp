@@ -1,6 +1,7 @@
 export {
   WorkoutParser,
   createWorkoutParser,
+  DISTANCE_STEP_DISCARDED,
   resolvePowerTarget,
   resolveZoneTargets,
 } from "./parser.js";

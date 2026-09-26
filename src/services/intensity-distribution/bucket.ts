@@ -1,4 +1,8 @@
-import type { FlatPlannedStep, PowerTarget } from "../session-review/index.js";
+import {
+  targetMidpoint,
+  type FlatPlannedStep,
+  type PowerTarget,
+} from "../prescription/index.js";
 import { bandFor } from "./zones.js";
 import type {
   BoundarySpanningStep,
@@ -36,11 +40,7 @@ export interface MiddleBandBounds {
  * pattern the prescription never asked for.
  */
 export function bucketWattsFor(target: PowerTarget): number | undefined {
-  if (typeof target.watts === "number") return target.watts;
-  if (typeof target.low === "number" && typeof target.high === "number") {
-    return (target.low + target.high) / 2;
-  }
-  return undefined;
+  return targetMidpoint(target);
 }
 
 /**

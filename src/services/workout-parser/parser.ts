@@ -66,6 +66,7 @@ export class WorkoutParser implements IWorkoutParser {
             line: i + 1,
             text: line,
             reason: discardReason(line),
+            ...(block?.kind === "repeat" ? { reps: block.reps } : {}),
           });
           return;
         }
@@ -209,6 +210,9 @@ function parseStepLine(line: string): PlannedDocStep | undefined {
   };
 }
 
+/** The discard reason a step prescribed by distance alone is given. */
+export const DISTANCE_STEP_DISCARDED = "distance-based step with no duration";
+
 function discardReason(line: string): string {
   const body = line.replace(/^-\s*/, "");
   const tokens = body.split(/\s+/).filter(Boolean);
@@ -218,7 +222,7 @@ function discardReason(line: string): string {
   });
   if (hasZero) return "zero duration";
   const hasDistance = tokens.some((t) => classify(t).kind === "distance");
-  if (hasDistance) return "distance-based step with no duration";
+  if (hasDistance) return DISTANCE_STEP_DISCARDED;
   return "no parseable duration";
 }
 

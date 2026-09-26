@@ -1,9 +1,10 @@
 import { z } from "zod";
 import type { IIntervalsClient } from "../index.js";
 import {
+  anchorsFor,
   unreviewableWorkSteps,
   type UnreviewableStep,
-} from "../services/step-roles/index.js";
+} from "../services/prescription/index.js";
 import { KEY_SESSION_FLOOR_PCT_FTP } from "../services/execution-digest/index.js";
 import type { WorkoutPlan } from "../services/workout-builder/index.js";
 import { slugify } from "../services/workout-builder/index.js";
@@ -141,23 +142,25 @@ export async function createWorkout(
 }
 
 /**
- * Best-effort: a warning is worth one context lookup, and worth nothing if it
+ * Best-effort: a warning is worth one athlete lookup, and worth nothing if it
  * can fail the write it is warning about. No FTP, or a lookup that throws, and
- * the workout is created with no warning rather than not created.
+ * the workout is created with no warning rather than not created. The lookup
+ * carries the power zones too, so a work step written as a zone is judged.
  */
 async function unreviewableWarning(
   client: IIntervalsClient,
   description: string
 ): Promise<{ unreviewableSteps?: UnreviewableStep[] }> {
-  let ftp: number | null = null;
+  let anchors;
   try {
-    ftp = (await client.getCoachingContext()).athlete.ftp;
+    anchors = anchorsFor(await client.getAthlete());
   } catch {
     return {};
   }
 
+  const { ftp } = anchors;
   const floor = ftp ? (ftp * KEY_SESSION_FLOOR_PCT_FTP) / 100 : undefined;
-  const steps = unreviewableWorkSteps(description, floor, ftp);
+  const steps = unreviewableWorkSteps(description, floor, anchors);
   return steps.length > 0 ? { unreviewableSteps: steps } : {};
 }
 

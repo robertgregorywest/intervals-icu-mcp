@@ -2,7 +2,7 @@ import type { IActivitiesApi } from "../activities/index.js";
 import type { IEventsApi } from "../events/index.js";
 import type { Activity } from "../activities/types.js";
 import type { IntervalsEvent } from "../../types.js";
-import { flattenPlannedSteps, plannedDuration } from "./planned.js";
+import { plannedDuration, readPrescription } from "../prescription/index.js";
 import {
   DEFAULT_TOLERANCE,
   reviewSession,
@@ -48,9 +48,9 @@ export class SessionReview implements ISessionReview {
     const activity = pair.activity!;
     const event = pair.event!;
 
-    const planned = flattenPlannedSteps(event.workout_doc, {
+    const planned = readPrescription(event.workout_doc, {
       ftp: event.icu_ftp ?? (activity.icu_ftp as number | undefined),
-    });
+    }).steps;
 
     if (planned.length === 0) {
       return this.refuse(

@@ -7,7 +7,7 @@ import {
   MAX_RELATIVE_DURATION_DIFF,
   CONFIDENCE_FLOOR,
 } from "../../../src/services/session-review/align.js";
-import { flattenPlannedSteps } from "../../../src/services/session-review/planned.js";
+import { flattenPlannedSteps } from "../../../src/services/prescription/index.js";
 import { toDeliveredIntervals } from "../../../src/services/session-review/review.js";
 import type { DeliveredInterval } from "../../../src/services/session-review/types.js";
 

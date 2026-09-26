@@ -1,11 +1,7 @@
 import type { IEventsApi } from "../events/index.js";
 import type { IWellnessApi } from "../wellness/index.js";
 import type { IAthleteApi, SportSetting } from "../athlete/index.js";
-import { flattenPlannedSteps } from "../session-review/index.js";
-import {
-  createWorkoutParser,
-  resolveZoneTargets,
-} from "../workout-parser/index.js";
+import { readPrescription } from "../prescription/index.js";
 import type { IntervalsEvent, WorkoutDoc } from "../../types.js";
 import { deriveLoad } from "./load.js";
 import {
@@ -47,7 +43,6 @@ export interface ForecastDeps {
 
 export class TrainingLoadForecast implements ITrainingLoadForecast {
   private deps: ForecastDeps;
-  private parser = createWorkoutParser();
 
   constructor(deps: ForecastDeps) {
     this.deps = deps;
@@ -299,14 +294,10 @@ export class TrainingLoadForecast implements ITrainingLoadForecast {
         | "gaps"
       >
     | undefined {
-    const source =
-      doc ??
-      (description ? this.parser.parse(description, anchors).doc : undefined);
+    const source = doc ?? description;
     if (!source) return undefined;
 
-    const steps = flattenPlannedSteps(resolveZoneTargets(source, anchors), {
-      ftp: anchors.ftp,
-    });
+    const { steps } = readPrescription(source, anchors);
     const derived = deriveLoad(steps, anchors.ftp);
     if (!derived) return undefined;
 

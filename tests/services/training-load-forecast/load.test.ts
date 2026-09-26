@@ -3,7 +3,7 @@ import {
   buildPowerStream,
   deriveLoad,
 } from "../../../src/services/training-load-forecast/load.js";
-import { flattenPlannedSteps } from "../../../src/services/session-review/index.js";
+import { flattenPlannedSteps } from "../../../src/services/prescription/index.js";
 import type { FlatPlannedStep } from "../../../src/services/session-review/index.js";
 import { EVENTS } from "../workout-parser/fixture.js";
 

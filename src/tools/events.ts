@@ -1,4 +1,4 @@
-import { parseDescriptionSummary } from "../services/workout-library/index.js";
+import { prescriptionShape } from "../services/prescription/index.js";
 import { z } from "zod";
 import type { IIntervalsClient } from "../index.js";
 import {
@@ -149,7 +149,7 @@ export async function updateEvent(
     if (
       existing.category === "WORKOUT" &&
       hasSteps &&
-      parseDescriptionSummary(description).stepCount === 0
+      prescriptionShape(description).stepCount === 0
     ) {
       throw new Error(
         "update_event: refusing to update 'description' on a WORKOUT event — " +

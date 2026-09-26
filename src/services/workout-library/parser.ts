@@ -1,5 +1,6 @@
 import type { WorkoutSummary } from "./types.js";
-import { classify, matchRepeatHeader } from "../workout-parser/index.js";
+import { matchRepeatHeader } from "../workout-parser/index.js";
+import { prescriptionShape } from "../prescription/index.js";
 
 /** Provenance marker written by sync. */
 const TEMPLATE_MARKER_RE = /<!--\s*template:\s*[a-z0-9][a-z0-9-]*\s*-->/i;
@@ -59,65 +60,17 @@ export function hasTemplateMarker(description: string): boolean {
   return TEMPLATE_MARKER_RE.test(description ?? "");
 }
 
-interface ParsedStep {
-  durationSeconds: number | null;
-}
-
 /**
- * Duration/distance recognition delegates to workout-parser's tokens.ts — the
- * grammar ADR-0007 validated against the platform's own parse — rather than
- * reimplementing it. Only the first token of either kind decides the step: a
- * duration ends the search with a figure, a distance ends it with `null`.
+ * The library's one-line summary of a workout. The counting is the
+ * Prescription module's — the same parse every planned-side lens reads — so a
+ * step the platform would drop is not listed here either.
  */
-function parseStepLine(line: string): ParsedStep | null {
-  const body = stepBody(line);
-  if (body === null) return null;
-  for (const t of body.split(/\s+/)) {
-    const token = classify(t);
-    if (token.kind === "duration") return { durationSeconds: token.seconds };
-    if (token.kind === "distance") return { durationSeconds: null };
-  }
-  return { durationSeconds: 0 };
-}
-
 export function parseDescriptionSummary(
   description: string
 ): Omit<WorkoutSummary, "id" | "name" | "folder_id"> {
-  const lines = stripMarkers(description).split(/\r?\n/);
-  let totalSeconds = 0;
-  let stepCount = 0;
-  let hasDistance = false;
-  let i = 0;
-
-  while (i < lines.length) {
-    const line = lines[i];
-    const reps = matchRepeatHeader(line);
-    if (reps !== undefined && stepBody(line) === null) {
-      const iterations = reps;
-      const blockSteps: ParsedStep[] = [];
-      let j = i + 1;
-      while (j < lines.length) {
-        if (lines[j].trim() === "") break;
-        const parsed = parseStepLine(lines[j]);
-        if (parsed) blockSteps.push(parsed);
-        j++;
-      }
-      stepCount += iterations * blockSteps.length;
-      for (const s of blockSteps) {
-        if (s.durationSeconds === null) hasDistance = true;
-        else totalSeconds += iterations * s.durationSeconds;
-      }
-      i = j;
-      continue;
-    }
-    const parsed = parseStepLine(line);
-    if (parsed) {
-      stepCount++;
-      if (parsed.durationSeconds === null) hasDistance = true;
-      else totalSeconds += parsed.durationSeconds;
-    }
-    i++;
-  }
+  const { stepCount, totalSeconds, hasDistance } = prescriptionShape(
+    stripMarkers(description)
+  );
 
   return {
     totalSeconds,

@@ -3,18 +3,15 @@ import type { IntervalsEvent } from "../../types.js";
 import type { ISessionReview } from "../session-review/types.js";
 import type {
   AlignedStep,
-  FlatPlannedStep,
   PlannedVsActualResult,
-  PowerTarget,
 } from "../session-review/types.js";
-import { flattenPlannedSteps } from "../session-review/index.js";
 import type {
   IIntensityDistribution,
   IntensityDistributionRangeResult,
   RangeSessionRow,
 } from "../intensity-distribution/types.js";
 import { MAX_RANGE_DAYS } from "../intensity-distribution/index.js";
-import { isWorkLabel } from "../step-roles/index.js";
+import { readPrescription, type PlannedStep } from "../prescription/index.js";
 import type {
   CadenceRollup,
   DigestSession,
@@ -149,7 +146,7 @@ export class ExecutionDigest implements IExecutionDigest {
 
 interface PlannedSummary {
   event: IntervalsEvent;
-  steps: FlatPlannedStep[];
+  steps: PlannedStep[];
   isKey: boolean;
 }
 
@@ -165,7 +162,7 @@ function plannedSummary(
   athleteFtp: number | null
 ): PlannedSummary {
   const ftp = event.icu_ftp ?? athleteFtp;
-  const steps = flattenPlannedSteps(event.workout_doc, { ftp });
+  const steps = readPrescription(event.workout_doc, { ftp }).steps;
   const floor = ftp ? (ftp * KEY_SESSION_FLOOR_PCT_FTP) / 100 : undefined;
 
   const isKey =
@@ -173,9 +170,9 @@ function plannedSummary(
     floor !== undefined &&
     steps.some(
       (s) =>
-        isWorkLabel(s.label) &&
-        targetMidpoint(s.target) !== undefined &&
-        targetMidpoint(s.target)! >= floor
+        s.role === "work" &&
+        s.midpointWatts !== undefined &&
+        s.midpointWatts >= floor
     );
 
   return { event, steps, isKey };
@@ -191,11 +188,11 @@ function plannedSummary(
  */
 function digestSession(
   review: PlannedVsActualResult,
-  planned: FlatPlannedStep[],
+  planned: PlannedStep[],
   doseByEvent: Map<number, RangeSessionRow>
 ): DigestSession {
   const workIndexes = new Set(
-    planned.filter((s) => isWorkLabel(s.label)).map((s) => s.index)
+    planned.filter((s) => s.role === "work").map((s) => s.index)
   );
   const work = review.steps.filter((s) => workIndexes.has(s.index));
   const dose =
@@ -292,16 +289,6 @@ function windowDose(
     ...(distribution.zones ? { zones: distribution.zones } : {}),
     ...(distribution.boundaries ? { boundaries: distribution.boundaries } : {}),
   };
-}
-
-/** A band's midpoint, a point target's watts; undefined when unresolved. */
-function targetMidpoint(target: PowerTarget | undefined): number | undefined {
-  if (!target) return undefined;
-  if (typeof target.watts === "number") return target.watts;
-  if (typeof target.low === "number" && typeof target.high === "number") {
-    return (target.low + target.high) / 2;
-  }
-  return undefined;
 }
 
 function daysBetween(oldest: string, newest: string): number {

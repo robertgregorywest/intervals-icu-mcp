@@ -4,7 +4,7 @@ import {
   firstWord,
   isWorkLabel,
   stepRole,
-} from "../../../src/services/step-roles/index.js";
+} from "../../../src/services/prescription/index.js";
 
 describe("firstWord", () => {
   it("normalises the punctuation and casing a label actually carries", () => {

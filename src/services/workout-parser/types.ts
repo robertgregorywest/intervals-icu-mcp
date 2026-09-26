@@ -25,6 +25,8 @@ export interface DiscardedLine {
   line: number;
   text: string;
   reason: string;
+  /** Repetitions of the repeat block the line sat in, when it sat in one. */
+  reps?: number;
 }
 
 /**

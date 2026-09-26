@@ -121,16 +121,21 @@ describe("parseDescriptionSummary", () => {
     expect(parseDescriptionSummary("").oneLine).toBe("Empty workout");
   });
 
-  // Duration recognition now delegates to workout-parser's tokens.ts, the
-  // platform-validated grammar (ADR-0007), which requires h/m/s units in that
-  // order within one token. A token that reverses the order is not a duration
-  // at all — this step contributes zero rather than the summed 90 minutes a
-  // looser reading would give it.
-  it("does not recognise an out-of-order duration token", () => {
-    const desc = "- 30m1h 75%";
+  // Counting goes through the Prescription module's parse, so a line the
+  // platform drops is not listed as a step.
+  it("does not count a step line the platform would drop", () => {
+    const desc = "- MAX standing start from near-stop\n- 10m 200w";
     const s = parseDescriptionSummary(desc);
     expect(s.stepCount).toBe(1);
-    expect(s.totalSeconds).toBe(0);
+    expect(s.totalSeconds).toBe(600);
+  });
+
+  it("counts a distance step inside a repeat once per rep", () => {
+    const desc = "3x\n- 1km Z4\n- 2m Z1";
+    const s = parseDescriptionSummary(desc);
+    expect(s.stepCount).toBe(6);
+    expect(s.totalSeconds).toBe(3 * 120);
+    expect(s.oneLine).toContain("includes distance steps");
   });
 
   // matchRepeatHeader has no left-boundary requirement before the digit,
