@@ -2,7 +2,6 @@ export {
   readPrescription,
   targetMidpoint,
   prescriptionShape,
-  anchorsFor,
 } from "./prescription.js";
 export {
   flattenPlannedSteps,

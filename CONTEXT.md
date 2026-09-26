@@ -26,8 +26,12 @@ The Adapter at `src/cli/` that projects Tools as Bash subcommands. The agent's z
 A single Tool as exposed by one Adapter. An **MCP tool** and a **CLI command** are two Projections of the same Tool.
 
 **MAP zones**:
-The canonical coaching training zones, anchored to MAP (Ric Stern / cyclecoach model). Derived live and surfaced by `get_coaching_context` as `mapZones`. The coaching skills reason in these.
+The canonical coaching training zones, anchored to MAP (Ric Stern / cyclecoach model). Derived live by the **Athlete anchors** module and surfaced by `get_coaching_context` as `mapZones`. The coaching skills reason in these.
 _Avoid_: "power zones" (ambiguous with the FTP set)
+
+**Athlete anchors**:
+`src/services/athlete-anchors/` — the one place FTP, weight, the cycling power zones, MAP and the **MAP zones** are read. Holds the single athlete-field reader (FTP from the cycling sport settings, then the record's own `icu_ftp`/`ftp`; a zero is unset) and the single FTP fallback a planned event is read at: the event's own, then its paired ride's, then the athlete's. Each anchor is fetched only as far as it needs — FTP is one athlete request. The coaching context is one of its callers, not the way to get FTP.
+_Avoid_: building the coaching context to read FTP; resolving a plan's FTP with any other fallback order, which lets the digest select a session at one target while the review judges it at another.
 
 **FTP zones**:
 Intervals.icu's native Coggan / %FTP power zones. Available on the raw `get_athlete` view; intentionally absent from the coaching context (see ADR 0003).

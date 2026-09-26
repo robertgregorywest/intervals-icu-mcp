@@ -2,6 +2,7 @@ import type { IEventsApi } from "../events/index.js";
 import type { IWellnessApi } from "../wellness/index.js";
 import type { IAthleteApi, SportSetting } from "../athlete/index.js";
 import { readPrescription } from "../prescription/index.js";
+import { readAthlete } from "../athlete-anchors/index.js";
 import type { IntervalsEvent, WorkoutDoc } from "../../types.js";
 import { deriveLoad } from "./load.js";
 import {
@@ -69,15 +70,15 @@ export class TrainingLoadForecast implements ITrainingLoadForecast {
       this.deps.wellnessApi.getWellness(historyStart, seedDate),
     ]);
 
-    const cycling = pickCyclingSport(athlete);
-    const ftp = options.ftp ?? cycling?.ftp ?? null;
+    const { cycling, ftp: athleteFtp, powerZones } = readAthlete(athlete);
+    const ftp = options.ftp ?? athleteFtp;
     if (!ftp || ftp <= 0) {
       throw new Error(
         "No FTP available to resolve targets against — set one on the " +
           "athlete's cycling sport settings or pass one with the forecast."
       );
     }
-    const anchors = { ftp, powerZones: cycling?.power_zones ?? null };
+    const anchors = { ftp, powerZones };
 
     const settingsCtl = numberOrNull(cycling, "ctl_days");
     const settingsAtl = numberOrNull(cycling, "atl_days");
@@ -377,19 +378,6 @@ function mondayOf(date: string): string {
   // getUTCDay is 0 on Sunday, which is the last day of the week here.
   const offset = (d.getUTCDay() + 6) % 7;
   return shiftDate(date, -offset);
-}
-
-function pickCyclingSport(
-  athlete: Record<string, unknown>
-): SportSetting | undefined {
-  const settings = (athlete.sport_settings ??
-    athlete.sportSettings ??
-    []) as SportSetting[];
-  return (
-    settings.find((s) =>
-      (s.types ?? []).some((t) => /ride|cycl|bike/i.test(t))
-    ) ?? settings[0]
-  );
 }
 
 function numberOrNull(

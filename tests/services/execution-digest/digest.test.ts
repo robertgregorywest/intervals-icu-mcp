@@ -11,6 +11,10 @@ import type {
   IntensityDistributionRangeResult,
 } from "../../../src/services/intensity-distribution/types.js";
 import type { IntervalsEvent, PlannedDocStep } from "../../../src/types.js";
+import type {
+  Activity,
+  IActivitiesApi,
+} from "../../../src/services/activities/index.js";
 
 const FTP = 300;
 /** 88% of 300 W — the key-session floor these fixtures are built around. */
@@ -76,13 +80,29 @@ interface Harness {
   reviews?: Record<number, PlannedVsActualResult>;
   range?: Partial<IntensityDistributionRangeResult>;
   ftp?: number | null;
+  /** Rides in the widened window, paired to events by `paired_event_id`. */
+  rides?: Partial<Activity>[];
 }
 
 function digest(h: Harness) {
-  const calls: { eventIds: number[]; ranges: string[] } = {
+  const calls: {
+    eventIds: number[];
+    ranges: string[];
+    rideRanges: string[];
+    athleteFtpReads: number;
+  } = {
     eventIds: [],
     ranges: [],
+    rideRanges: [],
+    athleteFtpReads: 0,
   };
+
+  const activitiesApi = {
+    getActivities: async (oldest: string, newest: string) => {
+      calls.rideRanges.push(`${oldest}..${newest}`);
+      return (h.rides ?? []) as Activity[];
+    },
+  } as unknown as IActivitiesApi;
 
   const eventsApi = {
     getEvents: async () => h.events,
@@ -119,9 +139,13 @@ function digest(h: Harness) {
 
   const service = createExecutionDigest({
     eventsApi,
+    activitiesApi,
     sessionReview,
     intensityDistribution,
-    getFtp: async () => (h.ftp === undefined ? FTP : h.ftp),
+    getFtp: async () => {
+      calls.athleteFtpReads++;
+      return h.ftp === undefined ? FTP : h.ftp;
+    },
   });
 
   return { service, calls };
@@ -219,6 +243,27 @@ describe("getExecutionDigest — selecting key sessions", () => {
     const { service, calls } = digest({ events: [bare] });
     await service.getExecutionDigest(WINDOW);
     expect(calls.eventIds).toEqual([1]);
+  });
+
+  it("reads a plan at its paired ride's FTP, as the review does", async () => {
+    // 274 W clears 88% of the athlete's 300 W but not of the 320 W the ride
+    // was recorded at — the FTP the review will judge this plan against.
+    const bare = event(1, "Threshold", [step("Threshold", FLOOR + 10, 900)]);
+    delete (bare as { icu_ftp?: number | null }).icu_ftp;
+
+    const { service, calls } = digest({
+      events: [bare],
+      rides: [{ id: "i1", paired_event_id: 1, icu_ftp: 320 }],
+    });
+
+    expect((await service.getExecutionDigest(WINDOW)).status).toBe("skipped");
+    expect(calls.athleteFtpReads).toBe(0);
+  });
+
+  it("looks for paired rides as far past the window as the review does", async () => {
+    const { service, calls } = digest({ events: [] });
+    await service.getExecutionDigest(WINDOW);
+    expect(calls.rideRanges).toEqual(["2026-08-30..2026-09-19"]);
   });
 
   it("skips rather than guesses when no FTP resolves at all", async () => {

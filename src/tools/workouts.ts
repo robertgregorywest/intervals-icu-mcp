@@ -1,7 +1,6 @@
 import { z } from "zod";
 import type { IIntervalsClient } from "../index.js";
 import {
-  anchorsFor,
   unreviewableWorkSteps,
   type UnreviewableStep,
 } from "../services/prescription/index.js";
@@ -144,8 +143,8 @@ export async function createWorkout(
 /**
  * Best-effort: a warning is worth one athlete lookup, and worth nothing if it
  * can fail the write it is warning about. No FTP, or a lookup that throws, and
- * the workout is created with no warning rather than not created. The lookup
- * carries the power zones too, so a work step written as a zone is judged.
+ * the workout is created with no warning rather than not created. The anchors
+ * carry the power zones too, so a work step written as a zone is judged.
  */
 async function unreviewableWarning(
   client: IIntervalsClient,
@@ -153,7 +152,7 @@ async function unreviewableWarning(
 ): Promise<{ unreviewableSteps?: UnreviewableStep[] }> {
   let anchors;
   try {
-    anchors = anchorsFor(await client.getAthlete());
+    anchors = await client.getAthleteAnchors();
   } catch {
     return {};
   }

@@ -1,0 +1,181 @@
+import { describe, it, expect } from "vitest";
+import {
+  createAthleteAnchors,
+  planFtp,
+  readAthlete,
+} from "../../../src/services/athlete-anchors/index.js";
+import type { IAthleteApi } from "../../../src/services/athlete/index.js";
+import type {
+  Activity,
+  ActivityStreams,
+  IActivitiesApi,
+} from "../../../src/services/activities/index.js";
+import type { IPowerCurvesApi } from "../../../src/services/power-curves/index.js";
+
+/**
+ * The athlete as the live API returns it: the list is `sportSettings`, FTP and
+ * zones live on the cycling entry only, and `weight` is null beside
+ * `icu_weight`.
+ */
+const ATHLETE = {
+  id: "i1",
+  name: "Test",
+  weight: null,
+  icu_weight: 68.2,
+  icu_resting_hr: 46,
+  sportSettings: [
+    {
+      types: ["Run", "VirtualRun"],
+      ftp: null,
+      lthr: 165,
+      max_hr: 180,
+      power_zones: null,
+      hr_zones: null,
+      pace_zones: [77, 88, 94, 100, 103, 111, 999],
+    },
+    {
+      types: ["Ride", "VirtualRide", "TrackRide"],
+      ftp: 286,
+      lthr: 159,
+      max_hr: 172,
+      power_zones: [55, 75, 90, 105, 120, 150, 999],
+      hr_zones: [127, 142, 148, 158, 162, 167, 175],
+      pace_zones: null,
+    },
+  ],
+};
+
+describe("readAthlete — the one athlete-field reader", () => {
+  it("reads the live payload's cycling settings and icu_weight", () => {
+    const f = readAthlete(ATHLETE);
+    expect(f.ftp).toBe(286);
+    expect(f.weight).toBe(68.2);
+    expect(f.lthr).toBe(159);
+    expect(f.maxHr).toBe(172);
+    expect(f.restingHr).toBe(46);
+    expect(f.powerZones).toEqual([55, 75, 90, 105, 120, 150, 999]);
+    expect(f.hrZones).toEqual([127, 142, 148, 158, 162, 167, 175]);
+    expect(f.paceZones).toBeNull();
+    expect(f.sportSettings).toHaveLength(2);
+  });
+
+  it("reads the typed profile's snake_case sport settings the same way", () => {
+    const { sportSettings, ...rest } = ATHLETE;
+    expect(readAthlete({ ...rest, sport_settings: sportSettings }).ftp).toBe(
+      286
+    );
+  });
+
+  it("prefers the sport settings' FTP over a top-level one", () => {
+    expect(readAthlete({ ...ATHLETE, icu_ftp: 250, ftp: 240 }).ftp).toBe(286);
+  });
+
+  it("falls back to the top-level FTP, icu_ftp first, when the settings carry none", () => {
+    expect(readAthlete({ icu_ftp: 250, ftp: 240 }).ftp).toBe(250);
+    expect(readAthlete({ ftp: 240 }).ftp).toBe(240);
+  });
+
+  it("reads a zero or negative number as unset, not as an anchor", () => {
+    const f = readAthlete({
+      icu_weight: 0,
+      weight: 70,
+      sportSettings: [{ types: ["Ride"], ftp: 0 }],
+      icu_ftp: -1,
+    });
+    expect(f.weight).toBe(70);
+    expect(f.ftp).toBeNull();
+  });
+
+  it("answers null for an empty or missing record", () => {
+    expect(readAthlete(null)).toMatchObject({
+      ftp: null,
+      weight: null,
+      powerZones: null,
+      sportSettings: [],
+    });
+  });
+});
+
+function harness() {
+  const calls: string[] = [];
+  const athleteApi: IAthleteApi = {
+    getAthlete: async () => {
+      calls.push("athlete");
+      return ATHLETE as never;
+    },
+  };
+  const activitiesApi = {
+    getActivities: async () => {
+      calls.push("activities");
+      return [
+        {
+          id: "i9",
+          name: "MAP ramp test",
+          start_date_local: "2026-09-01T08:00:00",
+        },
+      ] as Activity[];
+    },
+    getActivityStreams: async () => {
+      calls.push("streams");
+      return { watts: Array(120).fill(400) } as ActivityStreams;
+    },
+  } as unknown as IActivitiesApi;
+  const powerCurvesApi: IPowerCurvesApi = {
+    getPowerCurve: async () => {
+      calls.push("curve");
+      return [{ secs: 5, value: 1000 }] as never;
+    },
+  };
+  const anchors = createAthleteAnchors({
+    athleteApi,
+    activitiesApi,
+    powerCurvesApi,
+    today: () => "2026-09-10",
+  });
+  return { anchors, calls };
+}
+
+describe("AthleteAnchorsService", () => {
+  it("answers FTP, weight and power zones from one athlete request", async () => {
+    const { anchors, calls } = harness();
+    expect(await anchors.getAthleteAnchors()).toEqual({
+      ftp: 286,
+      weight: 68.2,
+      powerZones: [55, 75, 90, 105, 120, 150, 999],
+    });
+    expect(calls).toEqual(["athlete"]);
+  });
+
+  it("derives MAP and its zones without reading the athlete record", async () => {
+    const { anchors, calls } = harness();
+    const { map, mapZones } = await anchors.getMapAnchors();
+    expect(map?.watts).toBe(400);
+    expect(mapZones?.length).toBeGreaterThan(0);
+    expect(calls).not.toContain("athlete");
+  });
+});
+
+describe("planFtp — the one event → ride → athlete order", () => {
+  const never = async () => {
+    throw new Error("the athlete is read only as a last resort");
+  };
+
+  it("takes the event's own FTP first", async () => {
+    expect(await planFtp({ icu_ftp: 300 }, { icu_ftp: 320 }, never)).toBe(300);
+  });
+
+  it("takes the ride's FTP when the event carries none", async () => {
+    expect(await planFtp({ icu_ftp: null }, { icu_ftp: 320 }, never)).toBe(320);
+  });
+
+  it("reads the athlete only when neither half carries one", async () => {
+    expect(await planFtp({}, undefined, async () => 286)).toBe(286);
+    expect(await planFtp({ icu_ftp: 0 }, { icu_ftp: 0 }, async () => 286)).toBe(
+      286
+    );
+  });
+
+  it("answers null rather than guessing", async () => {
+    expect(await planFtp({}, null, async () => null)).toBeNull();
+  });
+});

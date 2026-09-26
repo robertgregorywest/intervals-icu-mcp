@@ -1,10 +1,9 @@
-import type { IAthleteApi, SportSetting } from "../athlete/index.js";
+import type { IAthleteApi } from "../athlete/index.js";
 import type { IWellnessApi, WellnessRecord } from "../wellness/index.js";
 import type { IActivitiesApi } from "../activities/index.js";
 import type { IPowerCurvesApi } from "../power-curves/index.js";
 import { isoToday } from "../../clock.js";
-import { deriveLatestMap } from "../map/index.js";
-import { computeZones, extractPeaks } from "../power-profile/index.js";
+import { deriveMapAnchors, readAthlete } from "../athlete-anchors/index.js";
 import type {
   AthleteSnapshot,
   CoachingContext,
@@ -35,26 +34,18 @@ export async function buildCoachingContext(
   const today = opts.today ?? isoToday();
   const oldest = addDays(today, -(days - 1));
 
-  const [athleteRaw, wellnessRaw, curveRaw] = await Promise.all([
-    deps.athleteApi.getAthlete(),
-    deps.wellnessApi.getWellness(oldest, today),
-    // p5s only caps the NMP zone; degrade gracefully if the curve is unavailable.
-    deps.powerCurvesApi
-      .getPowerCurve({ range: "90d", type: "Ride" })
-      .catch(() => null),
-  ]);
+  // MAP zones come from the Athlete anchors module, the one place they are
+  // derived; the athlete record is read through its field reader.
+  const [athleteRaw, wellnessRaw, { map, mapZones, mapWarning }] =
+    await Promise.all([
+      deps.athleteApi.getAthlete(),
+      deps.wellnessApi.getWellness(oldest, today),
+      deriveMapAnchors(deps, today),
+    ]);
 
-  const athlete = summarizeAthlete(
-    athleteRaw as Record<string, unknown> & {
-      sport_settings?: SportSetting[];
-      sportSettings?: SportSetting[];
-    }
-  );
+  const athlete = summarizeAthlete(athleteRaw);
   const trend = summarizeTrend(wellnessRaw);
   const fitness = pickFitnessSnapshot(trend);
-  const { map, mapWarning } = await deriveLatestMap(deps.activitiesApi, today);
-  const p5s = extractPeaks(curveRaw).p5s;
-  const mapZones = map ? computeZones(map.watts, p5s) : null;
 
   return {
     asOf: today,
@@ -85,56 +76,20 @@ function addDays(date: string, delta: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-function summarizeAthlete(
-  raw: Record<string, unknown> & {
-    sport_settings?: SportSetting[];
-    sportSettings?: SportSetting[];
-  }
-): AthleteSnapshot {
-  const sportSettings = raw.sport_settings ?? raw.sportSettings ?? [];
-  const cycling = pickCyclingSport(sportSettings);
+function summarizeAthlete(raw: unknown): AthleteSnapshot {
+  const f = readAthlete(raw);
   return {
-    id: pickString(raw, "id"),
-    name: pickString(raw, "name"),
-    weight: pickNumber(raw, ["weight", "icu_weight"]),
-    ftp: pickNumber(raw, ["ftp", "icu_ftp"]) ?? cycling?.ftp ?? null,
-    lthr: pickNumber(raw, ["lthr", "icu_lthr"]) ?? cycling?.lthr ?? null,
-    max_hr:
-      pickNumber(raw, ["max_hr", "icu_max_hr"]) ?? cycling?.max_hr ?? null,
-    resting_hr: pickNumber(raw, ["resting_hr", "icu_resting_hr"]),
-    hr_zones: pickZones(cycling?.hr_zones),
-    pace_zones: pickZones(cycling?.pace_zones),
-    sport_settings_count: sportSettings.length,
+    id: f.id,
+    name: f.name,
+    weight: f.weight,
+    ftp: f.ftp,
+    lthr: f.lthr,
+    max_hr: f.maxHr,
+    resting_hr: f.restingHr,
+    hr_zones: f.hrZones,
+    pace_zones: f.paceZones,
+    sport_settings_count: f.sportSettings.length,
   };
-}
-
-function pickCyclingSport(settings: SportSetting[]): SportSetting | undefined {
-  if (!settings.length) return undefined;
-  const cycling = settings.find((s) =>
-    (s.types ?? []).some((t) => /ride|cycl|bike/i.test(t))
-  );
-  return cycling ?? settings[0];
-}
-
-function pickZones(zones: number[] | null | undefined): number[] | null {
-  if (!zones || !zones.length) return null;
-  return zones;
-}
-
-function pickString(obj: Record<string, unknown>, key: string): string | null {
-  const v = obj[key];
-  return typeof v === "string" && v.length > 0 ? v : null;
-}
-
-function pickNumber(
-  obj: Record<string, unknown>,
-  keys: string[]
-): number | null {
-  for (const k of keys) {
-    const v = obj[k];
-    if (typeof v === "number" && Number.isFinite(v)) return v;
-  }
-  return null;
 }
 
 function summarizeTrend(records: WellnessRecord[]): WellnessTrendPoint[] {

@@ -3,6 +3,7 @@ import type { IEventsApi } from "../events/index.js";
 import type { Activity } from "../activities/types.js";
 import type { IntervalsEvent } from "../../types.js";
 import { plannedDuration, readPrescription } from "../prescription/index.js";
+import { planFtp } from "../athlete-anchors/index.js";
 import {
   DEFAULT_TOLERANCE,
   reviewSession,
@@ -23,10 +24,14 @@ export { PAIR_SEARCH_WINDOW_DAYS } from "./pair.js";
 export interface SessionReviewDeps {
   activitiesApi: IActivitiesApi;
   eventsApi: IEventsApi;
+  /** The athlete's FTP, read only when neither the event nor the ride carries one. */
+  getFtp?: () => Promise<number | null>;
 }
 
 export class SessionReview implements ISessionReview {
   constructor(private deps: SessionReviewDeps) {}
+
+  private athleteFtp = async () => (await this.deps.getFtp?.()) ?? null;
 
   async comparePlannedVsActual(
     options: ComparePlannedVsActualOptions
@@ -48,9 +53,8 @@ export class SessionReview implements ISessionReview {
     const activity = pair.activity!;
     const event = pair.event!;
 
-    const planned = readPrescription(event.workout_doc, {
-      ftp: event.icu_ftp ?? (activity.icu_ftp as number | undefined),
-    }).steps;
+    const ftp = await planFtp(event, activity, this.athleteFtp);
+    const planned = readPrescription(event.workout_doc, { ftp }).steps;
 
     if (planned.length === 0) {
       return this.refuse(

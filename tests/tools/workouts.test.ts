@@ -204,3 +204,29 @@ describe("scheduleLibraryWorkout", () => {
     ]);
   });
 });
+
+describe("createWorkout — the unreviewable-step warning", () => {
+  it("reads FTP from the athlete anchors, and warns on an unlabelled hard step", async () => {
+    const client = {
+      ...createMockClient(),
+      getAthleteAnchors: vi
+        .fn()
+        .mockResolvedValue({ ftp: 300, weight: 70, powerZones: null }),
+    } as unknown as IIntervalsClient;
+
+    const result = await createWorkout(client, {
+      name: "Threshold",
+      date: "2024-03-30",
+      sportType: "Ride",
+      steps: [
+        { label: "Warmup", duration: "10m", target: "60%" },
+        { label: "Hard bit", duration: "10m", target: "100%" },
+      ],
+    });
+
+    expect(client.getAthleteAnchors).toHaveBeenCalledOnce();
+    expect(result.unreviewableSteps).toEqual([
+      { index: 1, label: "Hard bit", watts: 300 },
+    ]);
+  });
+});

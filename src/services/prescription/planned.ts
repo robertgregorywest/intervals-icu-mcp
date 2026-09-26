@@ -118,7 +118,8 @@ export function normalisePowerTarget(
     }
     if (!ftp || ftp <= 0) {
       return {
-        unresolved: "percent-of-FTP target but no FTP on the event or activity",
+        unresolved:
+          "percent-of-FTP target but no FTP on the event, its ride or the athlete",
       };
     }
     scale = ftp / 100;

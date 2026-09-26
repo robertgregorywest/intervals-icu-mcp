@@ -4,6 +4,7 @@ import type { Activity } from "../activities/types.js";
 import type { IntervalsEvent } from "../../types.js";
 import { resolvePair, shiftDate } from "../session-review/index.js";
 import { readPrescription } from "../prescription/index.js";
+import { planFtp } from "../athlete-anchors/index.js";
 import {
   bucketDelivered,
   bucketPlanned,
@@ -203,6 +204,7 @@ export class IntensityDistribution implements IIntensityDistribution {
     return {
       partition: zones ? derivePartition(zones) : [],
       middle: ftp && ftp > 0 ? middleBandBounds(ftp) : undefined,
+      athleteFtp: ftp,
     };
   }
 
@@ -211,9 +213,8 @@ export class IntensityDistribution implements IIntensityDistribution {
     event: IntervalsEvent,
     frame: Frame
   ): Promise<IntensityDistributionResult> {
-    const planned = readPrescription(event.workout_doc, {
-      ftp: event.icu_ftp ?? (activity.icu_ftp as number | undefined),
-    }).steps;
+    const ftp = await planFtp(event, activity, async () => frame.athleteFtp);
+    const planned = readPrescription(event.workout_doc, { ftp }).steps;
 
     if (planned.length === 0) {
       return refuse(
@@ -304,6 +305,8 @@ export class IntensityDistribution implements IIntensityDistribution {
 interface Frame {
   partition: PartitionBand[];
   middle?: MiddleBandBounds;
+  /** The last resort for a session whose event and ride both lack an FTP. */
+  athleteFtp: number | null;
 }
 
 function toRows(

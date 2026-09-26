@@ -1,8 +1,9 @@
 import type { IActivitiesApi } from "../activities/index.js";
-import type { IAthleteApi, SportSetting } from "../athlete/index.js";
+import type { IAthleteApi } from "../athlete/index.js";
 import type { IPowerCurvesApi } from "../power-curves/index.js";
 import { isoToday } from "../../clock.js";
 import { deriveLatestMap } from "../map/index.js";
+import { positiveNumber, readAthlete } from "../athlete-anchors/fields.js";
 import type {
   InputField,
   InputSource,
@@ -45,25 +46,22 @@ export async function resolveInputs(
   ]);
 
   const athlete = athleteRaw as Record<string, unknown> | null;
+  const fields = readAthlete(athlete);
 
   // weight
   let weightKg: InputField<number>;
   if (overrides.weightKg != null) {
     weightKg = field(overrides.weightKg, "override");
   } else {
-    const w = pickNumber(athlete, ["icu_weight", "weight"]);
+    const w = fields.weight;
     weightKg = w != null ? field(w, "athlete") : missing<number>();
   }
 
-  // ftp — top-level icu_ftp/ftp, or first cycling sportSettings entry
   let ftpWatts: InputField<number>;
   if (overrides.ftpWatts != null) {
     ftpWatts = field(overrides.ftpWatts, "override");
   } else {
-    const top = pickNumber(athlete, ["icu_ftp", "ftp"]);
-    const cycling = pickCyclingSport(athlete);
-    const cy = cycling ? pickNumber(cycling, ["ftp"]) : null;
-    const v = top ?? cy ?? null;
+    const v = fields.ftp;
     ftpWatts = v != null ? field(v, "athlete") : missing<number>();
   }
 
@@ -100,8 +98,8 @@ export async function resolveInputs(
   if (overrides.heightCm != null) {
     heightCm = field(overrides.heightCm, "override");
   } else {
-    const h = pickNumber(athlete, ["height"]);
-    if (h != null && h > 0) {
+    const h = positiveNumber(athlete, ["height"]);
+    if (h != null) {
       const cm = h <= 3 ? h * 100 : h; // metres → cm if value looks like metres
       heightCm = field(cm, "athlete");
     } else {
@@ -206,18 +204,6 @@ export async function resolveInputs(
   };
 }
 
-function pickNumber(
-  obj: Record<string, unknown> | null,
-  keys: string[]
-): number | null {
-  if (!obj) return null;
-  for (const k of keys) {
-    const v = obj[k];
-    if (typeof v === "number" && Number.isFinite(v) && v > 0) return v;
-  }
-  return null;
-}
-
 function pickString(
   obj: Record<string, unknown> | null,
   key: string
@@ -225,19 +211,6 @@ function pickString(
   if (!obj) return null;
   const v = obj[key];
   return typeof v === "string" && v.length > 0 ? v : null;
-}
-
-function pickCyclingSport(
-  athlete: Record<string, unknown> | null
-): Record<string, unknown> | null {
-  if (!athlete) return null;
-  const settings = (athlete["sportSettings"] ?? athlete["sport_settings"]) as
-    SportSetting[] | undefined;
-  if (!Array.isArray(settings)) return null;
-  const cycling = settings.find((s) =>
-    (s.types ?? []).some((t) => /ride|cycl|bike/i.test(t))
-  );
-  return (cycling ?? settings[0]) as unknown as Record<string, unknown> | null;
 }
 
 function computeAgeFromDob(dob: string, today: string): number | null {

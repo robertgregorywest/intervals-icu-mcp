@@ -110,6 +110,24 @@ describe("IntervalsClient pinned today", () => {
     expect(new URL(activities!).searchParams.get("newest")).toBe(TODAY);
   });
 
+  it("answers FTP from one athlete request, without the coaching context", async () => {
+    const { client, urls } = pinnedClient();
+    await client.getAthleteAnchors();
+    expect(urls.map((u) => new URL(u).pathname)).toEqual([
+      "/api/v1/athlete/i1",
+    ]);
+  });
+
+  it("builds no coaching context for the execution digest", async () => {
+    const { client, urls } = pinnedClient();
+    await client.getExecutionDigest({
+      oldest: "2026-09-01",
+      newest: "2026-09-06",
+    });
+    expect(urls.some((u) => u.includes("/wellness"))).toBe(false);
+    expect(urls.some((u) => u.includes("/power-curves"))).toBe(false);
+  });
+
   it("keeps an explicit coaching-context today over the pinned one", async () => {
     const { client } = pinnedClient();
     const ctx = await client.getCoachingContext({ today: "2026-08-01" });

@@ -1,4 +1,5 @@
 import type { IEventsApi } from "../events/index.js";
+import type { Activity, IActivitiesApi } from "../activities/index.js";
 import type { IntervalsEvent } from "../../types.js";
 import type { ISessionReview } from "../session-review/types.js";
 import type {
@@ -12,6 +13,8 @@ import type {
 } from "../intensity-distribution/types.js";
 import { MAX_RANGE_DAYS } from "../intensity-distribution/index.js";
 import { readPrescription, type PlannedStep } from "../prescription/index.js";
+import { planFtp } from "../athlete-anchors/index.js";
+import { PAIR_SEARCH_WINDOW_DAYS, shiftDate } from "../session-review/index.js";
 import type {
   CadenceRollup,
   DigestSession,
@@ -43,9 +46,11 @@ const COASTING_WORTH_REPORTING = 0.05;
 
 export interface ExecutionDigestDeps {
   eventsApi: IEventsApi;
+  /** The rides paired to the window's events, whose FTP a plan is read at. */
+  activitiesApi: IActivitiesApi;
   sessionReview: ISessionReview;
   intensityDistribution: IIntensityDistribution;
-  /** The athlete's FTP, for events that carry none of their own. */
+  /** The athlete's FTP, for events whose own and paired ride carry none. */
   getFtp(): Promise<number | null>;
 }
 
@@ -81,14 +86,31 @@ export class ExecutionDigest implements IExecutionDigest {
       );
     }
 
-    const events = await this.deps.eventsApi.getEvents(oldest, newest);
-    const athleteFtp = await this.deps.getFtp();
+    const [events, rides] = await Promise.all([
+      this.deps.eventsApi.getEvents(oldest, newest),
+      this.pairedRides(oldest, newest),
+    ]);
+    let athleteFtp: Promise<number | null> | undefined;
+    const lazyAthleteFtp = () => (athleteFtp ??= this.deps.getFtp());
 
     // Selection runs on the planned side, so a key session that was abandoned
     // or never started is selected and reported rather than silently missed.
-    const planned = events
-      .filter((e) => e.category === "WORKOUT")
-      .map((event) => plannedSummary(event, athleteFtp));
+    // It reads each plan at the FTP the review will judge it at, so a step is
+    // selected and judged against the same target.
+    const planned = await Promise.all(
+      events
+        .filter((e) => e.category === "WORKOUT")
+        .map(async (event) =>
+          plannedSummary(
+            event,
+            await planFtp(
+              event,
+              event.id !== undefined ? rides.get(event.id) : undefined,
+              lazyAthleteFtp
+            )
+          )
+        )
+    );
     const key = planned.filter((p) => p.isKey);
 
     if (key.length === 0) {
@@ -142,6 +164,26 @@ export class ExecutionDigest implements IExecutionDigest {
       nonKeySessions: planned.length - key.length,
     };
   }
+
+  /**
+   * The rides paired to events in the window, keyed by event. Widened by the
+   * review's own pairing reach, so a ride the review would find for an event is
+   * one found here too.
+   */
+  private async pairedRides(
+    oldest: string,
+    newest: string
+  ): Promise<Map<number, Activity>> {
+    const activities = await this.deps.activitiesApi.getActivities(
+      shiftDate(oldest, -PAIR_SEARCH_WINDOW_DAYS),
+      shiftDate(newest, PAIR_SEARCH_WINDOW_DAYS)
+    );
+    const byEvent = new Map<number, Activity>();
+    for (const a of activities) {
+      if (a.paired_event_id) byEvent.set(a.paired_event_id, a);
+    }
+    return byEvent;
+  }
 }
 
 interface PlannedSummary {
@@ -159,9 +201,8 @@ interface PlannedSummary {
  */
 function plannedSummary(
   event: IntervalsEvent,
-  athleteFtp: number | null
+  ftp: number | null
 ): PlannedSummary {
-  const ftp = event.icu_ftp ?? athleteFtp;
   const steps = readPrescription(event.workout_doc, { ftp }).steps;
   const floor = ftp ? (ftp * KEY_SESSION_FLOOR_PCT_FTP) / 100 : undefined;
 

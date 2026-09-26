@@ -101,6 +101,11 @@ import type {
   ITrainingLoadForecast,
 } from "./services/training-load-forecast/index.js";
 import { buildCoachingContext } from "./services/coaching-context/index.js";
+import { createAthleteAnchors } from "./services/athlete-anchors/index.js";
+import type {
+  AthleteAnchors,
+  IAthleteAnchors,
+} from "./services/athlete-anchors/index.js";
 import type {
   CoachingContext,
   CoachingContextOptions,
@@ -127,6 +132,8 @@ export interface IIntervalsClient {
 
   // Athlete
   getAthlete(): Promise<AthleteProfile>;
+  /** FTP, weight and power zones — one athlete request, no coaching context. */
+  getAthleteAnchors(): Promise<AthleteAnchors>;
 
   // Activities
   getActivities(oldest: string, newest: string): Promise<Activity[]>;
@@ -223,6 +230,7 @@ export class IntervalsClient implements IIntervalsClient {
   private events: IEventsApi;
   private workoutBuilder: IWorkoutBuilder;
   private athlete: IAthleteApi;
+  private anchors: IAthleteAnchors;
   private activities: IActivitiesApi;
   private wellness: IWellnessApi;
   private powerCurves: IPowerCurvesApi;
@@ -256,29 +264,38 @@ export class IntervalsClient implements IIntervalsClient {
     this.workoutLibrary = createWorkoutLibrary(
       createWorkoutLibraryApi(this.httpClient, athleteId)
     );
+    // One source for every FTP and MAP-zone reader, so the lenses and the week
+    // summary judge against the same anchors without building the coaching
+    // context to get them.
+    this.anchors = createAthleteAnchors({
+      athleteApi: this.athlete,
+      activitiesApi: this.activities,
+      powerCurvesApi: this.powerCurves,
+      today: this.today,
+    });
+    const getFtp = async () => (await this.anchors.getAthleteAnchors()).ftp;
     this.sessionReview = createSessionReview({
       activitiesApi: this.activities,
       eventsApi: this.events,
+      getFtp,
     });
     this.intensityDistribution = createIntensityDistribution({
       activitiesApi: this.activities,
       eventsApi: this.events,
-      // The full coaching context is more than the frame needs, but it is the
-      // one place MAP zones are derived; duplicating that derivation here would
-      // let the two drift apart.
       getCoachingZones: async () => {
-        const ctx = await this.getCoachingContext();
-        return { zones: ctx.mapZones, ftp: ctx.athlete.ftp };
+        const [{ mapZones }, ftp] = await Promise.all([
+          this.anchors.getMapAnchors(),
+          getFtp(),
+        ]);
+        return { zones: mapZones, ftp };
       },
     });
     this.executionDigest = createExecutionDigest({
       eventsApi: this.events,
+      activitiesApi: this.activities,
       sessionReview: this.sessionReview,
       intensityDistribution: this.intensityDistribution,
-      // Same source as the distribution's frame: the coaching context is the
-      // one place FTP is resolved, and a second derivation here could disagree
-      // with the band the dose is judged in.
-      getFtp: async () => (await this.getCoachingContext()).athlete.ftp,
+      getFtp,
     });
     this.trackLapAlignment = createTrackLapAlignment({
       activitiesApi: this.activities,
@@ -300,7 +317,7 @@ export class IntervalsClient implements IIntervalsClient {
       wellnessApi: this.wellness,
       eventsApi: this.events,
       // Same FTP source as the distribution frame, so the band means the same thing.
-      getFtp: async () => (await this.getCoachingContext()).athlete.ftp,
+      getFtp,
       today: this.today,
     });
   }
@@ -334,6 +351,10 @@ export class IntervalsClient implements IIntervalsClient {
   // Athlete
   async getAthlete(): Promise<AthleteProfile> {
     return this.athlete.getAthlete();
+  }
+
+  async getAthleteAnchors(): Promise<AthleteAnchors> {
+    return this.anchors.getAthleteAnchors();
   }
 
   // Activities
@@ -658,6 +679,11 @@ export type {
   WellnessTrendPoint,
 } from "./services/coaching-context/index.js";
 export type { MapInfo, MapDerivation } from "./services/map/index.js";
+export type {
+  AthleteAnchors,
+  IAthleteAnchors,
+  MapAnchors,
+} from "./services/athlete-anchors/index.js";
 export type {
   PowerProfileOverrides,
   PowerProfileResult,

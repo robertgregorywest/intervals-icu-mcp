@@ -1,4 +1,3 @@
-import type { AthleteProfile } from "../athlete/index.js";
 import {
   createWorkoutParser,
   DISTANCE_STEP_DISCARDED,
@@ -100,22 +99,5 @@ export function prescriptionShape(text: string): PrescriptionShape {
     stepCount: steps.length + distanceSteps,
     totalSeconds: steps.reduce((sum, s) => sum + (s.durationSeconds ?? 0), 0),
     hasDistance: distanceSteps > 0,
-  };
-}
-
-/**
- * The anchors to resolve a cycling prescription against: FTP and the power
- * zones from the athlete's cycling sport settings, where Intervals.icu keeps
- * them — the athlete record itself carries neither.
- */
-export function anchorsFor(athlete: AthleteProfile): ParseAnchors {
-  const settings = athlete.sport_settings ?? [];
-  const cycling =
-    settings.find((s) =>
-      (s.types ?? []).some((t) => /ride|cycl|bike/i.test(t))
-    ) ?? settings[0];
-  return {
-    ftp: cycling?.ftp ?? null,
-    powerZones: cycling?.power_zones ?? null,
   };
 }
